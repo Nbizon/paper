@@ -1,20 +1,38 @@
-\begin{figure}[t]
+\begin{figure*}[t]
     \centering
     \begin{tikzpicture}[
-        node distance=0.38cm,
-        box/.style={draw=gray!55,rounded corners=2pt,align=center,inner sep=5pt,font=\scriptsize,text width=0.28\columnwidth},
-        arrow/.style={-Latex,gray!70,line width=0.7pt}
+        >=Latex,
+        node distance=0.55cm and 0.62cm,
+        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.18\textwidth, minimum height=1.05cm},
+        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
+        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
+        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
+        arrow/.style={->, gray!75, line width=0.75pt},
+        dasharrow/.style={->, dashed, gray!70, line width=0.75pt}
     ]
-        \node[box] (dataset) {Generated Java call trees\\contexts, depth, distractors};
-        \node[box,right=of dataset] (models) {Three LLMs\\six reasoning budgets};
-        \node[box,below=of models] (metrics) {Final, chain, trace\\and budget use};
-        \node[box,left=of metrics] (taxonomy) {Trace taxonomy\\motifs and failure families};
-        \draw[arrow] (dataset) -- (models);
-        \draw[arrow] (models) -- (metrics);
-        \draw[arrow] (metrics) -- (taxonomy);
-        \draw[arrow] (taxonomy) -- (dataset);
+        \node[artifact] (generator) {Program generator\\graph, depth, context, stressors};
+        \node[artifact, right=of generator] (instances) {Benchmark instances\\Java, prompt, oracle trace};
+        \node[phase, right=of instances] (families) {Task families\\control flow\\data flow};
+        \node[phase, right=of families] (runs) {Budgeted model runs\\512--16,384 tokens};
+
+        \node[eval, below=of instances] (metrics) {Outcome metrics\\final, chain, trace, completeness};
+        \node[eval, right=of metrics] (budget) {Budget metrics\\requested budget\\emitted reasoning};
+        \node[warn, right=of budget] (failures) {Behavioral analysis\\failure families\\local motifs};
+
+        \node[phase, below=of budget] (claims) {Research claims\\budget scaling\\trace fidelity\\residual errors};
+
+        \draw[arrow] (generator) -- (instances);
+        \draw[arrow] (instances) -- (families);
+        \draw[arrow] (families) -- (runs);
+        \draw[arrow] (runs) |- (metrics);
+        \draw[arrow] (runs) -- (budget);
+        \draw[arrow] (metrics) -- (budget);
+        \draw[arrow] (budget) -- (failures);
+        \draw[arrow] (metrics) |- (claims);
+        \draw[arrow] (failures) |- (claims);
+        \draw[dasharrow] (failures.south west) to[bend right=18] node[below,font=\scriptsize,align=center] {new stressors\\and oracle checks} (generator.south east);
     \end{tikzpicture}
-    \caption{Analysis workflow used in the benchmark study. The loop back to the dataset highlights that trace failures suggest new controlled factors for the next benchmark iteration.}
-    \Description{Workflow diagram from generated Java call trees to model runs, metrics, trace taxonomy, and benchmark refinement.}
+    \caption{End-to-end workflow for \benchmark. The pipeline separates benchmark construction, the two task families, budgeted model execution, metric extraction, and behavioral failure analysis.}
+    \Description{Workflow diagram from program generation to benchmark instances, task families, budgeted model runs, outcome and budget metrics, behavioral failure analysis, and research claims, with a dashed feedback arrow from failure analysis back to the generator.}
     \label{fig:pipeline}
-\end{figure}
+\end{figure*}

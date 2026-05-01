@@ -14,32 +14,32 @@
         \draw[gray!20] (0,3.60) -- (11.2,3.60);
         \node[left,font=\scriptsize] at (-0.08,3.60) {100\%};
         \node[below,font=\small] at (1.45,-0.15) {Gemma};
-        \fill[finalcolor] (0.75,0) rectangle ++(0.26,3.243);
-        \node[font=\tiny,rotate=90,anchor=west] at (0.88,3.283) {90.1\%};
-        \fill[chaincolor] (1.11,0) rectangle ++(0.26,2.060);
-        \node[font=\tiny,rotate=90,anchor=west] at (1.24,2.100) {57.2\%};
-        \fill[tracecolor] (1.47,0) rectangle ++(0.26,0.839);
-        \node[font=\tiny,rotate=90,anchor=west] at (1.60,0.879) {23.3\%};
-        \fill[modelgreen] (1.83,0) rectangle ++(0.26,1.888);
-        \node[font=\tiny,rotate=90,anchor=west] at (1.96,1.928) {52.4\%};
+        \fill[finalcolor] (0.75,0) rectangle ++(0.26,3.290);
+        \node[font=\tiny,rotate=90,anchor=west] at (0.88,3.330) {91.4\%};
+        \fill[chaincolor] (1.11,0) rectangle ++(0.26,2.110);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.24,2.150) {58.6\%};
+        \fill[tracecolor] (1.47,0) rectangle ++(0.26,0.875);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.60,0.915) {24.3\%};
+        \fill[modelgreen] (1.83,0) rectangle ++(0.26,1.890);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.96,1.930) {52.5\%};
         \node[below,font=\small] at (4.80,-0.15) {GPT-OSS};
-        \fill[finalcolor] (4.10,0) rectangle ++(0.26,2.846);
-        \node[font=\tiny,rotate=90,anchor=west] at (4.23,2.886) {79.0\%};
-        \fill[chaincolor] (4.46,0) rectangle ++(0.26,1.308);
-        \node[font=\tiny,rotate=90,anchor=west] at (4.59,1.349) {36.3\%};
-        \fill[tracecolor] (4.82,0) rectangle ++(0.26,0.589);
-        \node[font=\tiny,rotate=90,anchor=west] at (4.95,0.629) {16.4\%};
-        \fill[modelgreen] (5.18,0) rectangle ++(0.26,1.686);
-        \node[font=\tiny,rotate=90,anchor=west] at (5.31,1.726) {46.8\%};
+        \fill[finalcolor] (4.10,0) rectangle ++(0.26,3.168);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.23,3.208) {88.0\%};
+        \fill[chaincolor] (4.46,0) rectangle ++(0.26,1.598);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.59,1.638) {44.4\%};
+        \fill[tracecolor] (4.82,0) rectangle ++(0.26,0.659);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.95,0.699) {18.3\%};
+        \fill[modelgreen] (5.18,0) rectangle ++(0.26,1.753);
+        \node[font=\tiny,rotate=90,anchor=west] at (5.31,1.793) {48.7\%};
         \node[below,font=\small] at (8.15,-0.15) {Qwen};
-        \fill[finalcolor] (7.45,0) rectangle ++(0.26,3.207);
-        \node[font=\tiny,rotate=90,anchor=west] at (7.58,3.247) {89.1\%};
-        \fill[chaincolor] (7.81,0) rectangle ++(0.26,2.389);
-        \node[font=\tiny,rotate=90,anchor=west] at (7.94,2.429) {66.4\%};
-        \fill[tracecolor] (8.17,0) rectangle ++(0.26,1.136);
-        \node[font=\tiny,rotate=90,anchor=west] at (8.30,1.176) {31.6\%};
-        \fill[modelgreen] (8.53,0) rectangle ++(0.26,2.066);
-        \node[font=\tiny,rotate=90,anchor=west] at (8.66,2.106) {57.4\%};
+        \fill[finalcolor] (7.45,0) rectangle ++(0.26,3.560);
+        \node[font=\tiny,rotate=90,anchor=west] at (7.58,3.600) {98.9\%};
+        \fill[chaincolor] (7.81,0) rectangle ++(0.26,2.923);
+        \node[font=\tiny,rotate=90,anchor=west] at (7.94,2.963) {81.2\%};
+        \fill[tracecolor] (8.17,0) rectangle ++(0.26,1.415);
+        \node[font=\tiny,rotate=90,anchor=west] at (8.30,1.455) {39.3\%};
+        \fill[modelgreen] (8.53,0) rectangle ++(0.26,2.275);
+        \node[font=\tiny,rotate=90,anchor=west] at (8.66,2.315) {63.2\%};
         \fill[finalcolor] (9.85,3.35) rectangle ++(0.22,0.12);
         \node[right,font=\scriptsize] at (10.15,3.41) {Final};
         \fill[chaincolor] (9.85,3.08) rectangle ++(0.22,0.12);
@@ -50,7 +50,7 @@
         \node[right,font=\scriptsize] at (10.15,2.60) {Completeness};
         \node[rotate=90,font=\scriptsize] at (-0.72,1.8) {Weighted accuracy};
     \end{tikzpicture}
-    \caption{Baseline model behavior on the common slice. Final-answer accuracy is separated from exact chain, exact trace, and trace-completeness metrics.}
-    \Description{Grouped LaTeX bar chart of final answer, chain, trace, and completeness metrics for the three models.}
+    \caption{Model behavior at the largest requested reasoning budget, 16,384 tokens. Even under the most favorable budget setting, final-answer accuracy remains substantially higher than chain and trace fidelity.}
+    \Description{Grouped LaTeX bar chart of final answer, chain, trace, and completeness metrics for the three models at the 16,384-token requested reasoning budget.}
     \label{fig:overall-metrics-latex}
 \end{figure*}

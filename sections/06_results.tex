@@ -11,7 +11,7 @@ The factors summarized in \tabref{tab:experimental-factors} separate three sourc
 
 \subsection{\researchq{1}: Reasoning-Budget Performance}
 
-The requested reasoning budget has a substantial but model-specific effect. \tabref{tab:overall} and \figref{fig:overall-metrics-latex} first show that the models rank differently depending on the metric. Gemma has the strongest final-answer accuracy on the common slice, but Qwen has the strongest exact-chain accuracy, trace accuracy, and trace completeness. GPT-OSS is weaker across the headline metrics. This already suggests that final-answer accuracy alone is an incomplete measure of software-engineering reasoning.
+The requested reasoning budget has a substantial but model-specific effect. \tabref{tab:overall} and \figref{fig:overall-metrics-latex} first show performance at the largest requested budget, 16,384 tokens. This is the most favorable budget setting in our sweep, yet the metric gap remains large: Qwen has the strongest final-answer accuracy and path fidelity, Gemma remains competitive on final answers but much weaker on traces, and GPT-OSS substantially improves its final answers while still lagging on exact chains. This already suggests that final-answer accuracy alone is an incomplete measure of software-engineering reasoning.
 
 \input{tables/overall_performance}
 \input{figures/latex_overall_metrics}
@@ -33,19 +33,22 @@ The emitted-reasoning proxy helps interpret these curves. At 16,384 requested to
 
 \subsection{\researchq{2}: Chains, Final Answers, and Failures}
 
-Final answers and traces diverge sharply. Across the common slice, final-answer accuracy is 90.1\% for Gemma, 79.0\% for GPT-OSS, and 89.1\% for Qwen, while trace accuracy is only 23.3\%, 16.4\%, and 31.6\%, respectively. The gap means that a model can frequently return the correct Boolean answer without reconstructing the exact path that justifies it.
+Final answers and traces diverge sharply even at the maximum requested budget. At 16,384 tokens, final-answer accuracy is 91.4\% for Gemma, 88.0\% for GPT-OSS, and 98.9\% for Qwen, while trace accuracy is only 24.3\%, 18.3\%, and 39.3\%, respectively. The gap means that a model can frequently return the correct Boolean answer without reconstructing the exact path that justifies it.
 
 The hardest cases remain difficult even at the maximum requested budget. \tabref{tab:high-budget-16384} shows that depth and context continue to reduce chain and trace fidelity. At depth 16--25 and context 500, final-answer accuracy is 79.5\% for Gemma, 75.4\% for GPT-OSS, and 97.0\% for Qwen; exact-chain accuracy drops to 33.5\%, 23.5\%, and 69.5\%. Trace accuracy is lower still: 4.1\%, 1.2\%, and 23.1\%. The maximum requested budget therefore does not eliminate the distinction between saying the right label and producing the right path.
 
 \input{figures/latex_depth_context}
 \input{tables/high_budget_16384}
 
-The error taxonomy indicates that residual failures are structural. Premature termination is the dominant family: shorter traces affect 31.7\% of Gemma cases, 38.5\% of GPT-OSS cases, and 18.0\% of Qwen cases. GPT-OSS is also most prone to over-exploration, alternative branches, invalid transitions, longer traces, and missed reachable targets. Qwen is cleaner on invalid and off-branch transitions, but still exhibits order issues and empty predictions. These patterns are stronger evidence than isolated examples because they connect model outputs to recurring graph-level failure modes.
+The error taxonomy indicates that residual failures are structural. Aggregated over the full budget sweep, premature termination is the dominant family: shorter traces affect 31.7\% of Gemma cases, 38.5\% of GPT-OSS cases, and 18.0\% of Qwen cases. GPT-OSS is also most prone to over-exploration, alternative branches, invalid transitions, longer traces, and missed reachable targets. Qwen is cleaner on invalid and off-branch transitions, but still exhibits order issues and empty predictions. These patterns are stronger evidence than isolated examples because they connect model outputs to recurring graph-level failure modes.
 
 \input{figures/latex_error_taxonomy}
 \input{tables/error_taxonomy}
+\input{tables/failure_budget_evolution}
 \input{tables/local_motif_examples}
 \input{tables/example_trace}
+
+\tabref{tab:failure-budget-evolution} adds the missing budget dimension to this taxonomy. The trends are not uniform. Qwen converts budget into broad behavioral cleanup: missed reachable targets fall from 16.6\% at 512 tokens to 1.0\% at 16,384, and over-exploration falls from 15.7\% to 1.4\%. GPT-OSS also reduces branch, transition, and missed-target errors as budget grows, but shorter traces remain high and even increase at the largest budgets. Gemma is the clearest saturation case: shorter traces stay near 31--32\% across the sweep, and some off-path or invalid-transition families slightly increase with budget.
 
 Finally, the descriptive factor contrasts show that surface code features can damage reasoning even when the oracle relation is unchanged. Comments, variables, loops, and conditionals generally reduce both final and chain accuracy. These contrasts should be interpreted descriptively until adjusted statistical models control for co-occurring factors, but they motivate the paired control-flow/data-flow design: syntax that is a distractor in one experiment can become the semantic object of study in the other.
 

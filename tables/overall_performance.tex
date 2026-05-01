@@ -1,15 +1,15 @@
 \begin{table*}[t]
     \centering
-    \caption{Overall performance on the common evaluation slice: contexts 100, 250, and 500; depths 1--25; budgets 512--16,384.}
+    \caption{Performance at the largest requested reasoning budget, 16,384 tokens, on the common evaluation slice: contexts 100, 250, and 500; depths 1--25.}
     \label{tab:overall}
     \small
     \begin{tabular}{lrrrrr}
         \toprule
         Model & Samples & Final & Chain & Trace & Completeness \\
         \midrule
-        gemma-4-26B-A4B-it & 36\,000 & 90.1\% & 57.2\% & 23.3\% & 52.4\% \\
-        gpt-oss-20b & 36\,000 & 79.0\% & 36.3\% & 16.4\% & 46.8\% \\
-        Qwen3.6-35B-A3B & 36\,000 & 89.1\% & 66.4\% & 31.6\% & 57.4\% \\
+        gemma-4-26B-A4B-it & 6\,000 & 91.4\% & 58.6\% & 24.3\% & 52.5\% \\
+        gpt-oss-20b & 6\,000 & 88.0\% & 44.4\% & 18.3\% & 48.7\% \\
+        Qwen3.6-35B-A3B & 6\,000 & 98.9\% & 81.2\% & 39.3\% & 63.2\% \\
         \bottomrule
     \end{tabular}
 \end{table*}
