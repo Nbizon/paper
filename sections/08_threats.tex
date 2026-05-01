@@ -1,0 +1,18 @@
+\section{Threats to Validity}
+\label{sec:threats}
+
+\subsection{Internal Validity}
+
+The evaluator depends on response parsing, trace normalization, and oracle alignment. Invalid JSON or malformed traces may cause a model's reasoning to be under-counted if the intended answer is present but unparsable. Conversely, permissive extraction can over-credit poorly formatted outputs. The benchmark mitigates this risk by storing oracle chains and scoring final answers separately from traces, but a final submission should include a stratified manual audit of parsed outputs.
+
+\subsection{Construct Validity}
+
+Trace correctness is an imperfect proxy for reasoning quality. A model may reason internally and emit a poor trace, or emit a plausible trace without faithful internal reasoning. The metric is nevertheless relevant for software-engineering assistants because the visible path is what developers can inspect. The emitted-reasoning-length proxy has a similar limitation: it counts visible text extracted from the response, not true internally consumed reasoning tokens.
+
+\subsection{External Validity}
+
+Generated Java programs give control and clean oracles, but they do not cover all features of real projects. The current benchmark abstracts away inheritance, dynamic dispatch, exceptions, concurrency, reflection, libraries, and build-system structure. The control-flow results should therefore be read as evidence about a focused program-comprehension capability rather than as a claim about full repository understanding. The planned data-flow family broadens the benchmark but remains synthetic.
+
+\subsection{Conclusion Validity}
+
+The headline comparisons use the common slice shared by all models. Excluding unavailable contexts improves fairness but narrows the scope of the reported results. Factor contrasts for comments, variables, loops, conditionals, and parameters are descriptive; causal claims require models that adjust for depth, context, budget, and co-occurring factors. Finally, model versions and serving stacks evolve quickly, so exact revisions and runtime configuration should be archived with the artifact.

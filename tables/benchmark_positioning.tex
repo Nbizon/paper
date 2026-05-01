@@ -1,0 +1,19 @@
+\begin{table*}[t]
+\centering
+\caption{Where \benchmark sits relative to common LLM software-engineering benchmarks.}
+\label{tab:benchmark-positioning}
+\begin{tabularx}{\textwidth}{p{0.17\textwidth}p{0.20\textwidth}p{0.20\textwidth}p{0.17\textwidth}X}
+\toprule
+Benchmark & Task & Typical oracle & Granularity & Reachability signal \\
+\midrule
+HumanEval / MBPP & Function synthesis & Unit tests & Single function & Indirect \\
+APPS & Algorithmic programming & Test cases & Full program & Indirect \\
+LiveCodeBench & Live coding scenarios & Test cases / scenarios & Problem-level & Indirect \\
+BigCodeBench & API-rich generation & Test cases & Function/program & Indirect \\
+CodeXGLUE & Code intelligence suite & Task-specific labels & Mixed & Partial \\
+Defects4J & Bug repair/testing & Regression tests & Real Java bugs & Indirect \\
+SWE-bench & Issue resolution & Repository tests & Real repositories & Indirect \\
+\benchmark & Method reachability & Generated oracle and trace & Controlled Java class & Direct \\
+\bottomrule
+\end{tabularx}
+\end{table*}

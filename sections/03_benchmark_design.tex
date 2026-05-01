@@ -1,0 +1,281 @@
+\section{Benchmark Design}
+\label{sec:benchmark-design}
+
+\benchmark is a software-engineering benchmark artifact. The dataset is not meant to mimic every feature of production Java systems. Its role is narrower: create a setting where program-flow complexity can be varied and measured. The generator exposes graph family, graph size, source-target depth, code-level stressors, and requested reasoning budget as explicit experimental factors. The current paper reports a fully quantified control-flow study and specifies the paired data-flow study supported by the same generation principles.
+
+\subsection{Task Definition}
+
+\textbf{Control-flow input:} a Java class and a natural-language question of the form: \emph{Does method A call method B, either directly or indirectly?}
+
+\textbf{Data-flow input:} a Java class and a natural-language question that asks whether a value introduced at one program point can influence a later value, parameter, return expression, or call argument. Data-flow instances reuse the generator's method graph but make variables, parameters, assignments, and call arguments semantic rather than merely distracting.
+
+\textbf{Output:} a JSON object with:
+\begin{itemize}[leftmargin=*]
+    \item \texttt{trace}: ordered list of method names or data-flow program points;
+    \item \texttt{final\_answer}: \true or \false.
+\end{itemize}
+
+\textbf{Oracle:} generated graph metadata and validation from the analysis pipeline. For control-flow questions, the oracle is the source-target call path or the absence of such a path. For data-flow questions, the oracle is the generated value-dependency path.
+
+\subsection{Dataset Generation Pipeline}
+
+Dataset generation has three stages. The generator first samples unique method names and builds an abstract flow structure. It then materializes that structure as Java code, optionally adding comments, local variables, parameters, loops, and conditionals. Finally, it samples questions and writes the oracle files consumed by the evaluation scripts.
+
+The pipeline currently supports two complementary call-graph families:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Linear graphs} isolate path-following behavior. The relevant structure is a chain of method calls, which separates the effect of depth from the effect of branching.
+    \item \textbf{Tree graphs} add branching and negative reasoning. A source method may call multiple descendants, and unreachable targets force the model to avoid treating code co-occurrence as reachability. These cases are closer to the exploration used in call-graph comprehension.
+\end{itemize}
+
+The implementation makes the following design choices:
+\begin{itemize}[leftmargin=*]
+    \item The benchmark language is Java.
+    \item Method names sampled from realistic camelCase verb/noun fragments.
+    \item Method bodies are shuffled in the class to prevent position-only solutions.
+    \item Positive and negative questions sampled per depth, so reachable and unreachable decisions can be studied separately.
+    \item Stored artifacts for each case: generated class, prompt, reachability questions, oracle chains, method list, and configuration metadata.
+\end{itemize}
+
+\input{tables/experimental_factors}
+
+\subsection{Generated Call-Graph Structures}
+
+Each generated Java class is the textual representation of an underlying directed call graph. Nodes correspond to methods, and directed edges correspond to method calls. Reachability questions are asked over this graph, not over the textual order of methods in the file. That distinction matters because method bodies are shuffled before the class is written: a method can appear late in the file while sitting close to the root of the call graph, or the reverse. Solving the task requires reconstructing call relations from code.
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(a) Linear call graph}\\[0.4em]
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    method/.style={draw, rounded corners, minimum width=1.1cm, minimum height=0.55cm, align=center, font=\scriptsize},
+    edge/.style={->, thick},
+    query/.style={font=\scriptsize}
+]
+\node[method] (m1) {$m_1$};
+\node[method, right=1.1cm of m1] (m2) {$m_2$};
+\node[method, right=1.1cm of m2] (m3) {$m_3$};
+\node[method, right=1.1cm of m3] (m4) {$m_4$};
+\node[method, right=1.1cm of m4] (m5) {$m_5$};
+\draw[edge] (m1) -- (m2);
+\draw[edge] (m2) -- (m3);
+\draw[edge] (m3) -- (m4);
+\draw[edge] (m4) -- (m5);
+\draw[->, very thick, blue] ($(m2.south)+(0,-0.15)$) to[bend right=20] node[query, below] {reachable: $m_2 \leadsto m_5$} ($(m5.south)+(0,-0.15)$);
+\draw[->, dashed, red] ($(m4.north)+(0,0.15)$) to[bend left=20] node[query, above] {unreachable: $\neg(m_4 \leadsto m_2)$} ($(m2.north)+(0,0.15)$);
+\end{tikzpicture}
+}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(b) Sample generated tree}\\[0.4em]
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    x=1cm,
+    y=1cm,
+    method/.style={draw, rounded corners, minimum width=1.1cm, minimum height=0.55cm, align=center, font=\scriptsize},
+    edge/.style={->, thick},
+    query/.style={font=\scriptsize}
+]
+\node[method] (u0) at (0,0) {$u_0$};
+\node[method] (l0) at (-1.6,-1.0) {$L(u_0)$};
+\node[method] (r0) at (1.6,-1.0) {$R(u_0)$};
+\node[method] (ll0) at (-2.4,-2.0) {$L(L(u_0))$};
+\node[method] (lr0) at (-0.8,-2.0) {$R(L(u_0))$};
+\node[method] (l1) at (0.8,-2.0) {$L(R(u_0))$};
+\node[method] (r1) at (2.4,-2.0) {$R(R(u_0))$};
+\draw[edge] (u0) -- (l0);
+\draw[edge] (u0) -- (r0);
+\draw[edge] (l0) -- (ll0);
+\draw[edge] (l0) -- (lr0);
+\draw[edge] (r0) -- (l1);
+\draw[edge] (r0) -- (r1);
+\draw[->, very thick, blue] ($(u0.east)+(0.05,0)$) to[bend left=18] node[query, right] {reachable} ($(r1.east)+(0.05,0)$);
+\draw[->, dashed, red] ($(r0.west)+(-0.05,0)$) to[bend right=16] node[query, below] {unreachable} ($(lr0.east)+(0.05,0)$);
+\end{tikzpicture}
+}
+\end{minipage}
+\caption{Call-graph abstractions used by the generated code. Solid black arrows are actual Java method calls. Blue arrows mark reachable queries; red dashed arrows mark query pairs that are not call edges.}
+\Description{Two call-graph diagrams. The first is a linear chain of five methods with forward calls only. The second is a sample generated tree with a root, left and right children, and lower-level descendants.}
+\label{fig:generated-call-graphs}
+\end{figure*}
+
+\subsubsection{Linear Structure}
+
+In the linear configuration, the generator builds one or more method chains. Within a chain, method $m_i$ calls only its successor $m_{i+1}$; the last method has no outgoing call. The graph is a directed path:
+\[
+    m_1 \rightarrow m_2 \rightarrow \cdots \rightarrow m_k.
+\]
+Position in the chain determines reachability. A question $(m_i, m_j)$ is positive when $i < j$, because execution can follow successor edges from $m_i$ to $m_j$. A question is negative when the target is upstream or outside the suffix reachable from the source. For example, $m_2$ reaches $m_5$, but $m_4$ does not reach $m_2$ because calls never go backward. Linear cases isolate path length: increasing the source-target distance increases the number of method definitions the model has to connect, without adding branches.
+
+\subsubsection{Tree Structure}
+
+In the tree configuration, the generator builds a rooted directed tree. Each method can call its children; leaves have no outgoing call. A target is reachable from a source exactly when it lies in the source's descendant subtree. In \figpanelref{fig:generated-call-graphs}{(b)}, $u_0$ reaches every node in the fragment, while $R(u_0)$ does not reach $R(L(u_0))$ because that target belongs to a sibling subtree.
+
+Tree instances introduce two difficulties absent from linear chains. A model has to follow multiple outgoing calls from the same method. Negative examples also require branch-sensitive reasoning: the target method may appear in the same Java class, even close by in the textual file, while remaining unreachable from the queried source. For that reason, tree cases better resemble common comprehension tasks such as impact analysis, security reachability checks, and debugging through call hierarchies.
+
+Tree generation uses breadth-first construction with a probabilistic local expansion rule. Let $u$ be the node currently processed, and let $L(u)$ and $R(u)$ denote its left and right children. When enough method names remain, both children are created:
+\[
+    u \rightarrow L(u), \qquad u \rightarrow R(u).
+\]
+The left child may then be expanded one level further. Two independent Bernoulli variables control that expansion:
+\[
+    X_{LL}(u) \sim \mathrm{Bernoulli}(p),
+    \qquad
+    X_{LR}(u) \sim \mathrm{Bernoulli}(p).
+\]
+\figref{fig:local-tree-rule} shows the local rule. Children $L(u)$ and $R(u)$ form the deterministic skeleton, while the two descendants of $L(u)$ are sampled independently.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    x=1cm,
+    y=1cm,
+    method/.style={draw, rounded corners, minimum width=1.35cm, minimum height=0.55cm, align=center, font=\scriptsize},
+    det/.style={->, thick},
+    opt/.style={->, thick, dashed, blue},
+    note/.style={font=\scriptsize, align=center}
+]
+\node[method] (u) at (0,0) {$u$};
+\node[method] (l) at (-1.4,-1.0) {$L(u)$};
+\node[method] (r) at (1.4,-1.0) {$R(u)$};
+\node[method] (ll) at (-2.2,-2.0) {$L(L(u))$};
+\node[method] (lr) at (-0.6,-2.0) {$R(L(u))$};
+\draw[det] (u) -- node[note, above left] {always} (l);
+\draw[det] (u) -- node[note, above right] {always} (r);
+\draw[opt] (l) -- node[note, left] {$X_{LL}(u)$} (ll);
+\draw[opt] (l) -- node[note, right] {$X_{LR}(u)$} (lr);
+\node[note, text width=4.2cm] at (0,-2.75) {Optional edges are sampled independently with probability $p$.};
+\end{tikzpicture}
+}
+\caption{Local probabilistic expansion rule for one processed tree node.}
+\Description{A node u has deterministic left and right children. The left child has two optional children, each controlled by an independent Bernoulli variable.}
+\label{fig:local-tree-rule}
+\end{figure}
+
+If $X_{LL}(u)=1$, the generator creates the left child of the left child, $L(L(u))$. If $X_{LR}(u)=1$, it creates the right child of the left child, $R(L(u))$:
+\[
+    \begin{aligned}
+    X_{LL}(u)=1 &\Rightarrow L(u) \rightarrow L(L(u)),\\
+    X_{LR}(u)=1 &\Rightarrow L(u) \rightarrow R(L(u)).
+    \end{aligned}
+\]
+The active tree generator currently uses $p=0.65$ by default.
+
+The rule gives a simple distribution for the local shape below $L(u)$. The probability that the left child remains a leaf is
+\[
+    \Pr(\mathrm{outdeg}(L(u)) = 0) = (1-p)^2.
+\]
+The probability that it has exactly one child is
+\[
+    \Pr(\mathrm{outdeg}(L(u)) = 1) = 2p(1-p),
+\]
+and the probability that it has two children is
+\[
+    \Pr(\mathrm{outdeg}(L(u)) = 2) = p^2.
+\]
+Equivalently, the expected number of extra children attached under $L(u)$ is
+\[
+    \mathbb{E}[\mathrm{outdeg}(L(u))] = \mathbb{E}[X_{LL}(u)+X_{LR}(u)] = 2p.
+\]
+Larger values of $p$ increase the local branching factor and produce broader subtrees around left branches.
+
+\begin{figure*}[t]
+\centering
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(a) $p=0$: right-spine tendency}\\[0.4em]
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    x=1cm,
+    y=1cm,
+    method/.style={draw, rounded corners, minimum width=1.0cm, minimum height=0.5cm, align=center, font=\scriptsize},
+    edge/.style={->, thick},
+    note/.style={font=\scriptsize}
+]
+\node[method] (u0) at (0,0) {$u_0$};
+\node[method] (a0) at (-1.4,-0.9) {$L(u_0)$};
+\node[method] (u1) at (1.4,-0.9) {$u_1$};
+\node[method] (a1) at (0.0,-1.8) {$L(u_1)$};
+\node[method] (u2) at (2.8,-1.8) {$u_2$};
+\node[method] (a2) at (1.4,-2.7) {$L(u_2)$};
+\node[method] (u3) at (4.2,-2.7) {$u_3$};
+\draw[edge] (u0) -- (a0);
+\draw[edge] (u0) -- (u1);
+\draw[edge] (u1) -- (a1);
+\draw[edge] (u1) -- (u2);
+\draw[edge] (u2) -- (a2);
+\draw[edge] (u2) -- (u3);
+\node[note] at (2.2,-3.35) {left children remain leaves};
+\end{tikzpicture}
+}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\centering
+\textbf{(b) $p=1$: dense left expansions}\\[0.4em]
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    x=1cm,
+    y=1cm,
+    method/.style={draw, rounded corners, minimum width=1.0cm, minimum height=0.5cm, align=center, font=\scriptsize},
+    edge/.style={->, thick},
+    note/.style={font=\scriptsize}
+]
+\node[method] (u0) at (0,0) {$u_0$};
+\node[method] (l0) at (-1.7,-0.9) {$L(u_0)$};
+\node[method] (r0) at (1.7,-0.9) {$R(u_0)$};
+\node[method] (ll0) at (-2.5,-1.8) {$LL$};
+\node[method] (lr0) at (-0.9,-1.8) {$LR$};
+\node[method] (l1) at (0.9,-1.8) {$L(R(u_0))$};
+\node[method] (r1) at (2.5,-1.8) {$R(R(u_0))$};
+\node[method] (ll1) at (0.1,-2.7) {$LL$};
+\node[method] (lr1) at (1.7,-2.7) {$LR$};
+\draw[edge] (u0) -- (l0);
+\draw[edge] (u0) -- (r0);
+\draw[edge] (l0) -- (ll0);
+\draw[edge] (l0) -- (lr0);
+\draw[edge] (r0) -- (l1);
+\draw[edge] (r0) -- (r1);
+\draw[edge] (l1) -- (ll1);
+\draw[edge] (l1) -- (lr1);
+\node[note] at (0,-3.35) {every generated left child branches};
+\end{tikzpicture}
+}
+\end{minipage}
+\caption{Qualitative effect of the probability parameter on realized tree shapes before truncation by the finite method budget.}
+\Description{Two tree sketches. With p equals zero, the tree tends toward a right spine with left leaves. With p equals one, left children are always expanded with two descendants, producing denser branching.}
+\label{fig:p-extremes}
+\end{figure*}
+
+The extreme cases make the parameter's role concrete. If $p=0$, then $X_{LL}(u)=X_{LR}(u)=0$ for every processed node. The generator still creates $L(u)$ and $R(u)$, but $L(u)$ remains a leaf. Because the right child is systematically queued for later expansion, the global structure approaches a right spine with one left leaf attached at each processed node. This case emphasizes long reachability paths with limited branching. If $p=1$, then $X_{LL}(u)=X_{LR}(u)=1$ for every processed node. Every generated left child is immediately expanded into a binary node, making the structure denser for a fixed number of methods. The number of sibling subtrees increases as well, creating more negative reachability pairs where the target exists in the same class but lies outside the source subtree.
+
+For a finite context size $N$, the process stops when the generated method-name list is exhausted. The equations above describe the local generation rule before exhaustion; the final levels may be truncated when fewer method names remain. For this reason, \benchmark stores the realized tree and derives questions from that graph, rather than from the probability model alone.
+
+\subsubsection{From Graph to Java Code}
+
+After constructing the abstract graph, the generator emits one Java method per node. For an edge $u \rightarrow v$, the body of method $u$ contains a call to method $v$. Depending on the configuration, method bodies may also contain comments, local variables, loops, conditionals, and parameters. These elements vary the surface complexity of the code while preserving the reachability relation. The final method order in \texttt{TheClass.java} is randomized, so the benchmark measures call-graph reconstruction rather than reading order.
+
+\subsection{Prompting Protocol}
+
+All models receive the same task framing for a given experiment family. The prompt defines the required JSON schema, states that the trace must list the methods or program points that justify the answer, and includes the generated Java class and the natural-language query. The control-flow prompt asks the model to reason over direct and indirect method calls. The data-flow prompt uses the same response schema but asks the model to follow value dependencies through assignments, parameters, return values, and call arguments. In both families, the evaluator treats invalid JSON, missing fields, and unparsable traces as incorrect for trace metrics while still attempting to recover a final Boolean answer when it can be extracted unambiguously.
+
+\subsection{Benchmark Outputs and Metadata}
+
+Each generated case is stored as a small directory whose files are sufficient to reproduce the prompt and the oracle:
+\begin{itemize}[leftmargin=*]
+    \item \texttt{TheClass.java}: generated source program.
+    \item \texttt{system.txt}: task instructions plus source code.
+    \item \texttt{reachability\_questions.txt}: one question per line, prefixed by signed distance.
+    \item \texttt{chains.txt}: expected trace/chain aligned by question index.
+    \item \texttt{methods.txt}: generated method names.
+    \item \texttt{config.json}: context size, depth range, comments, variables, loops, conditionals, parameters.
+\end{itemize}

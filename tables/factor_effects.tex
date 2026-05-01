@@ -1,0 +1,19 @@
+\begin{table*}[t]
+    \centering
+    \caption{Preliminary factor contrasts on the common slice. Values are stress-minus-baseline deltas in percentage points.}
+    \label{tab:factors}
+    \small
+    \begin{tabular}{l rr rr rr}
+        \toprule
+        & \multicolumn{2}{c}{Gemma} & \multicolumn{2}{c}{GPT-OSS} & \multicolumn{2}{c}{Qwen} \\
+        \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
+        Factor contrast & Final & Chain & Final & Chain & Final & Chain \\
+        \midrule
+        comment: 0 -> 1 & -6.7 pp & -10.5 pp & -6.4 pp & -7.2 pp & -2.2 pp & -4.0 pp \\
+        var: 0 -> 2 & -5.1 pp & -8.1 pp & -4.5 pp & -5.0 pp & -2.4 pp & -3.9 pp \\
+        loop: 0 -> 3 & -3.6 pp & -8.5 pp & -7.6 pp & -8.2 pp & -2.0 pp & -5.0 pp \\
+        if: 1 -> 2 & -3.6 pp & -9.5 pp & -7.5 pp & -8.3 pp & -2.4 pp & -6.1 pp \\
+        params: 0 -> 2 & -2.4 pp & -3.2 pp & -1.9 pp & -2.4 pp & -0.8 pp & +0.8 pp \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

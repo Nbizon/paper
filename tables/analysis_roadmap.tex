@@ -1,0 +1,18 @@
+\begin{table*}[t]
+    \centering
+    \caption{Draft analysis roadmap. The goal is to keep each figure tied to one interpretable scientific claim rather than touring the whole dashboard.}
+    \label{tab:analysis-roadmap}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.09\textwidth}p{0.25\textwidth}p{0.31\textwidth}X}
+        \toprule
+        RQ & Scientific question & Figure or table & Interpretation target \\
+        \midrule
+        RQ0 & Is the actually used budget observable? & \tabref{tab:budget-observability}; \tabref{tab:used-budget-by-requested}; \figref{fig:used-reasoning-budget-latex} & Separate tokenizer-counted emitted reasoning length from requested budget before making cost claims. \\
+        RQ1 & What is the baseline behavior across final, chain, and trace metrics? & \figref{fig:overall-metrics-latex}; \tabref{tab:overall} & Check whether final-answer accuracy hides weak reasoning traces. \\
+        RQ2 & How does performance scale with requested budget? & \figref{fig:budget-scaling-latex}; \tabref{tab:budget} & Estimate budget sensitivity and compare model-specific gains. \\
+        RQ3 & Where does the budget saturate? & \tabref{tab:marginal-budget} & Identify the first budget step where marginal gains become negligible. \\
+        RQ4 & At 16,384 tokens, what remains hard? & \figref{fig:depth-context-latex}; \tabref{tab:high-budget-16384} & Study depth and context after giving the model maximal requested budget. \\
+        RQ5 & Are the remaining errors structural? & \figref{fig:error-taxonomy-latex}; \tabref{tab:errors} & Distinguish wrong final decisions from wrong paths and invalid traces. \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}

@@ -1,0 +1,15 @@
+\begin{table*}[t]
+    \centering
+    \caption{Availability of tokenizer-counted emitted reasoning tokens in the recomputed CSV summaries. The value counts the generated reasoning text extracted between \texttt{R:} and \texttt{A:} with each model's local tokenizer; it is a reasoning-length proxy, not a runtime usage counter.}
+    \label{tab:budget-observability}
+    \small
+    \begin{tabular}{lrrl}
+        \toprule
+        Model & CSV rows & Proxy rows & Status \\
+        \midrule
+        Gemma & 450 & 450 & tokenizer-counted \\
+        GPT-OSS & 450 & 450 & tokenizer-counted \\
+        Qwen & 450 & 450 & tokenizer-counted \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

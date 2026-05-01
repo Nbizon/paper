@@ -1,0 +1,15 @@
+\begin{table*}[t]
+    \centering
+    \caption{Overall performance on the common evaluation slice: contexts 100, 250, and 500; depths 1--25; budgets 512--16,384.}
+    \label{tab:overall}
+    \small
+    \begin{tabular}{lrrrrr}
+        \toprule
+        Model & Samples & Final & Chain & Trace & Completeness \\
+        \midrule
+        gemma-4-26B-A4B-it & 36\,000 & 90.1\% & 57.2\% & 23.3\% & 52.4\% \\
+        gpt-oss-20b & 36\,000 & 79.0\% & 36.3\% & 16.4\% & 46.8\% \\
+        Qwen3.6-35B-A3B & 36\,000 & 89.1\% & 66.4\% & 31.6\% & 57.4\% \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

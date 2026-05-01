@@ -1,0 +1,15 @@
+\begin{table*}[t]
+    \centering
+    \caption{Tokenizer-counted emitted reasoning tokens by requested budget. Cells report weighted means over the common slice. The proxy can slightly exceed the requested budget at 512 because it is computed after generation from the extracted \texttt{R:} text with the local tokenizer, whereas the decoding budget is enforced by the serving stack.}
+    \label{tab:used-budget-by-requested}
+    \small
+    \begin{tabular}{lrrrrrr}
+        \toprule
+        Model & 512 & 1024 & 2048 & 4096 & 8192 & 16384 \\
+        \midrule
+        Gemma & 514 & 988 & 1790 & 2855 & 3835 & 4468 \\
+        GPT-OSS & 503 & 969 & 1737 & 2710 & 3512 & 3870 \\
+        Qwen & 516 & 1022 & 1924 & 3137 & 3871 & 3941 \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

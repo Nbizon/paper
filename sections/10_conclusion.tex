@@ -1,0 +1,4 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper presents \benchmark, a controlled benchmark for studying how LLMs reason about program control flow and data flow under explicit reasoning budgets. The completed control-flow study shows that budget can help, but its value depends strongly on the model and on the metric being optimized. Qwen converts budget into large gains in both final answers and chain fidelity, Gemma saturates early, and GPT-OSS improves final answers more than traces. Across all models, final-answer accuracy substantially overstates path-level reasoning quality. The next step is to complete the paired data-flow experiments and release the benchmark artifacts, prompts, oracle traces, and analysis scripts so that budgeted program-flow reasoning can be evaluated reproducibly.

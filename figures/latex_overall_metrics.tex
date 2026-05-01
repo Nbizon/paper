@@ -1,0 +1,56 @@
+\begin{figure*}[t]
+    \centering
+    \begin{tikzpicture}[x=1cm,y=1cm]
+        \draw[gray!45] (0,0) -- (11.2,0);
+        \draw[gray!45] (0,0) -- (0,3.6);
+        \draw[gray!20] (0,0.00) -- (11.2,0.00);
+        \node[left,font=\scriptsize] at (-0.08,0.00) {0\%};
+        \draw[gray!20] (0,0.90) -- (11.2,0.90);
+        \node[left,font=\scriptsize] at (-0.08,0.90) {25\%};
+        \draw[gray!20] (0,1.80) -- (11.2,1.80);
+        \node[left,font=\scriptsize] at (-0.08,1.80) {50\%};
+        \draw[gray!20] (0,2.70) -- (11.2,2.70);
+        \node[left,font=\scriptsize] at (-0.08,2.70) {75\%};
+        \draw[gray!20] (0,3.60) -- (11.2,3.60);
+        \node[left,font=\scriptsize] at (-0.08,3.60) {100\%};
+        \node[below,font=\small] at (1.45,-0.15) {Gemma};
+        \fill[finalcolor] (0.75,0) rectangle ++(0.26,3.243);
+        \node[font=\tiny,rotate=90,anchor=west] at (0.88,3.283) {90.1\%};
+        \fill[chaincolor] (1.11,0) rectangle ++(0.26,2.060);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.24,2.100) {57.2\%};
+        \fill[tracecolor] (1.47,0) rectangle ++(0.26,0.839);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.60,0.879) {23.3\%};
+        \fill[modelgreen] (1.83,0) rectangle ++(0.26,1.888);
+        \node[font=\tiny,rotate=90,anchor=west] at (1.96,1.928) {52.4\%};
+        \node[below,font=\small] at (4.80,-0.15) {GPT-OSS};
+        \fill[finalcolor] (4.10,0) rectangle ++(0.26,2.846);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.23,2.886) {79.0\%};
+        \fill[chaincolor] (4.46,0) rectangle ++(0.26,1.308);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.59,1.349) {36.3\%};
+        \fill[tracecolor] (4.82,0) rectangle ++(0.26,0.589);
+        \node[font=\tiny,rotate=90,anchor=west] at (4.95,0.629) {16.4\%};
+        \fill[modelgreen] (5.18,0) rectangle ++(0.26,1.686);
+        \node[font=\tiny,rotate=90,anchor=west] at (5.31,1.726) {46.8\%};
+        \node[below,font=\small] at (8.15,-0.15) {Qwen};
+        \fill[finalcolor] (7.45,0) rectangle ++(0.26,3.207);
+        \node[font=\tiny,rotate=90,anchor=west] at (7.58,3.247) {89.1\%};
+        \fill[chaincolor] (7.81,0) rectangle ++(0.26,2.389);
+        \node[font=\tiny,rotate=90,anchor=west] at (7.94,2.429) {66.4\%};
+        \fill[tracecolor] (8.17,0) rectangle ++(0.26,1.136);
+        \node[font=\tiny,rotate=90,anchor=west] at (8.30,1.176) {31.6\%};
+        \fill[modelgreen] (8.53,0) rectangle ++(0.26,2.066);
+        \node[font=\tiny,rotate=90,anchor=west] at (8.66,2.106) {57.4\%};
+        \fill[finalcolor] (9.85,3.35) rectangle ++(0.22,0.12);
+        \node[right,font=\scriptsize] at (10.15,3.41) {Final};
+        \fill[chaincolor] (9.85,3.08) rectangle ++(0.22,0.12);
+        \node[right,font=\scriptsize] at (10.15,3.14) {Chain};
+        \fill[tracecolor] (9.85,2.81) rectangle ++(0.22,0.12);
+        \node[right,font=\scriptsize] at (10.15,2.87) {Trace};
+        \fill[modelgreen] (9.85,2.54) rectangle ++(0.22,0.12);
+        \node[right,font=\scriptsize] at (10.15,2.60) {Completeness};
+        \node[rotate=90,font=\scriptsize] at (-0.72,1.8) {Weighted accuracy};
+    \end{tikzpicture}
+    \caption{Baseline model behavior on the common slice. Final-answer accuracy is separated from exact chain, exact trace, and trace-completeness metrics.}
+    \Description{Grouped LaTeX bar chart of final answer, chain, trace, and completeness metrics for the three models.}
+    \label{fig:overall-metrics-latex}
+\end{figure*}

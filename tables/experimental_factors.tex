@@ -1,0 +1,22 @@
+\begin{table*}[t]
+\centering
+\caption{Experimental factors exposed by the generator. Control-flow experiments use call reachability as the semantic target; data-flow experiments use value-dependency reachability.}
+\label{tab:experimental-factors}
+\begin{tabularx}{\textwidth}{p{0.18\textwidth}p{0.25\textwidth}X}
+\toprule
+Factor & Values & Purpose \\
+\midrule
+Experiment family & Control flow, data flow & Separate method-call reachability from value-propagation reasoning \\
+Graph family & Linear, tree & Separate path following from branching \\
+Context size & 100, 250, 500, 750, 1000 & Vary the amount of surrounding code \\
+Depth & 1--25 & Vary path length \\
+Comments & 0, 1 & Add lexical material \\
+Variables & 0--2 & Add local state \\
+Loops & 0--3 & Add control-flow distractors \\
+Conditionals & 0--3 & Add branch structure \\
+Parameters & 0--2 & Add call signatures and data flow \\
+Requested budget & 512--16,384 & Vary available reasoning tokens \\
+Question label & Reachable/unreachable & Balance positives/negatives \\
+\bottomrule
+\end{tabularx}
+\end{table*}

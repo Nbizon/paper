@@ -1,0 +1,22 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Reasoning Budget Is Not a Uniform Resource}
+
+The main empirical lesson is that requested budget is not converted into software-engineering reasoning in a uniform way. Qwen uses additional budget to improve both final answers and chain fidelity. Gemma reaches high final-answer accuracy quickly and then plateaus. GPT-OSS improves substantially in final-answer accuracy, but its trace fidelity remains weak. For tool builders, this means that a larger budget is not a portable intervention: the useful budget depends on the model and on whether the application needs a trustworthy path or only a label.
+
+\subsection{Final Answers Hide Program-Reasoning Failures}
+
+The gap between final and trace metrics is too large to treat traces as a secondary diagnostic. A reachability assistant that answers \true correctly while skipping an intermediate method may still mislead a developer about where to inspect, patch, or instrument the program. In security, debugging, and impact-analysis settings, the path often matters as much as the existence of a path. Evaluations that report only final labels therefore risk overstating the reliability of LLM-based program comprehension.
+
+\subsection{Control Flow and Data Flow Should Be Paired}
+
+The benchmark design intentionally supports both control-flow and data-flow experiments. Control-flow reachability tests whether a model can reconstruct method-call structure. Data-flow tracing tests whether it can follow values through assignments, parameters, returns, and call arguments. Pairing the two matters because many code features play different roles across the families. A parameter may be a distractor in a call-reachability question but essential evidence in a value-flow question. Reporting both families should make it easier to distinguish general context-management failures from relation-specific reasoning failures.
+
+\subsection{Implications for Software-Engineering Assistants}
+
+The results argue for hybrid tooling. LLMs can provide useful explanations and triage, but the low trace accuracies suggest that direct reachability answers should be checked against static or dynamic analysis whenever correctness matters. A practical assistant could use a conventional analyzer to compute candidate call or data-flow paths, then ask the model to summarize, rank, or explain them. In that design, the model's language strengths complement program analysis rather than replacing it.
+
+\subsection{Implications for Benchmark Design}
+
+Broad software-engineering benchmarks remain necessary, but they should be complemented by controlled probes. Generated reachability tasks cannot replace real repositories, yet they expose failure modes that repository-level scores blur: premature stops, invalid edges, branch switches, over-exploration, and trace/answer disagreement. Those signals are especially important for ICSE-style evaluation because they help explain why a model succeeds or fails, not only whether it does.

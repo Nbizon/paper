@@ -1,0 +1,17 @@
+\begin{table*}[t]
+    \centering
+    \caption{Example of a correct final answer with an incorrect trace. The target is reachable, but the model skips the intermediate method, so final-answer accuracy overstates path fidelity.}
+    \label{tab:example}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.17\textwidth}X}
+        \toprule
+        Field & Value \\
+        \midrule
+        Question & Does `loadValueFromDatabase` call `calculateMetricInThread`, either directly or indirectly? \\
+        Budget/depth & 512 tokens / depth 2 \\
+        Oracle chain & \texttt{loadValueFromDatabase} \(\rightarrow\) \texttt{dispatchEventForExecution} \(\rightarrow\) \texttt{calculateMetricInThread} \\
+        Predicted trace & \texttt{loadValueFromDatabase} \(\rightarrow\) \texttt{calculateMetricInThread} \\
+        Interpretation & Final answer is \true, but the reasoning trace contains a shortcut edge that is not present in the oracle call path. \\
+        \bottomrule
+    \end{tabularx}
+\end{table*}

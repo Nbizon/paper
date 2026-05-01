@@ -1,0 +1,75 @@
+\documentclass[sigconf,review]{acmart}
+
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xspace}
+\usepackage{enumitem}
+\usepackage{listings}
+\usepackage{balance}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\definecolor{modelblue}{RGB}{37,99,235}
+\definecolor{modelorange}{RGB}{194,65,12}
+\definecolor{modelgreen}{RGB}{21,128,61}
+\definecolor{finalcolor}{RGB}{37,99,235}
+\definecolor{chaincolor}{RGB}{21,128,61}
+\definecolor{tracecolor}{RGB}{194,65,12}
+
+\input{macros}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ACMBlue,
+  citecolor=ACMBlue,
+  urlcolor=ACMBlue
+}
+
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\acmConference[ICSE '27]{International Conference on Software Engineering}{Conference Date TBD}{Location TBD}
+\acmYear{2027}
+\copyrightyear{2027}
+\acmDOI{}
+\acmISBN{}
+
+\title{Reasoning Under Budget: Benchmarking Large Language Models on Program Control and Data Flow}
+
+\author{Nolan Bizon}
+\affiliation{%
+  \institution{LaBRI}
+  \city{Bordeaux}
+  \country{France}
+}
+
+\begin{document}
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\keywords{large language models, software engineering benchmark, program comprehension, reasoning budget, reachability, control flow, data flow}
+
+\maketitle
+
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_benchmark_design}
+\input{sections/04_research_questions}
+\input{sections/05_methodology}
+\input{sections/06_results}
+\input{sections/07_discussion}
+\input{sections/08_threats}
+\input{sections/09_related_work}
+\input{sections/10_conclusion}
+
+\balance
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{bibliography/references}
+
+\end{document}

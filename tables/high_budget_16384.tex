@@ -1,0 +1,25 @@
+\begin{table*}[t]
+    \centering
+    \caption{Performance at the maximum requested budget, 16,384 tokens, grouped by depth band and context size. Values are weighted percentages. This is the key diagnostic table for asking what remains hard when the budget is maximal.}
+    \label{tab:high-budget-16384}
+    \scriptsize
+    \begin{tabular}{llrrrrrrrrr}
+        \toprule
+        Metric & Model & \multicolumn{3}{c}{Depth 1--5} & \multicolumn{3}{c}{Depth 6--15} & \multicolumn{3}{c}{Depth 16--25} \\
+        \cmidrule(lr){3-5}\cmidrule(lr){6-8}\cmidrule(lr){9-11}
+        & & C100 & C250 & C500 & C100 & C250 & C500 & C100 & C250 & C500 \\
+        \midrule
+        Final & Gemma & 99.0 & 96.2 & 89.2 & 96.6 & 94.4 & 85.5 & 97.1 & 89.9 & 79.5 \\
+        Final & GPT-OSS & 98.0 & 96.5 & 88.8 & 95.1 & 87.6 & 81.4 & 93.0 & 85.8 & 75.4 \\
+        Final & Qwen & 100.0 & 100.0 & 99.5 & 99.8 & 99.1 & 98.6 & 99.5 & 98.2 & 97.0 \\
+        \midrule
+        Chain & Gemma & 83.2 & 76.8 & 64.0 & 70.5 & 62.4 & 47.2 & 64.2 & 49.6 & 33.5 \\
+        Chain & GPT-OSS & 73.2 & 72.5 & 58.8 & 51.6 & 42.1 & 35.4 & 42.0 & 35.9 & 23.5 \\
+        Chain & Qwen & 95.8 & 97.2 & 95.8 & 83.1 & 85.4 & 83.4 & 71.4 & 71.9 & 69.5 \\
+        \midrule
+        Trace & Gemma & 64.0 & 59.2 & 54.5 & 27.0 & 22.2 & 13.1 & 16.4 & 10.4 & 4.1 \\
+        Trace & GPT-OSS & 60.2 & 61.0 & 51.2 & 16.9 & 11.2 & 9.4 & 8.0 & 4.4 & 1.2 \\
+        Trace & Qwen & 73.8 & 77.2 & 80.2 & 34.6 & 38.5 & 37.5 & 21.6 & 23.8 & 23.1 \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

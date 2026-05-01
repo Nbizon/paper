@@ -1,0 +1,20 @@
+\begin{figure}[t]
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.38cm,
+        box/.style={draw=gray!55,rounded corners=2pt,align=center,inner sep=5pt,font=\scriptsize,text width=0.28\columnwidth},
+        arrow/.style={-Latex,gray!70,line width=0.7pt}
+    ]
+        \node[box] (dataset) {Generated Java call trees\\contexts, depth, distractors};
+        \node[box,right=of dataset] (models) {Three LLMs\\six reasoning budgets};
+        \node[box,below=of models] (metrics) {Final, chain, trace\\and budget use};
+        \node[box,left=of metrics] (taxonomy) {Trace taxonomy\\motifs and failure families};
+        \draw[arrow] (dataset) -- (models);
+        \draw[arrow] (models) -- (metrics);
+        \draw[arrow] (metrics) -- (taxonomy);
+        \draw[arrow] (taxonomy) -- (dataset);
+    \end{tikzpicture}
+    \caption{Analysis workflow used in the benchmark study. The loop back to the dataset highlights that trace failures suggest new controlled factors for the next benchmark iteration.}
+    \Description{Workflow diagram from generated Java call trees to model runs, metrics, trace taxonomy, and benchmark refinement.}
+    \label{fig:pipeline}
+\end{figure}

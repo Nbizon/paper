@@ -1,0 +1,32 @@
+\section{Background and Motivation}
+\label{sec:background}
+
+\subsection{LLM Benchmarks for Software Engineering}
+
+LLM benchmarks for software engineering fall into several loose families. One family evaluates code synthesis from natural-language specifications. HumanEval~\cite{chen2021codex} and MBPP~\cite{austin2021program} are the familiar examples: a model completes short Python functions, and unit tests decide whether the result works. APPS~\cite{hendrycks2021apps} raises the difficulty with larger programming-contest problems and richer tests. These benchmarks remain useful because they are cheap to run and easy to compare, yet their main signal is generation rather than analysis of an existing program.
+
+A second family tries to make the setting more realistic and less vulnerable to contamination. LiveCodeBench~\cite{jain2024livecodebench} uses time-aware problem collection and includes scenarios beyond simple generation, such as repair and execution-oriented tasks. BigCodeBench~\cite{zhuo2024bigcodebench} puts more weight on complex instructions and library use, closer to everyday API programming. Its core signal still comes from producing or manipulating code under test-based evaluation.
+
+A third family targets broader software-engineering work. CodeXGLUE~\cite{lu2021codexglue} covers code search, summarization, translation, defect detection, and other code-intelligence problems. Defects4J~\cite{just2014defects4j} provides real Java bugs for repair and testing research. SWE-bench~\cite{jimenez2024swebench} asks whether a model or agent can resolve real GitHub issues by editing repositories and passing tests. These tasks are closer to maintenance, but diagnosis becomes harder. A failure may reflect weak issue understanding, poor localization, an incorrect edit, missing tool use, or insufficient program reasoning.
+
+\tabref{tab:benchmark-positioning} places \benchmark relative to these families. The distinction is granularity. \benchmark does not ask the model to synthesize behavior or repair a repository. It isolates a program-comprehension judgment that is small enough to control but still requires structured reasoning over code.
+
+\input{tables/benchmark_positioning}
+
+\subsection{Reachability as a Program-Comprehension Task}
+
+Reachability is a basic concept in program analysis. At method level, it asks whether execution starting from one method can eventually invoke another. The same relation appears in call-graph construction, impact analysis, security auditing, dead-code detection, testing strategies, debugging, and program understanding. Traditional static-analysis research has studied how to build call graphs soundly and scalably~\cite{grove2001framework,tip2000scalable}. In safety-critical settings, LLMs are a poor substitute for those analyses. At the same time, developer-facing assistants increasingly answer questions that look like lightweight program analysis.
+
+For an LLM, reachability is deceptively simple. A shallow case may reduce to spotting a direct call. A deeper case requires following several method definitions. A negative case adds another burden: the target may appear in the file, yet remain outside the subgraph reachable from the source. With a tree-shaped call structure, sibling branches may have to be checked before the target can be found or ruled out. Comments, variables, parameters, loops, and conditionals add surface code for the model to filter while leaving the underlying call relation unchanged.
+
+That combination makes reachability a useful diagnostic task. The expected output can include a Boolean answer and a trace. Evaluation can then distinguish cases that test-pass metrics often merge together: the right answer for the wrong reason, a partial path, a hallucinated call edge, skipped intermediate methods, or an early stop.
+
+\subsection{Why a Controlled Synthetic Benchmark?}
+
+Real projects are essential for external validity. Generated programs serve a different purpose: they make a specific capability measurable. In \benchmark, generation gives direct control over context size, target depth, graph shape, and syntactic distractors. Ground truth comes from construction, rather than from brittle manual labeling. The resulting task is not a substitute for real-repository benchmarks; it is an interpretable lens on one ability that broader benchmarks implicitly require.
+
+The implementation generates Java programs organized around method-call trees. Each benchmark case contains the generated class, the prompt context, reachability questions, expected chains, and configuration metadata. Positive questions use reachable source-target pairs; negative questions use targets outside the source's reachable subgraph. The experimental factors include context size, call depth, comments, variables, loops, conditionals, and parameters. Together they support questions about scaling, robustness, and reasoning quality.
+
+\subsection{Terminology}
+
+In the terminology used here, the \emph{source method} is where traversal begins, and the \emph{target method} is the queried destination. A \emph{reachable} target can be invoked directly or indirectly from the source through method calls. A \emph{trace} is the ordered list of methods visited or reported by the model. A \emph{chain} is the expected source-to-target path for reachable cases; for unreachable cases, it is the expected explored path defined by the benchmark oracle. The \emph{distance} or \emph{depth} is the absolute value of the stored question distance. Positive distances denote reachable questions, and negative distances denote unreachable questions.

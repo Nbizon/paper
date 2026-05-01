@@ -1,0 +1,25 @@
+\begin{table*}[t]
+    \centering
+    \caption{Aggregated chain-level failure families from the deeper-analysis dashboard. Rates are normalized by all evaluated cases in scope. Families are not mutually exclusive: one erroneous trace can contribute to several interpretable characteristics.}
+    \label{tab:errors}
+    \small
+    \begin{tabular}{lrrr}
+        \toprule
+        Failure family & Gemma & GPT-OSS & Qwen \\
+        \midrule
+        Shorter trace & 31.7\% & 38.5\% & 18.0\% \\
+        Over-exploration & 14.6\% & 31.5\% & 7.5\% \\
+        Alternative branch & 12.4\% & 26.6\% & 6.2\% \\
+        Invalid transition & 11.8\% & 22.7\% & 4.9\% \\
+        Reachable target missed & 8.1\% & 18.3\% & 7.0\% \\
+        Longer trace & 7.8\% & 19.3\% & 4.9\% \\
+        Order issue & 6.2\% & 9.5\% & 7.9\% \\
+        Empty prediction & 4.0\% & 6.7\% & 6.1\% \\
+        Hallucinated target & 1.0\% & 1.7\% & 0.6\% \\
+        Target at wrong rank & 1.0\% & 5.1\% & 1.3\% \\
+        Repeated methods & 0.6\% & 5.5\% & 1.0\% \\
+        Unresolved node & 0.2\% & 4.0\% & 1.1\% \\
+        Wrong source & $<0.1$\% & $<0.1$\% & 0.4\% \\
+        \bottomrule
+    \end{tabular}
+\end{table*}

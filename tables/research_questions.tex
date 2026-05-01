@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\centering
+\caption{Research questions and primary measurements.}
+\label{tab:research-questions}
+\begin{tabularx}{\textwidth}{p{0.08\textwidth}p{0.52\textwidth}X}
+\toprule
+RQ & Question & Main measurements \\
+\midrule
+\researchq{0} & How can a controlled benchmark be generated for testing LLM reasoning over program control flow and data flow? & Graph family, context size, depth, control-flow/data-flow task schema, distractor settings, positive/negative balance, oracle trace availability, metadata completeness \\
+\researchq{1} & How does requested reasoning budget affect model performance on the generated benchmark? & Final-answer accuracy, exact-chain accuracy, trace accuracy, trace completeness, emitted reasoning length, marginal gains across budgets \\
+\researchq{2} & What is the relationship between the model's reasoning chain and its final answer? & Gaps between final and trace metrics, depth/context effects, failure taxonomy, local trace motifs, cases where final answers are correct but paths are not \\
+\bottomrule
+\end{tabularx}
+\end{table*}
