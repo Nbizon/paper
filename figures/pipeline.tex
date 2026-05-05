@@ -2,37 +2,30 @@
     \centering
     \begin{tikzpicture}[
         >=Latex,
-        node distance=0.55cm and 0.62cm,
-        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.18\textwidth, minimum height=1.05cm},
-        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
-        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
-        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.17\textwidth, minimum height=0.92cm},
+        node distance=0.55cm and 0.55cm,
+        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
+        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
+        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
+        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
         arrow/.style={->, gray!75, line width=0.75pt},
         dasharrow/.style={->, dashed, gray!70, line width=0.75pt}
     ]
-        \node[artifact] (generator) {Program generator\\graph, depth, context, stressors};
-        \node[artifact, right=of generator] (instances) {Benchmark instances\\Java, prompt, oracle trace};
-        \node[phase, right=of instances] (families) {Task families\\control flow\\data flow};
-        \node[phase, right=of families] (runs) {Budgeted model runs\\512--16,384 tokens};
+        \node[phase] (design) {Benchmark design\\task definition\\factors and schemas};
+        \node[artifact, right=of design] (generation) {Instance generation\\graphs, Java code,\\questions, oracles};
+        \node[artifact, right=of generation] (execution) {Model execution\\prompting and\\inference settings};
+        \node[eval, right=of execution] (evaluation) {Response evaluation\\parsing, scoring,\\metric extraction};
+        \node[warn, right=of evaluation] (analysis) {Result analysis\\aggregation, failure modes,\\tables and figures};
 
-        \node[eval, below=of instances] (metrics) {Outcome metrics\\final, chain, trace, completeness};
-        \node[eval, right=of metrics] (budget) {Budget metrics\\requested budget\\emitted reasoning};
-        \node[warn, right=of budget] (failures) {Behavioral analysis\\failure families\\local motifs};
+        \node[phase, below=of execution] (reporting) {Paper-level claims\\performance trends,\\trace fidelity, limits};
 
-        \node[phase, below=of budget] (claims) {Research claims\\budget scaling\\trace fidelity\\residual errors};
-
-        \draw[arrow] (generator) -- (instances);
-        \draw[arrow] (instances) -- (families);
-        \draw[arrow] (families) -- (runs);
-        \draw[arrow] (runs) |- (metrics);
-        \draw[arrow] (runs) -- (budget);
-        \draw[arrow] (metrics) -- (budget);
-        \draw[arrow] (budget) -- (failures);
-        \draw[arrow] (metrics) |- (claims);
-        \draw[arrow] (failures) |- (claims);
-        \draw[dasharrow] (failures.south west) to[bend right=18] node[below,font=\scriptsize,align=center] {new stressors\\and oracle checks} (generator.south east);
+        \draw[arrow] (design) -- (generation);
+        \draw[arrow] (generation) -- (execution);
+        \draw[arrow] (execution) -- (evaluation);
+        \draw[arrow] (evaluation) -- (analysis);
+        \draw[arrow] (evaluation) -- (reporting);
+        \draw[arrow] (analysis) |- (reporting);
     \end{tikzpicture}
-    \caption{End-to-end workflow for \benchmark. The pipeline separates benchmark construction, the two task families, budgeted model execution, metric extraction, and behavioral failure analysis.}
-    \Description{Workflow diagram from program generation to benchmark instances, task families, budgeted model runs, outcome and budget metrics, behavioral failure analysis, and research claims, with a dashed feedback arrow from failure analysis back to the generator.}
+    \caption{Global pipeline for \benchmark, from benchmark design and instance generation to model execution, response evaluation, and result analysis.}
+    \Description{A high-level workflow diagram showing benchmark design, instance generation, model execution, response evaluation, result analysis, and paper-level claims, with a dashed feedback arrow from analysis back to design.}
     \label{fig:pipeline}
 \end{figure*}

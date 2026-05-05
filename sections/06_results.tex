@@ -3,7 +3,7 @@
 
 \subsection{\researchq{0}: Benchmark Generation}
 
-\benchmark provides a controlled setting for program-flow reasoning. The generator constructs an abstract graph, emits Java code from that graph, shuffles method definitions to break position-based shortcuts, samples positive and negative source-target questions, and stores oracle traces with the generated source and metadata. The control-flow family uses direct and indirect method calls as the semantic relation. The data-flow family uses the same structural controls but turns variables, parameters, assignments, return values, and call arguments into the queried relation.
+\benchmark provides a controlled setting for control-flow reasoning. The generator constructs an abstract graph, emits Java code from that graph, shuffles method definitions to break position-based shortcuts, samples positive and negative source-target questions, and stores oracle traces with the generated source and metadata. The evaluated family uses direct and indirect method calls as the semantic relation. The specified data-flow extension uses the same structural controls but would turn variables, parameters, assignments, return values, and call arguments into the queried relation.
 
 \input{figures/pipeline}
 
@@ -11,25 +11,23 @@ The factors summarized in \tabref{tab:experimental-factors} separate three sourc
 
 \subsection{\researchq{1}: Reasoning-Budget Performance}
 
-The requested reasoning budget has a substantial but model-specific effect. \tabref{tab:overall} and \figref{fig:overall-metrics-latex} first show performance at the largest requested budget, 16,384 tokens. This is the most favorable budget setting in our sweep, yet the metric gap remains large: Qwen has the strongest final-answer accuracy and path fidelity, Gemma remains competitive on final answers but much weaker on traces, and GPT-OSS substantially improves its final answers while still lagging on exact chains. This already suggests that final-answer accuracy alone is an incomplete measure of software-engineering reasoning.
+The requested reasoning budget has a substantial but model-specific effect. \tabref{tab:overall} first shows performance at the largest requested budget, 16,384 tokens. This is the most favorable budget setting in our sweep, yet the metric gap remains large: Qwen has the strongest final-answer accuracy and path fidelity, Gemma remains competitive on final answers but much weaker on traces, and GPT-OSS substantially improves its final answers while still lagging on exact chains. This already suggests that final-answer accuracy alone is an incomplete measure of software-engineering reasoning.
 
 \input{tables/overall_performance}
-\input{figures/latex_overall_metrics}
+\papertodo{Move the duplicate overall-metrics bar chart to supplementary material unless needed for readability.}
 
-\tabref{tab:budget} and \figref{fig:budget-scaling-latex} show how performance changes as requested budget increases. Qwen benefits most: final-answer accuracy rises from 73.4\% at 512 tokens to 98.9\% at 16,384 tokens, while exact-chain accuracy rises from 41.1\% to 81.2\%. GPT-OSS also improves substantially in final-answer accuracy, from 65.0\% to 88.0\%, but its chain accuracy remains below 45\% at the largest budget. Gemma starts high and saturates early, with most of its final-answer gain already visible by 2048 tokens.
+\figref{fig:budget-scaling-latex} shows how performance changes as requested budget increases. Qwen benefits most: final-answer accuracy rises from 73.4\% at 512 tokens to 98.9\% at 16,384 tokens, while exact-chain accuracy rises from 41.1\% to 81.2\%. GPT-OSS also improves substantially in final-answer accuracy, from 65.0\% to 88.0\%, but its chain accuracy remains below 45\% at the largest budget. Gemma starts high and saturates early, with most of its final-answer gain already visible by 2048 tokens.
 
 \input{figures/latex_budget_scaling}
-\input{tables/budget_effects}
+\papertodo{Move the full budget-effect table to supplementary material; keep the scaling figure and in-text values in the main paper.}
 
 The marginal-gain analysis makes the saturation pattern clearer. Gemma gains only +0.3 final-answer points and +0.2 chain points when moving from 2048 to 4096, and later changes are negligible. Qwen gains strongly until 4096 and then flattens, with no chain gain from 8192 to 16,384. GPT-OSS continues to gain final-answer accuracy through the largest budget, but the last chain gain is only +0.2 points.
 
-\input{tables/marginal_budget_gains}
+\papertodo{Move the marginal-gain table to supplementary material or replace it with confidence intervals in the main result.}
 
-The emitted-reasoning proxy helps interpret these curves. At 16,384 requested tokens, the models emit far fewer visible reasoning tokens on average: 4,468 for Gemma, 3,870 for GPT-OSS, and 3,941 for Qwen. Thus, larger requested budgets do not necessarily translate into proportionally longer visible reasoning. This is a saturation signal, not a true runtime cost measurement.
+The emitted-reasoning proxy helps interpret these curves. At 16,384 requested tokens, the models emit far fewer visible reasoning tokens on average: 4,468 for Gemma, 3,870 for GPT-OSS, and 3,941 for Qwen. Thus, larger requested budgets do not necessarily translate into proportionally longer visible reasoning. This is a saturation signal, not a true runtime cost measurement. Requested reasoning budget should be interpreted as an interface-level control rather than a direct measurement of internally consumed reasoning tokens. Accordingly, our conclusions concern model-interface pairs under requested budgets, not latent reasoning cost.
 
-\input{tables/budget_observability}
-\input{tables/used_reasoning_budget_by_requested}
-\input{figures/latex_used_reasoning_budget}
+\papertodo{Move the emitted-reasoning table and figure to supplementary material after keeping the interface-level budget limitation in the main text.}
 
 \subsection{\researchq{2}: Chains, Final Answers, and Failures}
 
@@ -37,19 +35,15 @@ Final answers and traces diverge sharply even at the maximum requested budget. A
 
 The hardest cases remain difficult even at the maximum requested budget. \tabref{tab:high-budget-16384} shows that depth and context continue to reduce chain and trace fidelity. At depth 16--25 and context 500, final-answer accuracy is 79.5\% for Gemma, 75.4\% for GPT-OSS, and 97.0\% for Qwen; exact-chain accuracy drops to 33.5\%, 23.5\%, and 69.5\%. Trace accuracy is lower still: 4.1\%, 1.2\%, and 23.1\%. The maximum requested budget therefore does not eliminate the distinction between saying the right label and producing the right path.
 
-\input{figures/latex_depth_context}
 \input{tables/high_budget_16384}
 
 The error taxonomy indicates that residual failures are structural. Aggregated over the full budget sweep, premature termination is the dominant family: shorter traces affect 31.7\% of Gemma cases, 38.5\% of GPT-OSS cases, and 18.0\% of Qwen cases. GPT-OSS is also most prone to over-exploration, alternative branches, invalid transitions, longer traces, and missed reachable targets. Qwen is cleaner on invalid and off-branch transitions, but still exhibits order issues and empty predictions. These patterns are stronger evidence than isolated examples because they connect model outputs to recurring graph-level failure modes.
 
-\input{figures/latex_error_taxonomy}
 \input{tables/error_taxonomy}
-\input{tables/failure_budget_evolution}
-\input{tables/local_motif_examples}
-\input{tables/example_trace}
+\papertodo{Move the duplicate error-taxonomy figure plus detailed failure-by-budget, local motif, and trace-example tables to supplementary material; keep the taxonomy and one concise qualitative example in the main text.}
 
-\tabref{tab:failure-budget-evolution} adds the missing budget dimension to this taxonomy. The trends are not uniform. Qwen converts budget into broad behavioral cleanup: missed reachable targets fall from 16.6\% at 512 tokens to 1.0\% at 16,384, and over-exploration falls from 15.7\% to 1.4\%. GPT-OSS also reduces branch, transition, and missed-target errors as budget grows, but shorter traces remain high and even increase at the largest budgets. Gemma is the clearest saturation case: shorter traces stay near 31--32\% across the sweep, and some off-path or invalid-transition families slightly increase with budget.
+The detailed failure-by-budget table, moved out of the main text, adds the missing budget dimension to this taxonomy. The trends are not uniform. Qwen converts budget into broad behavioral cleanup: missed reachable targets fall from 16.6\% at 512 tokens to 1.0\% at 16,384, and over-exploration falls from 15.7\% to 1.4\%. GPT-OSS also reduces branch, transition, and missed-target errors as budget grows, but shorter traces remain high and even increase at the largest budgets. Gemma is the clearest saturation case: shorter traces stay near 31--32\% across the sweep, and some off-path or invalid-transition families slightly increase with budget.
 
-Finally, the descriptive factor contrasts show that surface code features can damage reasoning even when the oracle relation is unchanged. Comments, variables, loops, and conditionals generally reduce both final and chain accuracy. These contrasts should be interpreted descriptively until adjusted statistical models control for co-occurring factors, but they motivate the paired control-flow/data-flow design: syntax that is a distractor in one experiment can become the semantic object of study in the other.
+Finally, the descriptive factor contrasts show that surface code features can damage reasoning even when the oracle relation is unchanged. Comments, variables, loops, and conditionals generally reduce both final and chain accuracy. These contrasts should be interpreted descriptively until adjusted statistical models control for co-occurring factors. They also motivate the paired data-flow extension: syntax that is a distractor in the current control-flow experiment can become the semantic object of study in a future value-flow experiment.
 
 \input{tables/factor_effects}

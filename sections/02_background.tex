@@ -9,9 +9,7 @@ A second family tries to make the setting more realistic and less vulnerable to 
 
 A third family targets broader software-engineering work. CodeXGLUE~\cite{lu2021codexglue} covers code search, summarization, translation, defect detection, and other code-intelligence problems. Defects4J~\cite{just2014defects4j} provides real Java bugs for repair and testing research. SWE-bench~\cite{jimenez2024swebench} asks whether a model or agent can resolve real GitHub issues by editing repositories and passing tests. These tasks are closer to maintenance, but diagnosis becomes harder. A failure may reflect weak issue understanding, poor localization, an incorrect edit, missing tool use, or insufficient program reasoning.
 
-\tabref{tab:benchmark-positioning} places \benchmark relative to these families. The distinction is granularity. \benchmark does not ask the model to synthesize behavior or repair a repository. It isolates a program-comprehension judgment that is small enough to control but still requires structured reasoning over code.
-
-\input{tables/benchmark_positioning}
+The distinction is granularity. \benchmark does not ask the model to synthesize behavior or repair a repository. It isolates a program-comprehension judgment that is small enough to control but still requires structured reasoning over code. \papertodo{Move the benchmark-positioning table to the related-work section, supplement, or artifact notes if page budget allows.}
 
 \subsection{Reachability as a Program-Comprehension Task}
 

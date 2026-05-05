@@ -4,7 +4,7 @@ Software-engineering tools increasingly rely on large language models (LLMs) to 
 
 Current benchmarks provide strong macro-level signals but weaker diagnostic ones. HumanEval and MBPP made function-level generation easy to score; APPS and LiveCodeBench introduced harder programming tasks and time-aware evaluation; BigCodeBench emphasizes library-rich generation; CodeXGLUE covers several code-intelligence tasks; Defects4J and SWE-bench move evaluation toward maintenance and real repository repair. These benchmarks are valuable, but they often blend several skills into one outcome. When a model fails to fix a bug or pass a test, the cause may be issue understanding, localization, editing, search, API use, or a more basic failure to follow the program's internal flow.
 
-This paper isolates a smaller capability that many software-engineering tasks quietly depend on: reasoning about how information and execution move through code. We focus first on method-level control-flow reachability. Given a Java class and a pair of methods, the model must decide whether the source method can invoke the target directly or indirectly, and it must return the method trace supporting the decision. The task is simple to state but difficult to solve by lexical matching alone: a model must identify method definitions, recover call edges, traverse the induced graph, ignore irrelevant code, and avoid confusing co-occurrence with reachability. We also design the benchmark so the same generator can support a data-flow family in which variables, parameters, and value propagation become the object of the query rather than surface distractors.
+This paper isolates a smaller capability that many software-engineering tasks quietly depend on: reasoning about how execution moves through code. We report a completed study of method-level control-flow reachability. Given a Java class and a pair of methods, the model must decide whether the source method can invoke the target directly or indirectly, and it must return the method trace supporting the decision. The task is simple to state but difficult to solve by lexical matching alone: a model must identify method definitions, recover call edges, traverse the induced graph, ignore irrelevant code, and avoid confusing co-occurrence with reachability. The generator is also designed to support a paired data-flow family in which variables, parameters, and value propagation become the object of the query; that family is specified here as benchmark design, not reported as empirical evidence.
 
 The central empirical issue is reasoning budget. Modern reasoning-oriented models often expose a requested thinking-token or completion-token budget, and software-engineering users naturally ask whether more budget makes program reasoning more reliable. A final Boolean answer is not enough to answer that question. A model can say \true or \false correctly while skipping an intermediate method, inventing a call edge, taking the wrong branch, or stopping before the target. For program-comprehension tasks, those failures matter: a lucky label is not a dependable basis for a repair, audit, or debugging recommendation.
 
@@ -12,17 +12,19 @@ We therefore study budget through both outcomes and evidence. The benchmark repo
 
 The study is organized around three research questions:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{RQ0}: How can we generate a controlled benchmark for testing LLM program-flow reasoning?
+    \item \textbf{RQ0}: What controlled factors and oracle conventions are needed to generate a diagnostic benchmark for LLM control-flow reasoning?
     \item \textbf{RQ1}: How does requested reasoning budget affect model performance on this benchmark?
     \item \textbf{RQ2}: What do model traces reveal about the relationship between the generated reasoning chain and the final answer?
 \end{itemize}
 
 \textbf{Contributions.} The paper makes the following contributions:
 \begin{itemize}[leftmargin=*]
-    \item A benchmark design for controlled Java program-flow reasoning, with control-flow and data-flow task families and explicit experimental factors.
+    \item A benchmark design for controlled Java program-flow reasoning, consisting of a fully evaluated control-flow family and a formally specified paired data-flow extension.
     \item A detailed generation pipeline for method-level reachability instances, including graph construction, Java materialization, oracle extraction, metadata, and benchmark schemas.
     \item An evaluation protocol that separates final-answer accuracy from exact-chain accuracy, trace accuracy, trace completeness, emitted reasoning length, and interpretable trace-error families.
     \item An empirical control-flow study showing that reasoning budget improves models unevenly and that final answers can substantially overstate path fidelity.
 \end{itemize}
+
+\papertodo{Before submission, complete the administrative pass required by the target ICSE track: use the official conference template, verify double-anonymity across the PDF and artifact, and reduce the main text to the allowed page limit.}
 
 The remainder of the paper proceeds as follows. \secref{sec:background} motivates reachability as a program-comprehension task. \secref{sec:benchmark-design} describes the benchmark and its generation pipeline. \secref{sec:research-questions} states the research questions, and \secref{sec:methodology} gives the experimental protocol. \secref{sec:results} and \secref{sec:discussion} report and interpret the findings. \secref{sec:threats} and \secref{sec:related-work} discuss validity threats and related work before \secref{sec:conclusion} concludes.

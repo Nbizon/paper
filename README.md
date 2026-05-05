@@ -2,10 +2,11 @@
 
 This directory contains an ACM/ICSE-style LaTeX draft for:
 
-> Reasoning Under Budget: Benchmarking Large Language Models on Program Control and Data Flow
+> Reasoning Under Budget: Benchmarking Large Language Models on Java Control-Flow Reachability
 
 The draft combines the benchmark-generation material with the reasoning-budget
-study and organizes the paper around RQ0/RQ1/RQ2.
+study and organizes the paper around RQ0/RQ1/RQ2. The current quantified
+claims are scoped to Java control-flow reachability.
 
 ## Build
 

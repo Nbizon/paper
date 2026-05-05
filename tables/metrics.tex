@@ -7,9 +7,9 @@
 Metric & Definition \\
 \midrule
 Final-answer accuracy & Predicted \true/\false matches the oracle label \\
-Exact-chain accuracy & Predicted method chain exactly matches the expected oracle chain \\
-Trace accuracy & Predicted trace satisfies the stricter trace representation used by the evaluator \\
-Trace completeness & Fraction of the expected trace recovered in order \\
+Exact-chain accuracy & Predicted method chain exactly matches the expected oracle chain after normalization; for unreachable cases this depends on the documented exploration convention \\
+Trace accuracy & Predicted trace satisfies the stricter trace representation used by the evaluator, including valid method names and valid call transitions \\
+Trace completeness & Fraction of the expected trace recovered in order; invalid and empty traces receive zero \\
 Emitted reasoning length & Tokenizer-counted visible reasoning text extracted from the model response; not a runtime consumed-token counter \\
 \bottomrule
 \end{tabularx}
