@@ -1,16 +1,16 @@
 \begin{table*}[t]
 \centering
-\caption{Evaluation metrics used for final answers, traces, and budget-related behavior.}
+\caption{Main evaluation metrics. The main paper reports strict scores where \texttt{NO\_RESPONSE} counts as incorrect; appendix tables also report conditional scores excluding \texttt{NO\_RESPONSE}.}
 \label{tab:metrics}
-\begin{tabularx}{\textwidth}{p{0.25\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & The predicted \true/\false matches the oracle label \\
-Exact-chain accuracy & The predicted method chain matches the expected oracle chain exactly after normalization; for unreachable cases this depends on the documented exploration convention \\
-Trace accuracy & The predicted trace satisfies the stricter trace representation used by the evaluator, including valid method names and valid call transitions \\
-Trace completeness & Fraction of the expected trace recovered in order; invalid and empty traces receive zero \\
-Emitted reasoning length & Visible reasoning text counted by tokenizer and extracted from the model response; not a counter of tokens consumed at runtime \\
+Final-answer accuracy & Whether the predicted \true/\false answer matches the oracle label. \\
+Canonical execution-trace accuracy & Whether the predicted trace exactly matches the canonical execution-oriented oracle trace. \\
+Trace completeness & Fraction of the canonical execution trace recovered in order by the model. \\
+Graph-valid exploration accuracy & Whether the predicted exploration is structurally valid with respect to the generated call graph; positive traces must reach the target, and negative traces must cover the reachable region without reaching the target. \\
+\texttt{NO\_RESPONSE} rate & Fraction of cases with no extractable final answer, invalid JSON, truncated structured output, or schema violation. \\
 \bottomrule
 \end{tabularx}
 \end{table*}

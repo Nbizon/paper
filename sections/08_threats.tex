@@ -1,53 +1,24 @@
-\section{Threats to Validity}
-\label{sec:threats}
+\section{Discussion and Limitations}
+\label{sec:discussion}
 
-\subsection{Internal Validity}
+\subsection{Complementarity with Realistic Benchmarks}
 
-\begin{itemize}[leftmargin=*]
-    \item Parsing and normalization may under-credit or over-credit some outputs.
-    \item Alignment to the oracle is sensitive, especially for negative cases.
-\end{itemize}
+\benchmark is a diagnostic benchmark, not a replacement for realistic software-engineering benchmarks. Existing code benchmarks are valuable for measuring end-to-end performance on realistic tasks. \benchmark is complementary: it isolates a lower-level structural capability that may be hidden inside broader software-engineering tasks.
 
-\subsection{Construct Validity}
+\subsection{Synthetic Java}
 
-\begin{itemize}[leftmargin=*]
-    \item Trace correctness is only a proxy for reasoning quality.
-    \item This proxy still matters because visible traces are what users inspect.
-    \item Emitted reasoning length is not an internal reasoning cost.
-\end{itemize}
+\benchmark uses generated Java programs rather than real-world repositories. This limits direct ecological validity: the benchmark does not capture the full complexity of naming conventions, architectural patterns, dependencies, side effects, or domain semantics found in real projects. However, this synthetic design is intentional. It allows us to control structural difficulty, generate balanced positive and negative queries, compute exact oracle labels and traces, and validate instances automatically.
 
-\subsection{External Validity}
+\subsection{Task Scope}
 
-\begin{itemize}[leftmargin=*]
-    \item Synthetic Java improves control but reduces realism.
-    \item Missing real-world features to mention:
-    \begin{itemize}[leftmargin=*]
-        \item inheritance;
-        \item dynamic dispatch;
-        \item exceptions;
-        \item concurrency;
-        \item reflection;
-        \item library and build structure.
-    \end{itemize}
-\end{itemize}
+The current benchmark targets Java and materializes each instance as a single class containing many generated methods. It does not include inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, multi-class projects, or cyclic call graphs. Current graphs are acyclic tree-shaped structures. Condition-aware reachability is limited to \texttt{if} statements and does not claim arbitrary control-flow or loop-guarded call reachability.
 
-\subsection{Conclusion Validity}
+The generator starts from abstract call graphs, so the core design is partly language-agnostic. Extending the benchmark to other languages would require a new materialization and validation backend, as well as language-specific prompt examples.
 
-\begin{itemize}[leftmargin=*]
-    \item Filtering to a shared slice improves fairness but narrows the claims.
-    \item Contrasts across factors are descriptive rather than causal.
-    \item Rapid changes in models and serving stacks reduce temporal stability.
-\end{itemize}
+\subsection{Trace and Reasoning Limitations}
 
-\subsection{Transparency, Ethics, and Artifact Availability}
+Trace correctness is an observable-output metric, not a direct measurement of hidden model cognition. A model may produce a correct trace for the wrong internal reason, or a correct final answer with an invalid trace. Likewise, emitted reasoning text from locally run models is an observable output artifact; we do not assume that it fully captures internal computation.
 
-\begin{itemize}[leftmargin=*]
-    \item No human participants are involved.
-    \item Still document:
-    \begin{itemize}[leftmargin=*]
-        \item model licenses;
-        \item compute cost;
-        \item hardware requirements;
-        \item artifact release constraints.
-    \end{itemize}
-\end{itemize}
+\subsection{External Claims}
+
+Model availability, licenses, model sizes, context lengths, and reasoning-budget support are temporally unstable. The final paper must verify and cite these claims from official sources before submission. \redtodo{Verify exact model identifiers, sizes, licenses, context lengths, and Jean compatibility.}

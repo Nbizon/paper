@@ -1,14 +1,19 @@
 \begin{table*}[t]
 \centering
-\caption{Models evaluated in the control-flow requested reasoning budget study.}
+\caption{Planned final model set. Main tables report base Hugging Face identifiers only; local quantization or deployment variants are excluded from this table.}
 \label{tab:models}
-\begin{tabularx}{\textwidth}{p{0.30\textwidth}p{0.16\textwidth}p{0.18\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.34\textwidth}p{0.18\textwidth}X}
 \toprule
-Model & Reported size & Reasoning mode & Notes \\
+Base model identifier & Category & Verification status \\
 \midrule
-gemma-4-26B-A4B-it & 26B class & Enabled & Strong baseline on the final answer; early budget saturation \\
-gpt-oss-20b & 20B class & Enabled & Large final-answer gains with budget; lower trace fidelity \\
-Qwen3.6-35B-A3B & 35B class & Enabled & Best exact-chain, trace, and trace-completeness metrics \\
+\path{openai/gpt-oss-20b} & Reasoning & \redtodo{Verify availability, license, size, context length, and reasoning-budget interface.} \\
+\path{Qwen/Qwen3.6-35B-A3B} & Reasoning & \redtodo{Verify exact identifier, availability, license, size, context length, and reasoning-budget interface.} \\
+\path{deepseek-ai/DeepSeek-R1-Distill-Qwen-32B} & Reasoning & \redtodo{Verify availability, license, size, context length, and reasoning-budget interface.} \\
+\path{Qwen/QwQ-32B} & Reasoning & \redtodo{Verify availability, license, size, context length, and reasoning-budget interface.} \\
+\path{google/gemma-4-26B-A4B-it} & Instruction & \redtodo{Verify exact identifier, availability, license, size, context length, and non-reasoning classification.} \\
+\path{Qwen/Qwen2.5-Coder-32B-Instruct} & Instruction & \redtodo{Verify availability, license, size, context length, and non-reasoning classification.} \\
+\path{Qwen/Qwen2.5-32B-Instruct} & Instruction & \redtodo{Verify availability, license, size, context length, and non-reasoning classification.} \\
+\path{mistralai/Mistral-Small-3.1-24B-Instruct-2503} & Instruction & \redtodo{Verify availability, license, size, context length, and non-reasoning classification.} \\
 \bottomrule
 \end{tabularx}
 \end{table*}

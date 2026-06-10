@@ -1,12 +1,14 @@
-# Reasoning Under Budget Paper
+# ReachabilityBench Paper
 
 This directory contains an ACM/ICSE-style LaTeX draft for:
 
-> Reasoning Under Budget: Benchmarking Large Language Models on Java Control-Flow Reachability
+> Benchmarking Large Language Models on Controlled Java Reachability Tasks
 
-The draft combines the benchmark-generation material with the reasoning-budget
-study and organizes the paper around RQ0/RQ1/RQ2. The current quantified
-claims are scoped to Java control-flow reachability.
+The draft is being rewritten around ReachabilityBench, a controlled Java
+benchmark for method-reachability questions with two task families:
+control-flow reachability and condition-aware reachability. Existing results
+are preliminary; final experiments must be rerun under the stabilized protocol
+described in `codex_icse2027_reachabilitybench_spec_v1.txt`.
 
 ## Build
 
@@ -28,6 +30,5 @@ The manuscript uses the ACM `acmart` class with:
 \documentclass[sigconf,review,anonymous]{acmart}
 ```
 
-The current quantified results are for the control-flow reachability family.
-The data-flow family is described as part of the benchmark design and should be
-filled with its corresponding experimental results once available.
+Main-paper claims should use visible red TODOs for any missing result,
+unverified external claim, or unresolved experimental parameter.

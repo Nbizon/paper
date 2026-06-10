@@ -3,29 +3,30 @@
     \begin{tikzpicture}[
         >=Latex,
         node distance=0.55cm and 0.55cm,
-        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
-        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
-        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
-        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.155\textwidth, minimum height=0.95cm},
+        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
+        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
+        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
+        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
         arrow/.style={->, gray!75, line width=0.75pt},
         dasharrow/.style={->, dashed, gray!70, line width=0.75pt}
     ]
-        \node[phase] (design) {Benchmark design\\task definition\\factors and schemas};
-        \node[artifact, right=of design] (generation) {Instance generation\\graphs, Java code,\\questions, oracles};
-        \node[artifact, right=of generation] (execution) {Model execution\\prompting and\\inference settings};
-        \node[eval, right=of execution] (evaluation) {Response evaluation\\parsing, scoring,\\metric extraction};
-        \node[warn, right=of evaluation] (analysis) {Result analysis\\aggregation, failure modes,\\tables and figures};
+        \node[phase] (graph) {Tree-shaped\\call graph};
+        \node[artifact, right=of graph] (java) {Java class\\generation};
+        \node[artifact, right=of java] (question) {Reachability\\question};
+        \node[artifact, right=of question] (output) {Model output\\JSON};
+        \node[eval, right=of output] (evaluation) {Oracle-based\\evaluation};
 
-        \node[phase, below=of execution] (reporting) {Paper claims\\performance trends,\\trace fidelity, limitations};
+        \node[warn, below=of java] (control) {Control-flow:\\unguarded calls};
+        \node[warn, below=of question] (condition) {Condition-aware:\\guards and conditions};
 
-        \draw[arrow] (design) -- (generation);
-        \draw[arrow] (generation) -- (execution);
-        \draw[arrow] (execution) -- (evaluation);
-        \draw[arrow] (evaluation) -- (analysis);
-        \draw[arrow] (evaluation) -- (reporting);
-        \draw[arrow] (analysis) |- (reporting);
+        \draw[arrow] (graph) -- (java);
+        \draw[arrow] (java) -- (question);
+        \draw[arrow] (question) -- (output);
+        \draw[arrow] (output) -- (evaluation);
+        \draw[dasharrow] (control) -- (java);
+        \draw[dasharrow] (condition) -- (java);
     \end{tikzpicture}
-    \caption{Overall pipeline of \benchmark, from benchmark design and instance generation through model execution, response evaluation, and result analysis.}
-    \Description{High-level workflow diagram showing benchmark design, instance generation, model execution, response evaluation, result analysis, and paper-level claims.}
+    \caption{Overall \benchmark pipeline. Control-flow and condition-aware instances share the same generation, prompting, and oracle-evaluation structure; condition-aware instances add guarded calls and condition evaluation.}
+    \Description{Pipeline showing tree-shaped call graph generation, Java class generation, reachability question construction, model JSON output, and oracle-based evaluation, with control-flow and condition-aware variants feeding into Java generation.}
     \label{fig:pipeline}
 \end{figure*}

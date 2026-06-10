@@ -1,96 +1,41 @@
-\section{Methodology}
+\section{Experimental Methodology}
 \label{sec:methodology}
 
-\subsection{Experimental Scope}
+\subsection{Experimental Scope and Rerun Protocol}
 
-\begin{itemize}[leftmargin=*]
-    \item The final paper should cover two families:
-    \begin{itemize}[leftmargin=*]
-        \item control-flow reachability ;
-        \item data-flow reachability.
-    \end{itemize}
-    \item Each case contains at minimum:
-    \begin{itemize}[leftmargin=*]
-        \item a generated Java class;
-        \item a source-target question;
-        \item an oracle label;
-        \item an oracle trace;
-        \item generation metadata.
-    \end{itemize}
-    \item Current experimental status:
-    \begin{itemize}[leftmargin=*]
-        \item only the control-flow experiments have been run so far;
-        \item the full reasoning-vs-non-reasoning and control-flow-vs-data-flow analyses still remain to be done.
-    \end{itemize}
-    \item The shared slice already used for the preliminary study is:
-    \begin{itemize}[leftmargin=*]
-        \item contexts 100, 250, and 500;
-        \item depths 1 to 25;
-        \item budgets 512 to 16\,384.
-    \end{itemize}
-\end{itemize}
+Existing results are preliminary. They were used to calibrate prompting, inspect budget effects, and avoid task misunderstandings. The final paper requires rerunning all experiments with the finalized model list, datasets, prompt variants, metrics, and budgets. \redtodo{Rerun all final experiments with the finalized protocol.}
 
-% \input{tables/full_data}
+The main comparison uses both task families over the same reachability question and trace-based evaluation protocol. The planned distance grid covers absolute canonical distances 1 to 25 and context sizes 100, 250, and 500. Positive and negative queries are sampled for every distance level.
 
-\subsection{Models and Inference}
+\subsection{Models and Local Execution}
 
-\begin{itemize}[leftmargin=*]
-    \item The final paper should compare:
-    \begin{itemize}[leftmargin=*]
-        \item reasoning models;
-        \item non-reasoning models;
-        \item a static baseline;
-        \item a heuristic baseline.
-    \end{itemize}
-    \item The same program, question, and output schema are used within a given task family.
-    \item The requested reasoning budget is a relevant variable only for models that expose this control.
-    \item The target decoding setup is deterministic or near-deterministic.
-    \item The three models currently included correspond to the preliminary empirical material already available.
-\end{itemize}
+All evaluated models are run locally on Jean, which allows us to control the requested reasoning budget and collect the reasoning text emitted by the model when available. Emitted reasoning remains an observable output artifact; we do not assume that it fully captures the model's internal computation.
 
 \input{tables/models}
 
-\subsection{Metrics}
+\redtodo{Verify exact Hugging Face availability, licenses, model sizes, context lengths, and local compatibility on Jean for all 8 models before final submission.}
+\redtodo{Verify whether each model should be classified as reasoning or non-reasoning in the final paper, based on official model documentation.}
 
-\begin{itemize}[leftmargin=*]
-    \item The evaluator parses:
-    \begin{itemize}[leftmargin=*]
-        \item the final answer;
-        \item the trace.
-    \end{itemize}
-    \item Metrics to report:
-    \begin{itemize}[leftmargin=*]
-        \item final-answer accuracy ;
-        \item chain accuracy ;
-        \item trace accuracy ;
-        \item trace completeness ;
-        \item emitted reasoning length.
-    \end{itemize}
-    \item Metrics should remain consistent across control-flow and data-flow because both families use the same reachability question and trace format.
-    \item Important caveat:
-    \begin{itemize}[leftmargin=*]
-        \item emitted reasoning length is only a visible-text proxy;
-        \item it is not an internal measure of reasoning tokens.
-    \end{itemize}
-\end{itemize}
+\subsection{Budget Settings}
+
+The main comparison uses a best-effort budget setting with a comparable total generation allowance across model families. Reasoning models receive a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. Non-reasoning models receive a total generation budget of 18,432 tokens. This setup gives each model a generous opportunity to solve the task while keeping the total generation allowance comparable. We do not claim that this makes reasoning and non-reasoning models identical in computational cost or internal allocation.
+
+Budget sensitivity is a secondary analysis limited to reasoning models. For control-flow reachability, requested reasoning budgets range from 512 to 16,384. Existing preliminary results suggest saturation around 8,192, but final experiments will be rerun. \redtodo{Recompute budget-saturation and smallest-budget-to-95\%-max-final-answer-accuracy after final control-flow reruns.} \redtodo{Do not generalize control-flow budget saturation to condition-aware reachability unless new experiments support it.}
+
+\subsection{Prompting Protocol}
+
+The final prompt was calibrated using preliminary experiments to make sure models understood the task, produced valid JSON, and were not instructed to use a named traversal algorithm. The prompt defines the trace as an explored call sequence, not as the shortest path. It tells the model to follow method calls in the order they appear in the code, start from the caller, and continue until the target is reached or no further reachable calls remain.
+
+For control-flow instances, the prompt does not mention condition evaluation. For condition-aware instances, the prompt states that the model must account for conditions and variable values that determine whether guarded calls are executed. The prompt includes a small illustrative example where the expected trace is \texttt{["A", "B", "C", "D", "E"]}; this clarifies that traces should list the explored call sequence in code order, rather than only a shorter source-target chain.
+
+\redtodo{Insert complete prompt templates in the appendix.}
+
+\subsection{Metrics}
 
 \input{tables/metrics}
 
-\subsection{Aggregation and Analysis}
+The main paper reports compact strict scores only: \texttt{NO\_RESPONSE} is counted as incorrect. Appendix tables will report both strict and conditional scores, where conditional scores exclude \texttt{NO\_RESPONSE} from the denominator. \texttt{NO\_RESPONSE} includes cases where no \texttt{final\_answer} can be extracted, no valid JSON can be parsed, the output is truncated before producing the required structured answer, or the model does not follow the output schema.
 
-\begin{itemize}[leftmargin=*]
-    \item Aggregate over shared slices when cross-model comparison requires it.
-    \item Break results down by:
-    \begin{itemize}[leftmargin=*]
-        \item model;
-        \item task family;
-        \item context size ;
-        \item depth ;
-        \item requested reasoning budget ;
-        \item code-level factors.
-    \end{itemize}
-    \item For \researchq{1}: compare overall performance across model families and task families.
-    \item For \researchq{2}: quantify the effect of structural factors.
-    \item For \researchq{3}: compare control flow and data flow at comparable difficulty.
-    \item For \researchq{4}: compare reasoning and non-reasoning models, then compare performance across requested reasoning budgets and identify saturation for models that expose this control.
-\end{itemize}
+\subsection{Oracle Validation Reminder}
+
+Before evaluation, the oracle-validation pipeline checks compilation, materialized call consistency, positive and negative reachability labels, canonical traces, and condition evaluation for guarded calls. We use programmatic analysis tools for oracle validation and dataset sanity checks, not as competing baselines. A deterministic program-analysis algorithm can solve the generated reachability task by construction; the scientific question is whether LLMs can recover and explain this structure from generated Java code.

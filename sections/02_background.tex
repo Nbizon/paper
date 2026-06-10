@@ -1,43 +1,18 @@
-\section{Background and Motivation}
+\section{Background and Related Work}
 \label{sec:background}
 
-\begin{itemize}[leftmargin=*]
-    \item Position this section as a future ``Background and Related Work'' block that is shorter and denser.
-    \item Contrast two evaluation styles:
-    \begin{itemize}[leftmargin=*]
-        \item macroscopic benchmarks, which are closer to realistic tasks but less diagnostic;
-        \item controlled tasks, which are less realistic but better suited to isolating a precise capability.
-    \end{itemize}
-    \item Defend the idea that a microscopic synthetic task can still be scientifically useful if it is:
-    \begin{itemize}[leftmargin=*]
-        \item simple to define;
-        \item experimentally controlled;
-        \item connected to a fundamental program-understanding capability;
-        \item paired with an exact oracle.
-    \end{itemize}
-    \item Motivate reachability specifically:
-    \begin{itemize}[leftmargin=*]
-        \item for control flow, it captures path following in a call graph;
-        \item for data flow, it captures path following when calls may be guarded by conditions over generated variables.
-    \end{itemize}
-    \item Clarify the ambition:
-    \begin{itemize}[leftmargin=*]
-        \item the benchmark does not replace real-repository benchmarks;
-        \item it serves as a diagnostic probe for a more fundamental structural capability.
-    \end{itemize}
-    \item Definitions to stabilize in the final version:
-    \begin{itemize}[leftmargin=*]
-        \item control-flow reachability ;
-        \item data-flow reachability ;
-        \item source method ;
-        \item target method ;
-        \item trace ;
-        \item chain ;
-        \item depth ;
-        \item distance ;
-        \item positive case ;
-        \item negative case.
-    \end{itemize}
-\end{itemize}
+\subsection{Macroscopic and Diagnostic Code Benchmarks}
 
-% \input{tables/benchmark_positioning}
+Broad code benchmarks measure realistic programming capabilities, including function synthesis, issue resolution, defect repair, and code understanding. Examples include HumanEval, APPS, CodeXGLUE, Defects4J, SWE-bench, LiveCodeBench, and BigCodeBench~\cite{chen2021codex,hendrycks2021apps,lu2021codexglue,just2014defects4j,jimenez2024swebench,jain2024livecodebench,zhuo2024bigcodebench}. Such benchmarks are valuable because they capture end-to-end behavior on tasks closer to developer workflows. Their breadth also makes them less diagnostic when the goal is to isolate one elementary structural capability.
+
+\redtodo{Verify and cite all related-work claims, including benchmark scope, dataset construction, and evaluation protocols.}
+
+Controlled diagnostic benchmarks make the opposite trade-off. They reduce ecological realism to gain control over input generation, difficulty factors, and oracle computation. \benchmark follows this diagnostic philosophy: generated Java programs are synthetic, but their structure is known exactly, and every reachability label and trace can be checked programmatically.
+
+\subsection{Program-Analysis Background}
+
+In a call graph, nodes represent methods and directed edges represent possible method calls. A reachability query asks whether a target node can be reached from a source node by following directed call edges. Program-analysis literature has studied call-graph construction and reachability for decades~\cite{grove2001framework,tip2000scalable}. \benchmark does not compete with deterministic program analysis: a graph traversal over the generated oracle graph solves the benchmark by construction. Instead, the benchmark asks whether LLMs can recover and explain this structure from generated Java source code.
+
+\subsection{Trace Explanations}
+
+The benchmark requires models to emit a trace in addition to a final answer. The trace is not used as evidence of hidden internal reasoning. It is an observable output artifact that can be compared with a canonical oracle trace. This distinction matters because a correct final answer can still be accompanied by an invalid transition, a missing intermediate method, or a shortcut that does not match the benchmark's execution-oriented trace convention.

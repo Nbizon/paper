@@ -1,102 +1,29 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{Target Organization of Results}
+The final results section will be organized by research question. Current quantitative results are preliminary and must not be presented as final evidence. \redtodo{Insert final control-flow results.} \redtodo{Insert final condition-aware results.}
 
-\begin{itemize}[leftmargin=*]
-    \item The final paper should present results in research-question order, not in the order of the currently available scripts.
-    \item Proposed narrative:
-    \begin{itemize}[leftmargin=*]
-        \item overall performance on reachability tasks;
-        \item effect of structural factors;
-        \item control-flow vs data-flow comparison;
-        \item reasoning vs non-reasoning comparison and effect of the requested budget.
-    \end{itemize}
-    \item Current status:
-    \begin{itemize}[leftmargin=*]
-        \item the tables and figures below mostly document the preliminary control-flow study;
-        \item subsections RQ1 to RQ4 currently remain placeholders for writing and future analysis.
-    \end{itemize}
-\end{itemize}
-
-\input{figures/pipeline}
-
-\subsection{\researchq{1}: Overall Performance on Reachability Tasks}
-
-\begin{itemize}[leftmargin=*]
-    \item Present here the final high-level view of model performance.
-    \begin{itemize}[leftmargin=*]
-        \item control-flow / data-flow comparison;
-        \item reasoning / non-reasoning comparison;
-        \item final metrics and trace metrics.
-    \end{itemize}
-\end{itemize}
-
-\subsection{\researchq{2}: Effect of Structural Difficulty Factors}
-
-\begin{itemize}[leftmargin=*]
-    \item Group together here the effects of depth, context, branching, and distractors.
-    \item Distinguish clearly between:
-    \begin{itemize}[leftmargin=*]
-        \item factors intrinsic to the control skeleton;
-        \item factors that determine whether guarded calls execute in the data-flow family.
-    \end{itemize}
-\end{itemize}
-
-\subsection{\researchq{3}: Comparison Between Control Flow and Data Flow}
-
-\begin{itemize}[leftmargin=*]
-    \item Show what changes when the same reachability question does or does not require reasoning over values.
-    \item Look for useful contrastive cases:
-    \begin{itemize}[leftmargin=*]
-        \item control flow reachable but data flow unreachable;
-        \item control flow easy but data flow difficult;
-        \item effects specific to condition evaluation and guarded calls.
-    \end{itemize}
-\end{itemize}
-
-\subsection{\researchq{4}: Reasoning Models, Non-Reasoning Models, and Requested Budget}
-
-\begin{itemize}[leftmargin=*]
-    \item Compare gaps in level, robustness, and failure types.
-    \item Check whether the gains of reasoning models are concentrated mainly:
-    \begin{itemize}[leftmargin=*]
-        \item on the final answer;
-        \item on the structural validity of the trace;
-        \item on robustness to difficulty factors.
-    \end{itemize}
-    \item For reasoning models, compare performance across requested reasoning budgets and identify saturation.
-    \item A preliminary result is already visible: the requested reasoning budget helps, but differently across models.
-    \item Keep a comparative narrative:
-    \begin{itemize}[leftmargin=*]
-        \item the strongest model overall;
-        \item the model that saturates early;
-        \item the model whose final answers improve more than its traces.
-    \end{itemize}
-    \item Key interpretation: final-answer accuracy alone overestimates reasoning quality.
-\end{itemize}
+\subsection{\researchq{1}: Overall Performance and Trace Quality}
 
 \input{tables/overall_performance}
 
-\input{figures/latex_budget_scaling}
-\input{tables/budget_effects}
-\input{tables/marginal_budget_gains}
-\input{tables/budget_observability}
-\input{tables/used_reasoning_budget_by_requested}
-\begin{itemize}[leftmargin=*]
-    \item Add a short reading of saturation below the figure.
-    \item Keep the caveat that the requested reasoning budget is an interface control, not an internal cost.
-\end{itemize}
+RQ1 reports final-answer accuracy, canonical execution-trace accuracy, trace completeness, graph-valid exploration accuracy, and \texttt{NO\_RESPONSE} rate for each model and task family. The main table reports strict scores only. Full appendix tables will include conditional scores that exclude \texttt{NO\_RESPONSE} from the denominator.
 
-\input{figures/latex_depth_context.tex}
-\input{tables/high_budget_16384}
-\input{figures/latex_error_taxonomy.tex}
-\input{tables/error_taxonomy}
-\input{tables/failure_budget_evolution}
-\input{tables/local_motif_examples}
-\input{tables/example_trace}
-\input{tables/factor_effects}
+\redtodo{Replace the planned table with final strict scores for all eight models and both task families.}
 
-\begin{itemize}[leftmargin=*]
-    \item Use these figures and tables to support the analysis of trace fidelity, failure modes, and budget sensitivity in \researchq{4}.
-\end{itemize}
+\subsection{\researchq{2}: Task Family and Structural Factors}
+
+RQ2 analyzes the effect of task family and structural difficulty. We report absolute performance for each task family, but focus the comparative analysis on the degradation from control-flow reachability to condition-aware reachability. Because both families share the same reachability question, output schema, and trace-based evaluation protocol, the performance drop isolates the additional difficulty introduced by guarded calls and condition evaluation.
+
+The analysis distinguishes graph-structural factors from code-surface factors. Graph-structural factors include signed canonical distance, tree depth, tree shape, branching, source-target position, and positive versus negative queries. Code-surface factors include context size, comments, local variables, loops, \texttt{if} statements, parameters, and method order shuffling. The tree-expansion parameter $p$ is fixed and is not treated as a main experimental factor.
+
+\redtodo{Insert final factor analysis, including degradation in percentage points from control-flow to condition-aware reachability.}
+
+\subsection{\researchq{3}: Reasoning Budget Analysis}
+
+RQ3 is limited to reasoning models that expose requested reasoning-budget control. For control-flow reachability, we analyze budgets from 512 to 16,384 requested reasoning tokens and report the smallest requested reasoning budget needed to reach at least 95\% of the maximum observed final-answer accuracy for each reasoning model. We also report \texttt{NO\_RESPONSE} rate across budgets.
+
+Budget sensitivity is secondary to the main benchmark comparison. We do not make reasoning versus non-reasoning the central story, and we do not claim that equal total generation allowance implies equal compute cost or equal internal allocation.
+
+\redtodo{Insert final control-flow budget curves and smallest-budget-to-95\%-max-final-answer-accuracy values.}
+\redtodo{Do not claim condition-aware budget saturation until condition-aware budget experiments are run.}

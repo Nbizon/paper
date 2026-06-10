@@ -1,59 +1,26 @@
 \section{Introduction}
 
+Large language models are now used in workflows that involve code understanding, explanation, review, transformation, and debugging. Existing code benchmarks are valuable for measuring end-to-end performance on realistic tasks. At the same time, realistic tasks often combine many capabilities: locating relevant identifiers, following call relations, interpreting guards, understanding API contracts, and producing a useful response. This makes it difficult to determine whether a model succeeds because it has recovered a specific program structure or because another cue in the task was sufficient.
+
+This paper studies a deliberately elementary program-understanding capability: method reachability. Reachability is not presented as a complete model of software-engineering reasoning. Rather, it is an elementary structural capability that can be involved in more complex tasks. Larger tasks may require a model to determine whether one method can directly or indirectly reach another, but reachability is only one component among many.
+
+We introduce \benchmark, a controlled Java benchmark for evaluating whether LLMs can answer and explain method-reachability questions under exact oracle supervision. \benchmark is complementary to macroscopic software-engineering benchmarks: it isolates a lower-level structural capability that may be hidden inside broader tasks. Each instance presents a generated Java class and asks whether a source method can reach a target method. The model must return both a \true/\false answer and a trace that can be compared with the oracle.
+
+\benchmark studies two task families. In \emph{control-flow reachability}, generated method calls are unguarded: every generated call is active for reachability. In \emph{condition-aware reachability}, the same method-reachability question is retained, but visible calls may appear inside \texttt{if} branches whose conditions determine whether the calls are executable. We use the term condition-aware reachability for this data-dependent extension of the task. Unlike full data-flow analysis, this setting does not aim to model arbitrary def-use relations, reaching definitions, or taint propagation. Instead, it keeps the same method-reachability question while allowing method calls to be guarded by conditions over generated variables and parameters.
+
+The final study is organized around three research questions:
 \begin{itemize}[leftmargin=*]
-    \item Open the paper by noting that LLMs are increasingly used for code understanding, explanation, review, and transformation tasks.
-    \item State the central problem:
-    \begin{itemize}[leftmargin=*]
-        \item many evaluations measure the correct final answer on macroscopic tasks;
-        \item they say less about how well models perform on simpler tasks.
-    \end{itemize}
-    \item Explain why this makes evaluation harder:
-    \begin{itemize}[leftmargin=*]
-        \item macroscopic tasks such as bug fixing combine several microscopic tasks, such as identifier lookup or reachability;
-        \item they make it difficult to isolate a precise structural capability.
-    \end{itemize}
-    \item Introduce the paper's methodological response:
-    \begin{itemize}[leftmargin=*]
-        \item use controlled reachability tasks;
-        \item keep the formulation simple;
-        \item impose an exact oracle and explicit difficulty factors.
-    \end{itemize}
-    \item Justify the choice of reachability:
-    \begin{itemize}[leftmargin=*]
-        \item it is simple to define;
-        \item it supports clean synthetic generation;
-        \item it can be verified automatically;
-        \item it provides a minimal but useful diagnostic task for structural reasoning.
-    \end{itemize}
-    \item Introduce the two task families targeted by the final benchmark:
-    \begin{itemize}[leftmargin=*]
-        \item \textbf{control-flow reachability}: follow call relations between methods;
-        \item \textbf{data-flow reachability}: follow the same call relation when method calls can be guarded by conditions that depend on generated variables.
-    \end{itemize}
-    \item Clarify the scientific progression:
-    \begin{itemize}[leftmargin=*]
-        \item control flow is the methodologically simpler case;
-        \item data flow keeps the same reachability question but requires evaluating the conditions that decide whether guarded calls execute.
-    \end{itemize}
-    \item Position the experimental program:
-    \begin{itemize}[leftmargin=*]
-        \item the paper aims for a full comparison between models on both families;
-        \item it measures performance and then analyzes the effect of dataset-intrinsic parameters.
-    \end{itemize}
+    \item \researchq{1}: How accurately do LLMs solve controlled Java reachability tasks, and how well do their generated traces match the benchmark oracle?
+    \item \researchq{2}: How do task family and structural difficulty factors affect model performance?
+    \item \researchq{3}: Among reasoning models, how does the requested reasoning budget affect answer accuracy, trace quality, and saturation behavior?
 \end{itemize}
 
-The target final study is organized around four research questions:
+\textbf{Contributions.} The paper makes four contributions:
 \begin{itemize}[leftmargin=*]
-    \item \textbf{RQ1}: how well do LLMs perform on controlled reasoning tasks about reachability between methods?
-    \item \textbf{RQ2}: how do structural difficulty factors affect that performance?
-    \item \textbf{RQ3}: how does performance differ between control-flow and data-flow reachability tasks?
-    \item \textbf{RQ4}: what differences appear between reasoning and non-reasoning models on these tasks, and how does the requested reasoning budget affect reasoning models?
+    \item \textbf{Benchmark artifact}: \benchmark, a controlled Java benchmark for method-reachability reasoning.
+    \item \textbf{Task design}: two task families, control-flow reachability and condition-aware reachability, sharing a common question and output schema.
+    \item \textbf{Evaluation protocol}: an exact oracle and metrics that separate final-answer correctness, canonical execution-trace accuracy, trace completeness, graph-valid exploration, and invalid-output behavior.
+    \item \textbf{Empirical study}: a local LLM study analyzing performance across task families, structural and code-surface factors, degradation from control-flow to condition-aware reachability, and reasoning-budget effects for reasoning models.
 \end{itemize}
 
-\textbf{Contributions.} The paper makes the following contributions:
-\begin{itemize}[leftmargin=*]
-    \item A controlled Java reachability benchmark for evaluating structural reasoning in LLMs.
-    \item Two complementary task families, control-flow and data-flow, sharing a common reachability formulation and a common trace output.
-    \item An evaluation protocol that separates final-answer accuracy, trace validity, path fidelity, and behavior across structural factors.
-    \item A complete experimental protocol to compare models, measure their performance, and analyze the effect of dataset-intrinsic parameters.
-\end{itemize}
+\redtodo{Verify whether a novelty claim using ``first'' or ``to our knowledge'' is defensible before adding it.}

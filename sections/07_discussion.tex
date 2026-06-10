@@ -1,49 +1,37 @@
-\section{Discussion}
-\label{sec:discussion}
+\section{Error Analysis}
+\label{sec:error-analysis}
 
-\subsection{Controlled Diagnostic Tasks Complement Macroscopic Evaluations}
+Beyond aggregate metrics, we conduct a semi-quantitative error analysis using an interactive deeper-analysis dashboard. The dashboard groups trace failures by structural parameters, reasoning budget, and local graph motifs. We use it to identify recurrent error families, such as syntactic-call bias in condition-aware instances, where models follow visible but non-executable calls. These error-family counts complement the main metrics by explaining why performance degrades when reachability depends on conditions.
 
-\begin{itemize}[leftmargin=*]
-    \item The benchmark should be defended as a useful probe, not as a substitute for realistic repository benchmarks.
-    \item Its value comes from experimental control, an exact oracle, and the ability to isolate precise structural reasoning.
-    \item This discussion should make explicit what reachability measures well, and what it does not measure.
-\end{itemize}
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    method/.style={draw, rounded corners=2pt, minimum width=1.0cm, minimum height=0.48cm, align=center, font=\scriptsize},
+    code/.style={draw=gray!70, rounded corners=2pt, align=left, inner sep=5pt, font=\scriptsize, text width=4.7cm},
+    edge/.style={->, thick},
+    bad/.style={->, very thick, dashed, modelorange}
+]
+\node[method] (a) at (0,0) {A};
+\node[method] (b) at (-1.2,-1.0) {B};
+\node[method] (c) at (1.2,-1.0) {C};
+\draw[edge] (a) -- node[left, font=\scriptsize] {true branch} (b);
+\draw[bad] (a) -- node[right, font=\scriptsize] {false branch} (c);
+\node[code, right=2.1cm of a] (snippet) {
+\texttt{void A() \{}\\
+\quad \texttt{if (x > 0) B();}\\
+\quad \texttt{if (x < 0) C();}\\
+\texttt{\}}\\
+\texttt{// generated x = 1}
+};
+\end{tikzpicture}
+}
+\caption{Schematic syntactic-call bias. A call to \texttt{C} is visible in the source code, but the generated condition is false, so \texttt{C} is excluded from the executable call graph and oracle trace.}
+\Description{A small call-graph and code schematic showing a true guarded call and a false guarded call.}
+\label{fig:syntactic-call-bias}
+\end{figure}
 
-\subsection{Reachability Provides a Natural Progression from Structure to Semantics}
+The final taxonomy may include syntactic-call bias, missing intermediate nodes, early stopping, over-exploration, invalid transition, target hallucination, positive shortcut, negative over-exploration, wrong source, repeated methods, and order violation. \redtodo{Finalize the error-family taxonomy after rerunning final experiments and inspecting the deeper-analysis dashboard.}
 
-\begin{itemize}[leftmargin=*]
-    \item Control flow should be presented as the simpler structural case.
-    \item Data flow should be presented as an extension of equal scientific importance, not as an appendix.
-    \item The discussion should show why keeping the same reachability formulation across both families is methodologically useful.
-\end{itemize}
-
-\subsection{Final Answers Are Not Enough to Characterize Reasoning}
-
-\begin{itemize}[leftmargin=*]
-    \item Traces are not merely auxiliary diagnostics.
-    \item Incorrect paths remain problematic even when labels are correct.
-    \item This discussion should connect trace fidelity to the practical reliability of software assistants.
-\end{itemize}
-
-\subsection{Requested Reasoning Budget Is Useful but Secondary in the Final Paper}
-
-\begin{itemize}[leftmargin=*]
-    \item Budget depends on the model and the serving interface.
-    \item More budget is not a portable fix across interfaces and models.
-    \item In the final paper, budget should remain an analysis dimension, not the central promise.
-\end{itemize}
-
-\subsection{Implications for Software Engineering Assistants and Benchmark Design}
-
-\begin{itemize}[leftmargin=*]
-    \item For tooling:
-    \begin{itemize}[leftmargin=*]
-        \item use LLMs for explanation and triage;
-        \item rely on conventional analyses for correctness-critical computations.
-    \end{itemize}
-    \item For benchmarks:
-    \begin{itemize}[leftmargin=*]
-        \item broad benchmarks remain necessary;
-        \item controlled probes add complementary diagnostic value.
-    \end{itemize}
-\end{itemize}
+The dashboard is used as a semi-quantitative tool rather than as a source of primary benchmark metrics. The main paper will include one representative visualization or schematic example, while full dashboard screenshots and usage notes belong in the appendix or artifact documentation. \redtodo{Add final deeper-analysis figure and dashboard appendix reference.}

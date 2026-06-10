@@ -1,20 +1,6 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\begin{itemize}[leftmargin=*]
-    \item Restate the final paper in one line: a controlled Java reachability benchmark for evaluating structural reasoning in LLMs on control-flow and data-flow tasks.
-    \item Restate the methodological message:
-    \begin{itemize}[leftmargin=*]
-        \item macroscopic evaluations are not sufficient to isolate structural reasoning;
-        \item a controlled reachability task with an exact oracle is useful as a diagnostic probe;
-        \item path-level and trace-level evidence should be reported.
-    \end{itemize}
-    \item Close with the next steps:
-    \begin{itemize}[leftmargin=*]
-        \item finalize the specification of the data-flow family;
-        \item finalize the baselines and statistics;
-        \item run the reasoning-vs-non-reasoning comparison;
-        \item release the anonymized artifact;
-        \item rewrite the final paper from complete results rather than from the budget-only preliminary study.
-    \end{itemize}
-\end{itemize}
+\benchmark is a controlled Java benchmark for evaluating whether LLMs can answer and explain method-reachability questions under exact oracle supervision. The benchmark is designed as a diagnostic complement to realistic software-engineering benchmarks: it isolates an elementary structural capability, separates final-answer correctness from trace quality, and supports controlled variation across task families and difficulty factors.
+
+The final ICSE study will compare control-flow and condition-aware reachability, quantify degradation introduced by guarded calls and condition evaluation, and analyze requested reasoning-budget effects for reasoning models. The current draft records the stabilized protocol and the remaining validation work. \redtodo{Replace this conclusion with final empirical insights after the final reruns.}
