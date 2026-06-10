@@ -1,0 +1,1110 @@
+SPECIFICATION FOR CODEX — ICSE 2027 PAPER DRAFT
+==================================================
+
+Working title
+-------------
+Benchmarking Large Language Models on Controlled Java Reachability Tasks
+
+Target venue
+------------
+ICSE 2027.
+
+Purpose of this file
+--------------------
+This file summarizes the current writing decisions for the paper. It is meant to guide Codex when editing or rewriting the LaTeX draft.
+
+IMPORTANT FOR CODEX
+-------------------
+1. Do not silently invent missing information.
+2. Any unresolved parameter, missing result, uncertain claim, or experiment not yet run must be inserted into the LaTeX draft as a visible red TODO.
+3. Use any LaTeX mechanism available in the project to create red TODOs, for example:
+   \textcolor{red}{TODO: ...}
+   or define a macro:
+   \newcommand{\redtodo}[1]{\textcolor{red}{TODO: #1}}
+4. Every claim about external benchmarks, related work, model properties, licenses, context length, availability, or novelty must be verified and cited.
+5. If a claim cannot be verified, insert a visible red TODO in the LaTeX draft.
+6. The current uploaded paper draft and scripts are preliminary; final experiments will be rerun under the stabilized protocol described below.
+
+Core paper positioning
+======================
+
+The paper has a dual positioning:
+
+1. Benchmark contribution:
+   ReachabilityBench is a controlled Java benchmark for evaluating whether LLMs can answer and explain method-reachability questions under exact oracle supervision.
+
+2. Analytical/critical contribution:
+   The benchmark tests a simple, elementary structural reasoning capability. The paper should show where LLMs succeed or fail on this controlled capability, and how failures depend on task family, structural difficulty, code-surface factors, and reasoning budget.
+
+Tone toward existing benchmarks
+-------------------------------
+Use a complementary tone, not an aggressive one.
+
+The paper should not claim that existing realistic code benchmarks are flawed or obsolete. Instead, it should argue that macroscopic benchmarks and controlled diagnostic benchmarks answer different questions.
+
+Recommended wording:
+"Existing code benchmarks are valuable for measuring end-to-end performance on realistic tasks. ReachabilityBench is complementary: it isolates a lower-level structural capability that may be hidden inside broader software-engineering tasks."
+
+Reachability as an elementary capability
+----------------------------------------
+Reachability should be framed as an elementary program-understanding task.
+
+It may be required as one component of larger SE tasks such as:
+- bug fixing;
+- code generation;
+- debugging;
+- impact analysis;
+- security reachability analysis;
+- repository-level issue resolution.
+
+But do not claim that these larger tasks always require reachability, or that they reduce to reachability.
+
+Recommended wording:
+"Reachability is not presented as a complete model of software-engineering reasoning. Rather, it is an elementary structural capability that can be involved in more complex tasks. Larger tasks may require a model to determine whether one method can directly or indirectly reach another, but reachability is only one component among many."
+
+Terminology
+===========
+
+Use the following main terms.
+
+Benchmark name
+--------------
+ReachabilityBench.
+
+Task families
+-------------
+1. Control-flow reachability.
+2. Condition-aware reachability.
+
+Important terminology decision
+------------------------------
+Do not use "data-flow reachability" as the main term in the final paper.
+
+At the beginning, the paper may mention that condition-aware reachability is a data-dependent extension of control-flow reachability, but after this clarification use "condition-aware reachability" as the main term.
+
+Recommended wording:
+"We use the term condition-aware reachability for the data-dependent extension of the task. Unlike full data-flow analysis, this setting does not aim to model arbitrary def-use relations, reaching definitions, or taint propagation. Instead, it keeps the same method-reachability question while allowing method calls to be guarded by conditions over generated variables and parameters."
+
+Control-flow reachability
+-------------------------
+In control-flow reachability:
+- method calls are placed outside control-flow structures;
+- calls are not guarded by if, for, while, or other control-flow constructs;
+- every generated method call is active for reachability;
+- variables, comments, loops, and other code-surface elements may exist only if they do not affect method-call reachability.
+
+Condition-aware reachability
+----------------------------
+In condition-aware reachability:
+- the reachability question remains the same;
+- method calls may remain outside control-flow structures or appear inside if statements;
+- method calls are not guarded by loops in the final definition;
+- calls inside if branches whose conditions evaluate to false are visible in the source code but are not executable;
+- the model must distinguish syntactic call presence from executable reachability.
+
+Syntactic vs executable call graph
+----------------------------------
+For condition-aware reachability, explicitly distinguish:
+
+1. Syntactic call graph:
+   Contains all method calls visible in the source code, including calls inside non-passing if branches.
+
+2. Executable call graph:
+   Contains only calls that are actually executed under the generated variable values and if conditions.
+
+Calls inside false if branches:
+- are distractors;
+- belong to the syntactic call graph;
+- do not belong to the executable call graph;
+- are excluded from the oracle trace and reachability label.
+
+Recommended wording:
+"Condition-aware reachability separates syntactic call presence from executable reachability. A guarded call may appear in the Java source code but be placed inside an if branch whose condition evaluates to false. Such a call belongs to the syntactic call graph but not to the executable call graph used by the oracle."
+
+Syntactic-call bias
+-------------------
+Use the term "syntactic-call bias" for a model error where the model treats the presence of a method call in the source code as evidence of reachability, even though the call is inside a non-executed branch and is absent from the executable call graph.
+
+This term should appear in the Error Analysis section.
+
+Benchmark structure
+===================
+
+Graph structure
+---------------
+The final ICSE paper should focus only on tree-shaped call graphs generated from randomized pseudo-binary trees.
+
+Use this phrase:
+"tree-shaped call graphs generated from randomized pseudo-binary trees"
+
+Do not present linear call graphs as part of the evaluated benchmark.
+
+Remove the "Linear Structure" subsection from the main paper.
+If the codebase still supports linear generation, it may be mentioned only in artifact documentation or appendix, not as a main benchmark component.
+
+Graph properties
+----------------
+- Nodes correspond to Java methods.
+- Directed edges correspond to method calls.
+- Generated graphs are acyclic.
+- There are no cycles.
+- There is no recursion.
+- The structure is a randomized pseudo-binary tree.
+- The current benchmark does not include inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, or multi-class projects.
+
+Generated Java programs
+-----------------------
+Each benchmark instance is materialized as:
+- a single Java class;
+- containing many generated methods;
+- methods call each other according to the generated tree-shaped call graph.
+
+Do not imply that the benchmark currently tests:
+- real repositories;
+- multi-file projects;
+- class hierarchies;
+- polymorphism;
+- dynamic dispatch;
+- recursive/cyclic call graphs.
+
+Method order shuffling
+----------------------
+Keep method order shuffling as a core design choice.
+
+The generator preserves child/call order inside each method body, which defines the canonical traversal, but it shuffles the order of method declarations in the Java class.
+
+Purpose:
+- prevent models from exploiting declaration order;
+- force models to reconstruct reachability from actual call relations.
+
+Do not treat method order shuffling as an experimental ablation.
+
+Canonical traversal and distance
+================================
+
+Canonical execution-oriented trace
+----------------------------------
+The oracle trace is defined as a canonical execution-oriented traversal trace, not necessarily the shortest path.
+
+Important:
+- Avoid saying simply "DFS" as the conceptual definition.
+- DFS may be an implementation analogy, but the paper should defend the concept as execution-oriented traversal.
+
+Definition:
+The canonical traversal is graph-defined and code-aligned.
+
+The generator:
+1. creates an ordered tree-shaped call graph;
+2. materializes the order of children as the textual order of call statements inside each Java method body.
+
+Therefore, the oracle traversal follows:
+- the ordered call graph;
+- the order in which calls appear in the generated Java code.
+
+Recommended wording:
+"The canonical execution-oriented order is defined by the ordered tree generated by the benchmark. When the abstract graph is materialized as Java code, the generator preserves this child order as the textual order of method calls inside each generated method body. Therefore, the oracle traversal is both graph-defined and code-aligned."
+
+Positive cases
+--------------
+For positive queries:
+- the final answer is True;
+- the trace corresponds to the first execution-consistent exploration that reaches the target;
+- the trace follows method calls in the canonical execution-oriented order;
+- it is not necessarily the shortest source-target path.
+
+Negative cases
+--------------
+For negative queries:
+- the final answer is False;
+- the trace corresponds to the canonical execution-oriented exploration from the source until the reachable region has been exhausted without reaching the target.
+
+Condition-aware traces
+----------------------
+For condition-aware instances:
+- the canonical trace follows the executable call graph;
+- calls in false if branches are excluded from the canonical trace;
+- syntactic-but-non-executable calls may be discussed as distractors in the error analysis.
+
+Distance
+--------
+The main distance used in the paper is:
+canonical execution-trace distance.
+
+It is not the shortest-path distance in the abstract graph.
+
+Definition:
+- For positive queries, distance is the number of execution-consistent traversal steps required to reach the target from the source.
+- For negative queries, distance is defined over the canonical exploration performed from the source before concluding that the target is unreachable.
+- Distances are signed:
+  +d for positive/reachable queries;
+  -d for negative/unreachable queries.
+
+Use "absolute canonical distance" or "target distance level" for d in {1, ..., 25}.
+Use "signed canonical distance" for +d and -d.
+
+TODO:
+\textcolor{red}{TODO: Verify in the generator code that the signed distance stored in reachability_questions.txt corresponds exactly to canonical execution-trace distance. Ask the author where the generation code is if needed.}
+
+Tree expansion parameter p
+==========================
+
+The tree generator uses an expansion parameter p.
+
+Final value:
+p = 0.65.
+
+How to present p
+----------------
+Do not present p as a main experimental factor.
+
+Present p as a generator calibration parameter used to obtain enough candidate positive and negative questions across the targeted canonical-distance range.
+
+Main paper:
+- mention p briefly;
+- do not include the long p = 0 / p = 1 discussion in the main paper;
+- do not present p as a result.
+
+Appendix / artifact documentation:
+- move detailed p explanation and figures there;
+- explain why p exists;
+- explain how p affects tree shape;
+- explain why p = 0.65 was selected.
+
+Recommended wording:
+"We fix the tree-expansion parameter to p = 0.65, based on a preliminary calibration study aimed at producing non-degenerate trees with enough candidate positive and negative queries across the targeted canonical-distance range."
+
+TODO:
+\textcolor{red}{TODO: Verify that p = 0.65 is used consistently in all final datasets.}
+\textcolor{red}{TODO: Add or reference calibration evidence explaining why p = 0.65 was selected.}
+
+Dataset size and configuration
+==============================
+
+Final planned experimental parameters
+-------------------------------------
+- Graph structure: tree-shaped call graphs only.
+- p = 0.65.
+- Context sizes: 100, 250, 500.
+- Absolute canonical distances: 1 to 25.
+- Positive and negative queries for each distance level.
+- Reasoning-budget study for control-flow: 512 to 16,384.
+- Main reasoning-model budget: 16,384 reasoning tokens + 2,048 final-answer tokens.
+- Main non-reasoning-model budget: 18,432 total output tokens.
+
+Dataset size formula
+--------------------
+For each task family:
+
+N_total_per_family =
+nb_context
+× nb_if
+× nb_loop
+× nb_comment
+× nb_depths
+× nb_params
+× nb_vars
+× 2
+× nb_questions_per_depth
+
+Where:
+- nb_depths counts absolute distance levels d in {1, ..., 25};
+- factor 2 corresponds to positive/negative queries;
+- negative queries are encoded with signed negative distances, but are paired with the same absolute depth grid.
+
+The dataset should be balanced:
+N_control_flow = N_condition_aware
+
+Current provisional value:
+nb_questions_per_depth = 4
+
+TODO:
+\textcolor{red}{TODO: Confirm final value of nb_questions_per_depth. Current provisional value is 4.}
+
+Research questions
+==================
+
+Use 3 RQs.
+
+RQ1 — Overall performance and trace quality
+-------------------------------------------
+"How accurately do LLMs solve controlled Java reachability tasks, and how well do their generated traces match the benchmark oracle?"
+
+Covers:
+- final-answer accuracy;
+- canonical execution-trace accuracy;
+- trace completeness;
+- graph-valid exploration accuracy;
+- model-to-model comparison.
+
+RQ2 — Effect of task family and structural difficulty
+-----------------------------------------------------
+"How do task family and structural difficulty factors affect model performance?"
+
+Covers:
+- control-flow vs condition-aware reachability;
+- degradation from control-flow to condition-aware;
+- signed canonical distance;
+- context size;
+- comments;
+- variables;
+- loops;
+- if conditions;
+- parameters;
+- positive vs negative queries.
+
+Do not assume a priori that distance is the only or main difficulty factor.
+Present all structural and code-surface factors as controlled factors; let the results determine which matter most.
+
+RQ3 — Reasoning budget analysis
+-------------------------------
+"Among reasoning models, how does the requested reasoning budget affect answer accuracy, trace quality, and saturation behavior?"
+
+Covers only reasoning models that expose budget control.
+This is a secondary analysis, not the dominant framing of the paper.
+
+Reasoning vs non-reasoning models
+---------------------------------
+Do not make reasoning vs non-reasoning the central story.
+It can appear as a model category in RQ1 and RQ3, but the main story is controlled reachability reasoning.
+
+Metrics
+=======
+
+Main metrics
+------------
+Use the following main metrics in this order:
+
+1. Final-answer accuracy
+2. Canonical execution-trace accuracy
+3. Trace completeness
+4. Graph-valid exploration accuracy
+5. NO_RESPONSE rate
+
+Main table should report strict scores only:
+NO_RESPONSE = incorrect.
+
+Full tables in the appendix should report:
+- strict scores;
+- conditional scores excluding NO_RESPONSE from the denominator;
+- NO_RESPONSE rate.
+
+Final-answer accuracy
+---------------------
+Measures whether the model gives the correct True/False answer.
+
+Primary convention:
+NO_RESPONSE = incorrect.
+
+Secondary convention:
+Exclude NO_RESPONSE from denominator.
+
+Canonical execution-trace accuracy
+----------------------------------
+Measures whether the predicted trace exactly matches the canonical execution-oriented trace.
+
+This is the main trace metric.
+
+Trace completeness
+------------------
+Measures the fraction of the canonical execution trace recovered in order by the model.
+
+Keep this as a main metric because exact trace match is strict and partial traces are informative.
+
+Graph-valid exploration accuracy
+--------------------------------
+Measures whether the predicted trace is structurally valid with respect to the generated call graph, even if it does not match the canonical order exactly.
+
+Definition:
+Starting from the source method, the evaluator maintains the set of methods already visited. Each next predicted method is accepted if it is directly callable from at least one method already in the visited set.
+
+Positive queries:
+- predicted exploration must be graph-valid;
+- must reach/end at the target.
+
+Negative queries:
+- predicted exploration must be graph-valid;
+- must cover the reachable region from the source without reaching the target.
+
+Place this metric after canonical trace metrics because it is a relaxed structural-validity metric.
+
+NO_RESPONSE rate
+----------------
+NO_RESPONSE includes cases where:
+- no final_answer can be extracted;
+- no valid JSON can be parsed;
+- the output is truncated before producing the required structured answer;
+- the model does not follow the output schema.
+
+Be careful:
+NO_RESPONSE often corresponds to budget exhaustion/truncation, but do not claim it always does.
+
+Strict vs conditional scores
+----------------------------
+For every main metric:
+- strict score: NO_RESPONSE = false/incorrect;
+- conditional score: NO_RESPONSE excluded.
+
+Main paper:
+- compact strict metrics only;
+- include NO_RESPONSE rate.
+
+Appendix:
+- complete table with strict and conditional variants.
+
+Secondary / appendix metrics
+----------------------------
+Move these to appendix or secondary analyses:
+- shortest-chain accuracy / direct-chain accuracy;
+- chain recall;
+- trace recall;
+- path recall;
+- chain_gap;
+- trace_gap;
+- path_gap;
+- emitted reasoning length.
+
+Shortest-chain accuracy
+-----------------------
+Do not make shortest-chain accuracy central.
+
+It is useful only as a secondary diagnostic because it measures whether the model produced the shortest source-target chain rather than the benchmark’s execution-oriented trace.
+
+Reasoning budget
+================
+
+Main budget setting
+-------------------
+Use a generous best-effort budget in the main comparison.
+
+Reasoning models:
+- 16,384 requested reasoning tokens;
+- 2,048 final-answer tokens.
+
+Non-reasoning models:
+- 18,432 total output tokens.
+
+This setup:
+- gives each model a comfortable chance to solve the task;
+- keeps the total generation allowance comparable.
+
+Important caveat:
+Equal total token budget is not equal compute fairness. Reasoning and non-reasoning models may allocate computation differently.
+
+Recommended wording:
+"We use a best-effort budget setting with a comparable total generation allowance across model families. Reasoning models receive a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. Non-reasoning models receive a total generation budget of 18,432 tokens. This setup gives each model a generous opportunity to solve the task while keeping the total generation allowance comparable. We do not claim that this makes reasoning and non-reasoning models identical in computational cost or internal allocation."
+
+Budget sensitivity
+------------------
+Budget sensitivity is a secondary analysis, limited to reasoning models.
+
+For control-flow:
+- budgets from 512 to 16,384;
+- existing preliminary results suggest saturation around 8,192;
+- final experiments will be rerun.
+
+For condition-aware:
+- do not claim saturation until experiments are run.
+
+Budget efficiency metric
+------------------------
+For control-flow only:
+"Smallest requested reasoning budget needed to reach at least 95% of the maximum observed final-answer accuracy."
+
+Compute this per reasoning model.
+
+Also report NO_RESPONSE rate across budgets.
+
+Do not compute or claim this for condition-aware until the condition-aware budget study is performed.
+
+TODO:
+\textcolor{red}{TODO: Recompute budget-saturation and smallest-budget-to-95%-max-final-answer-accuracy after final control-flow reruns.}
+\textcolor{red}{TODO: Do not generalize control-flow budget saturation to condition-aware unless new experiments support it.}
+
+Models
+======
+
+All final models must be available on Hugging Face and reported using exact base HF identifiers.
+
+Use base HF identifiers only in the main model table.
+Do not list local quantization/deployment variants in the main table.
+
+Reasoning models
+----------------
+1. openai/gpt-oss-20b
+2. Qwen/Qwen3.6-35B-A3B
+3. deepseek-ai/DeepSeek-R1-Distill-Qwen-32B
+4. Qwen/QwQ-32B
+
+Non-reasoning / instruction models
+----------------------------------
+1. google/gemma-4-26B-A4B-it
+2. Qwen/Qwen2.5-Coder-32B-Instruct
+3. Qwen/Qwen2.5-32B-Instruct
+4. mistralai/Mistral-Small-3.1-24B-Instruct-2503
+
+TODO:
+\textcolor{red}{TODO: Verify exact HF availability, licenses, model sizes, context lengths, and local compatibility on Jean for all 8 models before final submission.}
+\textcolor{red}{TODO: Verify whether each model should be classified as reasoning or non-reasoning in the final paper, based on official model documentation.}
+
+Local execution
+---------------
+All models are run locally on Jean.
+
+This allows:
+- controlled inference;
+- deterministic or near-deterministic decoding;
+- requested reasoning-budget control for reasoning models;
+- collection of emitted reasoning text when available.
+
+Do not claim that emitted reasoning text fully exposes the model’s hidden internal reasoning.
+
+Recommended wording:
+"All evaluated models are run locally on Jean, which allows us to control the requested reasoning budget and collect the reasoning text emitted by the model when available. Emitted reasoning remains an observable output artifact; we do not assume that it fully captures the model’s internal computation."
+
+Baselines
+=========
+
+Do not include static or heuristic baselines in the final paper.
+
+Reason:
+A deterministic program-analysis algorithm can solve the generated reachability task by construction. The scientific question is not whether a graph traversal algorithm can solve reachability, but whether LLMs can reconstruct and explain it from generated Java code.
+
+Replace baseline discussion with:
+- exact oracle;
+- dynamic/oracle validation pipeline;
+- dataset sanity checks.
+
+Recommended wording:
+"We do not include traditional program-analysis baselines as competing methods. The benchmark is generated with an exact oracle, and deterministic graph traversal over the generated call structure would solve the task by construction. Our goal is instead to evaluate whether LLMs can recover and explain this structure from generated Java code. We therefore use programmatic analysis tools only for oracle validation and dataset sanity checks, not as baseline models."
+
+Oracle validation
+=================
+
+Add a subsection in Benchmark Design:
+"Oracle Validation"
+
+Also add a short reminder in Methodology.
+
+Validation checks
+-----------------
+The validation pipeline checks:
+
+1. The generated Java code compiles.
+2. The materialized methods and calls match the intended graph.
+3. Positive questions are truly reachable.
+4. Negative questions are truly unreachable.
+5. Oracle traces correspond to the canonical execution-oriented traversal.
+6. For condition-aware instances, generated variables and if conditions correctly determine whether guarded calls are executed.
+
+Recommended wording:
+"We validate generated instances using a programmatic oracle-validation pipeline. This pipeline checks that the generated Java code compiles, that the materialized method calls match the intended tree-shaped call graph, and that sampled positive and negative queries agree with the reachability relation induced by the generated program. It also validates that oracle traces follow the benchmark’s canonical execution-oriented traversal. For condition-aware instances, the validation additionally checks that generated variables and conditions correctly determine whether guarded calls are executed."
+
+Prompting protocol
+==================
+
+Prompt status
+-------------
+The final prompt was calibrated using preliminary experiments.
+
+Pilot experiments were used to:
+- make sure models understand the task;
+- make sure models produce valid JSON;
+- avoid under-specified prompts that produce bad performance due to misunderstanding;
+- avoid over-specified prompts that tell models to use DFS, BFS, or another named traversal algorithm.
+
+The final experiments will be rerun from scratch using the stabilized prompt.
+
+Prompt placement
+----------------
+Main paper:
+- summarize the prompt.
+
+Appendix:
+- include complete prompt templates for control-flow and condition-aware tasks.
+
+Prompt convention
+-----------------
+The prompt must define the trace as an explored call sequence, not as the shortest path.
+
+The prompt should tell the model to:
+- follow method calls in the order they appear in the code;
+- start from the caller;
+- continue until the target is reached or no further reachable calls remain.
+
+Do not tell the model:
+- "use DFS";
+- "use BFS".
+
+Control-flow prompt
+-------------------
+For control-flow:
+- remove "executable";
+- remove "data-flow reasoning";
+- do not mention condition evaluation.
+
+Condition-aware prompt
+----------------------
+For condition-aware:
+- keep the notion of real executable reachability;
+- replace "data-flow reasoning" with wording about conditions and variable values;
+- say the model must account for conditions and variable values that determine whether guarded calls are executed.
+
+Illustrative example
+--------------------
+Keep the illustrative example where the expected trace is:
+["A", "B", "C", "D", "E"]
+
+This example is useful because it clarifies that the trace is the explored call sequence in code order, not the shortest path such as ["A", "C", "E"].
+
+Recommended wording:
+"The prompt includes a small illustrative example to define the output schema and the expected trace convention. In particular, the example shows that traces should list the explored call sequence in code order, rather than only the shortest source-target chain. The prompt does not instruct models to use DFS, BFS, or any named traversal algorithm."
+
+Results structure
+=================
+
+Main results table
+------------------
+Use a compact table in the main paper.
+
+Two separate blocks:
+1. Control-flow reachability.
+2. Condition-aware reachability.
+
+Columns:
+- Model
+- Final-answer accuracy
+- Canonical execution-trace accuracy
+- Trace completeness
+- Graph-valid exploration accuracy
+- NO_RESPONSE rate
+
+All main-table metrics use strict convention:
+NO_RESPONSE = incorrect.
+
+Appendix results table
+----------------------
+Provide complete strict and conditional scores.
+
+Recommended appendix columns:
+- Model
+- Task family
+- Metric
+- Strict score
+- Conditional score
+- NO_RESPONSE rate
+
+or a wide table:
+- Model
+- Family
+- Final strict
+- Final conditional
+- Trace strict
+- Trace conditional
+- Completeness strict
+- Completeness conditional
+- Graph-valid strict
+- Graph-valid conditional
+- NO_RESPONSE
+
+Control-flow vs condition-aware degradation
+-------------------------------------------
+Report absolute scores in both families.
+Focus analysis on the degradation from control-flow to condition-aware.
+
+Measure degradation as absolute difference in percentage points.
+
+Example:
+92% control-flow final-answer accuracy and 71% condition-aware final-answer accuracy = -21 percentage points.
+
+Recommended wording:
+"We report absolute performance for each task family, but focus the comparative analysis on the degradation from control-flow reachability to condition-aware reachability. Because both families share the same reachability question, output schema, and trace-based evaluation protocol, the performance drop isolates the additional difficulty introduced by guarded calls and condition evaluation."
+
+Structural factors
+==================
+
+Do not treat signed distance as the only primary factor by default.
+
+Organize factors into two groups:
+
+Graph-structural factors:
+- signed canonical distance;
+- tree depth;
+- tree shape / branching;
+- source-target position;
+- positive vs negative query.
+
+Code-surface factors:
+- context size;
+- comments;
+- local variables;
+- loops;
+- if statements;
+- parameters;
+- method order shuffling.
+
+Note:
+p is not a main factor; it is a fixed generator calibration parameter.
+
+Recommended wording:
+"We distinguish graph-structural factors from code-surface factors. Graph-structural factors determine the shape of the underlying call graph and the execution-oriented search needed to answer the query. Code-surface factors modify the generated Java program around that graph, for example by adding comments, variables, loops, conditionals, or parameters, while preserving the benchmark oracle."
+
+Error analysis
+==============
+
+Add a dedicated Error Analysis section.
+
+Purpose
+-------
+The Error Analysis section should interpret failures beyond aggregate metrics.
+
+It should use the deeper-analysis dashboard as a semi-quantitative tool, not as a main metric.
+
+Uploaded scripts:
+- index.html: dashboard interface.
+- build_deeper_analysis.py: builds analysis_data.json and analysis_data.js from raw results and dataset.
+
+Dashboard role
+--------------
+The dashboard supports:
+- filtering by structural parameters;
+- filtering by depth;
+- filtering by context size;
+- filtering by reasoning budget;
+- filtering by final-answer correctness;
+- distinguishing chain/trace failures;
+- inspecting recurrent local motifs;
+- visualizing reference vs prediction and problematic transitions.
+
+Use it especially for condition-aware reachability.
+
+Main paper
+----------
+Include one representative visualization or schematic example in the main paper, preferably:
+- an if condition;
+- a syntactically visible method call in a false branch;
+- a model trace following that non-executable call;
+- an oracle trace excluding it.
+
+Appendix / artifact
+-------------------
+Put the full dashboard description and screenshots in the appendix or artifact documentation.
+
+Semi-quantitative level
+-----------------------
+The error analysis should be semi-quantitative:
+- report representative error families and their relative frequency;
+- do not make error-family counts part of the main benchmark metrics.
+
+Potential error families
+------------------------
+Current categories are exploratory.
+Possible final taxonomy may include:
+- syntactic-call bias;
+- missing intermediate nodes;
+- early stopping;
+- over-exploration;
+- invalid transition;
+- target hallucination;
+- positive shortcut;
+- negative over-exploration;
+- wrong source;
+- repeated methods;
+- order violation.
+
+TODO:
+\textcolor{red}{TODO: Finalize the error-family taxonomy after rerunning final experiments and inspecting the deeper-analysis dashboard.}
+
+Recommended wording:
+"Beyond aggregate metrics, we conduct a semi-quantitative error analysis using an interactive dashboard. The dashboard groups trace failures by structural parameters, reasoning budget, and local graph motifs. We use it to identify recurrent error families, such as syntactic-call bias in condition-aware instances, where models follow visible but non-executable calls. These error-family counts complement the main metrics by explaining why performance degrades when reachability depends on conditions."
+
+Figures
+=======
+
+Main figure 1: full pipeline
+----------------------------
+The main benchmark figure should show:
+
+Tree-shaped call graph
+→ Java class generation
+→ Reachability question
+→ Model output JSON
+→ Oracle-based evaluation
+
+It should make clear that:
+- control-flow and condition-aware share the same pipeline;
+- condition-aware adds guarded calls and condition evaluation.
+
+Main figure 2: canonical traversal
+----------------------------------
+A second figure should show:
+- a tree-shaped call graph;
+- canonical execution-oriented traversal order with numbers;
+- one positive query;
+- one negative query;
+- corresponding oracle traces.
+
+The figure should help explain:
+- canonical trace;
+- signed distance;
+- positive vs negative cases;
+- why trace is not necessarily the shortest path.
+
+p figures
+---------
+Move p figures to appendix or artifact documentation.
+
+Do not keep detailed p=0 vs p=1 figures in the main paper.
+
+Deeper-analysis figure
+----------------------
+Include one representative deeper-analysis figure or schematic in the main paper.
+
+Use it to explain syntactic-call bias.
+
+Full dashboard screenshots go to appendix/artifact.
+
+Paper structure
+===============
+
+Use this ICSE-style structure:
+
+1. Introduction
+2. Background and Related Work
+3. ReachabilityBench Design
+4. Experimental Methodology
+5. Results
+6. Error Analysis
+7. Discussion and Limitations
+8. Conclusion
+
+Section purposes
+----------------
+
+1. Introduction
+   - Introduce LLMs for code understanding, explanation, review, transformation.
+   - Explain that realistic benchmarks are valuable but often conflate many capabilities.
+   - Introduce reachability as an elementary structural capability.
+   - Present ReachabilityBench as a controlled diagnostic benchmark.
+   - Emphasize two task families: control-flow and condition-aware.
+   - State 3 RQs.
+   - State contributions.
+
+2. Background and Related Work
+   Keep concise in the main paper.
+   Three blocks:
+   - realistic/macroscopic SE and code benchmarks;
+   - controlled/diagnostic benchmarks;
+   - program-analysis background: call graphs, reachability, control-flow, condition-aware execution.
+
+   TODO:
+   \textcolor{red}{TODO: Verify and cite all related-work claims, including SWE-bench, HumanEval, Defects4J, CodeXGLUE, controlled code-reasoning benchmarks, and program-analysis background.}
+
+3. ReachabilityBench Design
+   Include:
+   - task definition;
+   - control-flow vs condition-aware;
+   - syntactic vs executable call graph;
+   - randomized pseudo-binary tree generation;
+   - Java materialization;
+   - canonical trace and signed distance;
+   - dataset files/metadata;
+   - oracle validation pipeline.
+
+4. Experimental Methodology
+   Include:
+   - models;
+   - local execution on Jean;
+   - budgets;
+   - prompt summary;
+   - metrics;
+   - strict vs conditional scores;
+   - final rerun protocol.
+
+5. Results
+   Organize by RQs:
+   - RQ1: overall performance and trace quality;
+   - RQ2: task family and structural factors;
+   - RQ3: reasoning budget.
+
+6. Error Analysis
+   Include:
+   - deeper-analysis dashboard;
+   - semi-quantitative error families;
+   - syntactic-call bias;
+   - representative visualization.
+
+7. Discussion and Limitations
+   Include:
+   - synthetic Java;
+   - reachability as elementary, not full SE ability;
+   - Java only;
+   - language-agnostic graph-based generator potential;
+   - single class, no inheritance/polymorphism/exceptions/external libs;
+   - acyclic tree-shaped graphs only;
+   - no recursion/cycles;
+   - condition-aware limited to if statements;
+   - emitted reasoning text is not internal reasoning.
+
+8. Conclusion
+   Summarize:
+   - ReachabilityBench;
+   - controlled diagnostic value;
+   - main empirical insights;
+   - complementarity with realistic SE benchmarks;
+   - future extensions.
+
+Contributions
+=============
+
+Use four contributions:
+
+1. Benchmark artifact:
+   ReachabilityBench, a controlled Java benchmark for method-reachability reasoning.
+
+2. Task design:
+   Two task families:
+   - control-flow reachability;
+   - condition-aware reachability.
+
+3. Evaluation protocol:
+   Exact oracle and metrics separating:
+   - final-answer correctness;
+   - canonical execution-trace accuracy;
+   - trace completeness;
+   - graph-valid exploration;
+   - invalid-output behavior.
+
+4. Empirical study:
+   Local LLM study analyzing:
+   - performance across task families;
+   - structural/code-surface factors;
+   - degradation from control-flow to condition-aware;
+   - reasoning budget effects for reasoning models.
+
+Do not claim "first benchmark" unless verified by related work.
+
+Recommended safe wording:
+"We introduce ReachabilityBench, a controlled Java benchmark for evaluating whether LLMs can answer and explain method-reachability questions under exact oracle supervision."
+
+Stronger wording only if verified:
+"To our knowledge, ReachabilityBench is the first controlled benchmark focused on Java method-reachability traces for LLMs."
+
+TODO:
+\textcolor{red}{TODO: Verify novelty claim before using 'first' or 'to our knowledge'.}
+
+Discussion and limitations
+==========================
+
+Synthetic Java
+--------------
+Present as both:
+- a limitation;
+- a methodological necessity.
+
+Recommended wording:
+"ReachabilityBench uses generated Java programs rather than real-world repositories. This limits direct ecological validity: the benchmark does not capture the full complexity of naming conventions, architectural patterns, dependencies, side effects, or domain semantics found in real projects. However, this synthetic design is intentional. It allows us to control structural difficulty, generate balanced positive and negative queries, compute exact oracle labels and traces, and validate instances automatically."
+
+Elementary capability
+---------------------
+State explicitly:
+- method reachability is one elementary structural task;
+- strong performance does not imply full SE competence;
+- poor performance reveals weakness on a controlled sub-capability.
+
+Java only
+---------
+Current benchmark targets Java.
+
+But:
+- generator starts from abstract call graphs;
+- core design is partly language-agnostic;
+- extending to other languages would require new materialization/validation backend and prompt examples.
+
+Single-class scope
+------------------
+Current benchmark:
+- one Java class;
+- many methods;
+- calls between methods.
+
+Out of scope:
+- inheritance;
+- interfaces;
+- dynamic dispatch;
+- overloading;
+- exceptions;
+- recursion;
+- external libraries;
+- multi-class projects.
+
+Acyclic graphs
+--------------
+Current graphs are acyclic tree-shaped structures.
+No cycles or recursion.
+
+Condition-aware scope
+---------------------
+Condition-aware calls are guarded only by if statements.
+Do not claim arbitrary control-flow or loop-guarded call reachability.
+
+Reasoning text limitation
+-------------------------
+Even though models are local and emitted reasoning can be collected, do not claim emitted reasoning fully reflects internal computation.
+
+Rerun status and TODOs
+=====================
+
+Current status
+--------------
+Existing results are preliminary.
+
+They helped:
+- choose prompting;
+- avoid bad task misunderstanding;
+- inspect budget effects;
+- calibrate protocol.
+
+Final paper requires rerunning all experiments with:
+- final model list;
+- final datasets;
+- final prompt variants;
+- final metrics;
+- final budgets.
+
+Critical red TODO list for LaTeX
+--------------------------------
+Insert these as visible red TODOs where relevant:
+
+\textcolor{red}{TODO: Rerun all final experiments with the finalized protocol.}
+\textcolor{red}{TODO: Insert final control-flow results.}
+\textcolor{red}{TODO: Insert final condition-aware results.}
+\textcolor{red}{TODO: Verify exact model identifiers, sizes, licenses, context lengths, and Jean compatibility.}
+\textcolor{red}{TODO: Verify related-work claims and add citations.}
+\textcolor{red}{TODO: Confirm nb_questions_per_depth; current provisional value is 4.}
+\textcolor{red}{TODO: Verify signed distance semantics in the generation code.}
+\textcolor{red}{TODO: Verify p = 0.65 is used in all final datasets.}
+\textcolor{red}{TODO: Add or reference p calibration evidence.}
+\textcolor{red}{TODO: Finalize error-family taxonomy after final experiments.}
+\textcolor{red}{TODO: Add final deeper-analysis figure and dashboard appendix reference.}
+\textcolor{red}{TODO: Insert prompt templates in appendix.}
+\textcolor{red}{TODO: Verify whether a novelty claim using 'first' is defensible.}
+
+External claims to verify and cite
+==================================
+
+Codex must verify and cite:
+- SWE-bench;
+- HumanEval;
+- Defects4J;
+- CodeXGLUE;
+- controlled / synthetic diagnostic code benchmarks for LLMs;
+- program-analysis references for call graphs and reachability if needed;
+- exact Hugging Face model pages for all 8 models;
+- model sizes and reasoning/non-reasoning classification;
+- any claim about reasoning budget support.
+
+Do not rely on memory for external facts.
+If a source cannot be verified, insert a red TODO.
+
+End of specification
+====================

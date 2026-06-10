@@ -39,7 +39,7 @@
         \fill[modelgreen] (0,13.30) rectangle (4.9,13.66);
         \node[right,font=\tiny] at (5.2,13.48) {4.9\%};
 
-        \node[anchor=east,font=\scriptsize] at (-0.7,10.95) {Reachable target missed};
+        \node[anchor=east,font=\scriptsize] at (-0.7,10.95) {Missed reachable target};
         \fill[modelblue] (0,11.40) rectangle (8.1,11.76);
         \node[right,font=\tiny] at (8.4,11.58) {8.1\%};
         \fill[modelorange] (0,10.85) rectangle (18.3,11.21);
@@ -55,7 +55,7 @@
         \fill[modelgreen] (0,7.30) rectangle (4.9,7.66);
         \node[right,font=\tiny] at (5.2,7.48) {4.9\%};
 
-        \node[anchor=east,font=\scriptsize] at (-0.7,4.95) {Order issue};
+        \node[anchor=east,font=\scriptsize] at (-0.7,4.95) {Ordering issue};
         \fill[modelblue] (0,5.40) rectangle (6.2,5.76);
         \node[right,font=\tiny] at (6.5,5.58) {6.2\%};
         \fill[modelorange] (0,4.85) rectangle (9.5,5.21);
@@ -79,7 +79,7 @@
         \node[right,font=\scriptsize] at (28.2,25.20) {Qwen};
         \node[below,font=\scriptsize] at (21,-0.80) {Share of all cases};
     \end{tikzpicture}
-    \caption{Dominant deeper-analysis failure families for chain-level errors. Families are normalized by all evaluated cases and are not mutually exclusive because one trace can expose several local characteristics.}
+    \caption{Dominant failure families from the in-depth analysis for chain-level errors. Families are normalized by all evaluated cases and are not mutually exclusive, because a single trace can expose several local characteristics.}
     \Description{Grouped horizontal LaTeX bar chart of aggregated failure families for the three models.}
     \label{fig:error-taxonomy-latex}
 \end{figure*}

@@ -3,26 +3,51 @@
 
 \subsection{Internal Validity}
 
-The evaluator depends on response parsing, trace normalization, and oracle alignment. Invalid JSON or malformed traces may cause a model's reasoning to be under-counted if the intended answer is present but unparsable. Conversely, permissive extraction can over-credit poorly formatted outputs. The benchmark mitigates this risk by storing oracle chains and scoring final answers separately from traces, but a final submission should include a stratified manual audit of parsed outputs.
-
-\papertodo{Run and report a stratified manual audit of parsed outputs, covering valid JSON, invalid JSON, correct final answers with wrong traces, negative cases, and long-depth failures.}
+\begin{itemize}[leftmargin=*]
+    \item Parsing and normalization may under-credit or over-credit some outputs.
+    \item Alignment to the oracle is sensitive, especially for negative cases.
+\end{itemize}
 
 \subsection{Construct Validity}
 
-Trace correctness is an imperfect proxy for reasoning quality. A model may reason internally and emit a poor trace, or emit a plausible trace without faithful internal reasoning. The metric is nevertheless relevant for software-engineering assistants because the visible path is what developers can inspect. The emitted-reasoning-length proxy has a similar limitation: it counts visible text extracted from the response, not true internally consumed reasoning tokens.
+\begin{itemize}[leftmargin=*]
+    \item Trace correctness is only a proxy for reasoning quality.
+    \item This proxy still matters because visible traces are what users inspect.
+    \item Emitted reasoning length is not an internal reasoning cost.
+\end{itemize}
 
 \subsection{External Validity}
 
-Generated Java programs give control and clean oracles, but they do not cover all features of real projects. The current benchmark abstracts away inheritance, dynamic dispatch, exceptions, concurrency, reflection, libraries, and build-system structure. The control-flow results should therefore be read as evidence about a focused program-comprehension capability rather than as a claim about full repository understanding. The specified data-flow family would broaden the benchmark but would remain synthetic.
-
-\papertodo{Add an external-validation experiment on real Java code or explicitly justify why the paper remains a controlled synthetic benchmark only.}
+\begin{itemize}[leftmargin=*]
+    \item Synthetic Java improves control but reduces realism.
+    \item Missing real-world features to mention:
+    \begin{itemize}[leftmargin=*]
+        \item inheritance;
+        \item dynamic dispatch;
+        \item exceptions;
+        \item concurrency;
+        \item reflection;
+        \item library and build structure.
+    \end{itemize}
+\end{itemize}
 
 \subsection{Conclusion Validity}
 
-The headline comparisons use the common slice shared by all models. Excluding unavailable contexts improves fairness but narrows the scope of the reported results. Factor contrasts for comments, variables, loops, conditionals, and parameters are descriptive; causal claims require models that adjust for depth, context, budget, and co-occurring factors. Finally, model versions and serving stacks evolve quickly, so exact revisions and runtime configuration should be archived with the artifact.
+\begin{itemize}[leftmargin=*]
+    \item Filtering to a shared slice improves fairness but narrows the claims.
+    \item Contrasts across factors are descriptive rather than causal.
+    \item Rapid changes in models and serving stacks reduce temporal stability.
+\end{itemize}
 
 \subsection{Transparency, Ethics, and Artifact Availability}
 
-This study does not involve human participants. It evaluates generated Java programs and open-weight models through a local serving stack. \papertodo{Document model licenses, dataset license, compute cost, energy or hardware footprint if required by the venue, and any constraints on public release.}
-
-\papertodo{Provide an anonymized replication package for review. It should contain the generator, prompt templates, configuration files, seeds, raw model outputs, parsing scripts, evaluation scripts, figure/table generation scripts, environment specification, and README instructions that reproduce the main results.}
+\begin{itemize}[leftmargin=*]
+    \item No human participants are involved.
+    \item Still document:
+    \begin{itemize}[leftmargin=*]
+        \item model licenses;
+        \item compute cost;
+        \item hardware requirements;
+        \item artifact release constraints.
+    \end{itemize}
+\end{itemize}

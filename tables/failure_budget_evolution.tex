@@ -1,6 +1,6 @@
 \begin{table*}[t]
     \centering
-    \caption{Evolution of dominant chain-level failure families across requested reasoning budgets. Rates are percentages of all cases for the corresponding model and budget. Families are derived from deeper-analysis tags: shorter traces use \texttt{length\_shorter}, over-exploration uses \texttt{extra\_known\_internal} or \texttt{extra\_known\_leaf}, alternative branches use \texttt{coverage\_overlap}, invalid transitions use \texttt{structure\_with\_jump}, and missed reachable targets use \texttt{target\_expected\_missing}.}
+    \caption{Evolution of the dominant chain-level failure families across requested reasoning budgets. Rates are percentages of all cases for the corresponding model and budget. The families are derived from the in-depth analysis tags: shorter traces use \texttt{length\_shorter}, over-exploration uses \texttt{extra\_known\_internal} or \texttt{extra\_known\_leaf}, alternative branches use \texttt{coverage\_overlap}, invalid transitions use \texttt{structure\_with\_jump}, and missed reachable targets use \texttt{target\_expected\_missing}.}
     \label{tab:failure-budget-evolution}
     \scriptsize
     \begin{tabular}{llrrrrrr}
@@ -11,19 +11,19 @@
         Gemma & Over-exploration & 13.6 & 14.0 & 14.1 & 14.8 & 15.3 & 14.9 \\
         Gemma & Alternative branch & 12.1 & 12.1 & 11.8 & 12.7 & 12.9 & 12.8 \\
         Gemma & Invalid transition & 10.1 & 10.7 & 11.4 & 12.3 & 12.9 & 12.5 \\
-        Gemma & Reachable target missed & 9.8 & 8.6 & 8.0 & 7.9 & 7.1 & 7.5 \\
+        Gemma & Missed reachable target & 9.8 & 8.6 & 8.0 & 7.9 & 7.1 & 7.5 \\
         \midrule
         GPT-OSS & Shorter trace & 39.8 & 37.7 & 35.1 & 38.0 & 39.8 & 40.9 \\
         GPT-OSS & Over-exploration & 37.1 & 33.1 & 27.8 & 22.9 & 22.1 & 21.7 \\
         GPT-OSS & Alternative branch & 42.4 & 35.5 & 26.6 & 20.3 & 18.1 & 16.5 \\
         GPT-OSS & Invalid transition & 27.9 & 23.1 & 18.6 & 15.8 & 13.8 & 13.0 \\
-        GPT-OSS & Reachable target missed & 28.8 & 24.9 & 18.5 & 14.1 & 12.1 & 11.2 \\
+        GPT-OSS & Missed reachable target & 28.8 & 24.9 & 18.5 & 14.1 & 12.1 & 11.2 \\
         \midrule
         Qwen & Shorter trace & 29.6 & 25.7 & 18.6 & 12.2 & 10.4 & 11.4 \\
         Qwen & Over-exploration & 15.7 & 10.5 & 5.9 & 3.1 & 1.5 & 1.4 \\
         Qwen & Alternative branch & 14.8 & 10.2 & 6.0 & 3.0 & 1.5 & 1.5 \\
         Qwen & Invalid transition & 9.2 & 5.2 & 3.9 & 2.4 & 1.1 & 1.2 \\
-        Qwen & Reachable target missed & 16.6 & 12.3 & 7.1 & 3.4 & 1.5 & 1.0 \\
+        Qwen & Missed reachable target & 16.6 & 12.3 & 7.1 & 3.4 & 1.5 & 1.0 \\
         \bottomrule
     \end{tabular}
 \end{table*}

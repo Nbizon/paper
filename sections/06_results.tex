@@ -1,49 +1,102 @@
 \section{Results}
 \label{sec:results}
 
-\subsection{\researchq{0}: Benchmark Generation}
+\subsection{Target Organization of Results}
 
-\benchmark provides a controlled setting for control-flow reasoning. The generator constructs an abstract graph, emits Java code from that graph, shuffles method definitions to break position-based shortcuts, samples positive and negative source-target questions, and stores oracle traces with the generated source and metadata. The evaluated family uses direct and indirect method calls as the semantic relation. The specified data-flow extension uses the same structural controls but would turn variables, parameters, assignments, return values, and call arguments into the queried relation.
+\begin{itemize}[leftmargin=*]
+    \item The final paper should present results in research-question order, not in the order of the currently available scripts.
+    \item Proposed narrative:
+    \begin{itemize}[leftmargin=*]
+        \item overall performance on reachability tasks;
+        \item effect of structural factors;
+        \item control-flow vs data-flow comparison;
+        \item reasoning vs non-reasoning comparison and effect of the requested budget.
+    \end{itemize}
+    \item Current status:
+    \begin{itemize}[leftmargin=*]
+        \item the tables and figures below mostly document the preliminary control-flow study;
+        \item subsections RQ1 to RQ4 currently remain placeholders for writing and future analysis.
+    \end{itemize}
+\end{itemize}
 
 \input{figures/pipeline}
 
-The factors summarized in \tabref{tab:experimental-factors} separate three sources of difficulty that broader benchmarks often conflate. Depth controls the length of the reasoning path. Context size controls how much surrounding code must be filtered. Graph family controls whether the model follows a single chain or must reason across branches and negative reachability cases. Code-level factors then add surface complexity while preserving the oracle relation, allowing controlled stress tests without changing the underlying answer.
+\subsection{\researchq{1}: Overall Performance on Reachability Tasks}
 
-\subsection{\researchq{1}: Reasoning-Budget Performance}
+\begin{itemize}[leftmargin=*]
+    \item Present here the final high-level view of model performance.
+    \begin{itemize}[leftmargin=*]
+        \item control-flow / data-flow comparison;
+        \item reasoning / non-reasoning comparison;
+        \item final metrics and trace metrics.
+    \end{itemize}
+\end{itemize}
 
-The requested reasoning budget has a substantial but model-specific effect. \tabref{tab:overall} first shows performance at the largest requested budget, 16,384 tokens. This is the most favorable budget setting in our sweep, yet the metric gap remains large: Qwen has the strongest final-answer accuracy and path fidelity, Gemma remains competitive on final answers but much weaker on traces, and GPT-OSS substantially improves its final answers while still lagging on exact chains. This already suggests that final-answer accuracy alone is an incomplete measure of software-engineering reasoning.
+\subsection{\researchq{2}: Effect of Structural Difficulty Factors}
+
+\begin{itemize}[leftmargin=*]
+    \item Group together here the effects of depth, context, branching, and distractors.
+    \item Distinguish clearly between:
+    \begin{itemize}[leftmargin=*]
+        \item factors intrinsic to the control skeleton;
+        \item factors that determine whether guarded calls execute in the data-flow family.
+    \end{itemize}
+\end{itemize}
+
+\subsection{\researchq{3}: Comparison Between Control Flow and Data Flow}
+
+\begin{itemize}[leftmargin=*]
+    \item Show what changes when the same reachability question does or does not require reasoning over values.
+    \item Look for useful contrastive cases:
+    \begin{itemize}[leftmargin=*]
+        \item control flow reachable but data flow unreachable;
+        \item control flow easy but data flow difficult;
+        \item effects specific to condition evaluation and guarded calls.
+    \end{itemize}
+\end{itemize}
+
+\subsection{\researchq{4}: Reasoning Models, Non-Reasoning Models, and Requested Budget}
+
+\begin{itemize}[leftmargin=*]
+    \item Compare gaps in level, robustness, and failure types.
+    \item Check whether the gains of reasoning models are concentrated mainly:
+    \begin{itemize}[leftmargin=*]
+        \item on the final answer;
+        \item on the structural validity of the trace;
+        \item on robustness to difficulty factors.
+    \end{itemize}
+    \item For reasoning models, compare performance across requested reasoning budgets and identify saturation.
+    \item A preliminary result is already visible: the requested reasoning budget helps, but differently across models.
+    \item Keep a comparative narrative:
+    \begin{itemize}[leftmargin=*]
+        \item the strongest model overall;
+        \item the model that saturates early;
+        \item the model whose final answers improve more than its traces.
+    \end{itemize}
+    \item Key interpretation: final-answer accuracy alone overestimates reasoning quality.
+\end{itemize}
 
 \input{tables/overall_performance}
-\papertodo{Move the duplicate overall-metrics bar chart to supplementary material unless needed for readability.}
-
-\figref{fig:budget-scaling-latex} shows how performance changes as requested budget increases. Qwen benefits most: final-answer accuracy rises from 73.4\% at 512 tokens to 98.9\% at 16,384 tokens, while exact-chain accuracy rises from 41.1\% to 81.2\%. GPT-OSS also improves substantially in final-answer accuracy, from 65.0\% to 88.0\%, but its chain accuracy remains below 45\% at the largest budget. Gemma starts high and saturates early, with most of its final-answer gain already visible by 2048 tokens.
 
 \input{figures/latex_budget_scaling}
-\papertodo{Move the full budget-effect table to supplementary material; keep the scaling figure and in-text values in the main paper.}
+\input{tables/budget_effects}
+\input{tables/marginal_budget_gains}
+\input{tables/budget_observability}
+\input{tables/used_reasoning_budget_by_requested}
+\begin{itemize}[leftmargin=*]
+    \item Add a short reading of saturation below the figure.
+    \item Keep the caveat that the requested reasoning budget is an interface control, not an internal cost.
+\end{itemize}
 
-The marginal-gain analysis makes the saturation pattern clearer. Gemma gains only +0.3 final-answer points and +0.2 chain points when moving from 2048 to 4096, and later changes are negligible. Qwen gains strongly until 4096 and then flattens, with no chain gain from 8192 to 16,384. GPT-OSS continues to gain final-answer accuracy through the largest budget, but the last chain gain is only +0.2 points.
-
-\papertodo{Move the marginal-gain table to supplementary material or replace it with confidence intervals in the main result.}
-
-The emitted-reasoning proxy helps interpret these curves. At 16,384 requested tokens, the models emit far fewer visible reasoning tokens on average: 4,468 for Gemma, 3,870 for GPT-OSS, and 3,941 for Qwen. Thus, larger requested budgets do not necessarily translate into proportionally longer visible reasoning. This is a saturation signal, not a true runtime cost measurement. Requested reasoning budget should be interpreted as an interface-level control rather than a direct measurement of internally consumed reasoning tokens. Accordingly, our conclusions concern model-interface pairs under requested budgets, not latent reasoning cost.
-
-\papertodo{Move the emitted-reasoning table and figure to supplementary material after keeping the interface-level budget limitation in the main text.}
-
-\subsection{\researchq{2}: Chains, Final Answers, and Failures}
-
-Final answers and traces diverge sharply even at the maximum requested budget. At 16,384 tokens, final-answer accuracy is 91.4\% for Gemma, 88.0\% for GPT-OSS, and 98.9\% for Qwen, while trace accuracy is only 24.3\%, 18.3\%, and 39.3\%, respectively. The gap means that a model can frequently return the correct Boolean answer without reconstructing the exact path that justifies it.
-
-The hardest cases remain difficult even at the maximum requested budget. \tabref{tab:high-budget-16384} shows that depth and context continue to reduce chain and trace fidelity. At depth 16--25 and context 500, final-answer accuracy is 79.5\% for Gemma, 75.4\% for GPT-OSS, and 97.0\% for Qwen; exact-chain accuracy drops to 33.5\%, 23.5\%, and 69.5\%. Trace accuracy is lower still: 4.1\%, 1.2\%, and 23.1\%. The maximum requested budget therefore does not eliminate the distinction between saying the right label and producing the right path.
-
+\input{figures/latex_depth_context.tex}
 \input{tables/high_budget_16384}
-
-The error taxonomy indicates that residual failures are structural. Aggregated over the full budget sweep, premature termination is the dominant family: shorter traces affect 31.7\% of Gemma cases, 38.5\% of GPT-OSS cases, and 18.0\% of Qwen cases. GPT-OSS is also most prone to over-exploration, alternative branches, invalid transitions, longer traces, and missed reachable targets. Qwen is cleaner on invalid and off-branch transitions, but still exhibits order issues and empty predictions. These patterns are stronger evidence than isolated examples because they connect model outputs to recurring graph-level failure modes.
-
+\input{figures/latex_error_taxonomy.tex}
 \input{tables/error_taxonomy}
-\papertodo{Move the duplicate error-taxonomy figure plus detailed failure-by-budget, local motif, and trace-example tables to supplementary material; keep the taxonomy and one concise qualitative example in the main text.}
-
-The detailed failure-by-budget table, moved out of the main text, adds the missing budget dimension to this taxonomy. The trends are not uniform. Qwen converts budget into broad behavioral cleanup: missed reachable targets fall from 16.6\% at 512 tokens to 1.0\% at 16,384, and over-exploration falls from 15.7\% to 1.4\%. GPT-OSS also reduces branch, transition, and missed-target errors as budget grows, but shorter traces remain high and even increase at the largest budgets. Gemma is the clearest saturation case: shorter traces stay near 31--32\% across the sweep, and some off-path or invalid-transition families slightly increase with budget.
-
-Finally, the descriptive factor contrasts show that surface code features can damage reasoning even when the oracle relation is unchanged. Comments, variables, loops, and conditionals generally reduce both final and chain accuracy. These contrasts should be interpreted descriptively until adjusted statistical models control for co-occurring factors. They also motivate the paired data-flow extension: syntax that is a distractor in the current control-flow experiment can become the semantic object of study in a future value-flow experiment.
-
+\input{tables/failure_budget_evolution}
+\input{tables/local_motif_examples}
+\input{tables/example_trace}
 \input{tables/factor_effects}
+
+\begin{itemize}[leftmargin=*]
+    \item Use these figures and tables to support the analysis of trace fidelity, failure modes, and budget sensitivity in \researchq{4}.
+\end{itemize}

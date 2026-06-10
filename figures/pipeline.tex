@@ -16,7 +16,7 @@
         \node[eval, right=of execution] (evaluation) {Response evaluation\\parsing, scoring,\\metric extraction};
         \node[warn, right=of evaluation] (analysis) {Result analysis\\aggregation, failure modes,\\tables and figures};
 
-        \node[phase, below=of execution] (reporting) {Paper-level claims\\performance trends,\\trace fidelity, limits};
+        \node[phase, below=of execution] (reporting) {Paper claims\\performance trends,\\trace fidelity, limitations};
 
         \draw[arrow] (design) -- (generation);
         \draw[arrow] (generation) -- (execution);
@@ -25,7 +25,7 @@
         \draw[arrow] (evaluation) -- (reporting);
         \draw[arrow] (analysis) |- (reporting);
     \end{tikzpicture}
-    \caption{Global pipeline for \benchmark, from benchmark design and instance generation to model execution, response evaluation, and result analysis.}
-    \Description{A high-level workflow diagram showing benchmark design, instance generation, model execution, response evaluation, result analysis, and paper-level claims, with a dashed feedback arrow from analysis back to design.}
+    \caption{Overall pipeline of \benchmark, from benchmark design and instance generation through model execution, response evaluation, and result analysis.}
+    \Description{High-level workflow diagram showing benchmark design, instance generation, model execution, response evaluation, result analysis, and paper-level claims.}
     \label{fig:pipeline}
 \end{figure*}

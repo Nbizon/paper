@@ -1,22 +1,49 @@
 \section{Discussion}
 \label{sec:discussion}
 
-\subsection{Reasoning Budget Is Not a Uniform Resource}
+\subsection{Controlled Diagnostic Tasks Complement Macroscopic Evaluations}
 
-The main empirical lesson is that requested budget is not converted into software-engineering reasoning in a uniform way. Qwen uses additional budget to improve both final answers and chain fidelity. Gemma reaches high final-answer accuracy quickly and then plateaus. GPT-OSS improves substantially in final-answer accuracy, but its trace fidelity remains weak. For tool builders, this means that a larger budget is not a portable intervention: the useful budget depends on the model and on whether the application needs a trustworthy path or only a label.
+\begin{itemize}[leftmargin=*]
+    \item The benchmark should be defended as a useful probe, not as a substitute for realistic repository benchmarks.
+    \item Its value comes from experimental control, an exact oracle, and the ability to isolate precise structural reasoning.
+    \item This discussion should make explicit what reachability measures well, and what it does not measure.
+\end{itemize}
 
-\subsection{Final Answers Hide Program-Reasoning Failures}
+\subsection{Reachability Provides a Natural Progression from Structure to Semantics}
 
-The gap between final and trace metrics is too large to treat traces as a secondary diagnostic. A reachability assistant that answers \true correctly while skipping an intermediate method may still mislead a developer about where to inspect, patch, or instrument the program. In security, debugging, and impact-analysis settings, the path often matters as much as the existence of a path. Evaluations that report only final labels therefore risk overstating the reliability of LLM-based program comprehension.
+\begin{itemize}[leftmargin=*]
+    \item Control flow should be presented as the simpler structural case.
+    \item Data flow should be presented as an extension of equal scientific importance, not as an appendix.
+    \item The discussion should show why keeping the same reachability formulation across both families is methodologically useful.
+\end{itemize}
 
-\subsection{Control Flow and Data Flow Should Be Paired, But Separately Reported}
+\subsection{Final Answers Are Not Enough to Characterize Reasoning}
 
-The benchmark design intentionally supports both control-flow and data-flow task definitions, but only the control-flow family is evaluated in this paper. Control-flow reachability tests whether a model can reconstruct method-call structure. Data-flow tracing would test whether it can follow values through assignments, parameters, returns, and call arguments. Pairing the two matters because many code features play different roles across the families. A parameter may be a distractor in a call-reachability question but essential evidence in a value-flow question. Reporting both families in future work should make it easier to distinguish general context-management failures from relation-specific reasoning failures.
+\begin{itemize}[leftmargin=*]
+    \item Traces are not merely auxiliary diagnostics.
+    \item Incorrect paths remain problematic even when labels are correct.
+    \item This discussion should connect trace fidelity to the practical reliability of software assistants.
+\end{itemize}
 
-\subsection{Implications for Software-Engineering Assistants}
+\subsection{Requested Reasoning Budget Is Useful but Secondary in the Final Paper}
 
-The results argue for hybrid tooling. LLMs can provide useful explanations and triage, but the low trace accuracies suggest that direct reachability answers should be checked against static or dynamic analysis whenever correctness matters. A practical assistant could use a conventional analyzer to compute candidate call paths, then ask the model to summarize, rank, or explain them. In that design, the model's language strengths complement program analysis rather than replacing it.
+\begin{itemize}[leftmargin=*]
+    \item Budget depends on the model and the serving interface.
+    \item More budget is not a portable fix across interfaces and models.
+    \item In the final paper, budget should remain an analysis dimension, not the central promise.
+\end{itemize}
 
-\subsection{Implications for Benchmark Design}
+\subsection{Implications for Software Engineering Assistants and Benchmark Design}
 
-Broad software-engineering benchmarks remain necessary, but they should be complemented by controlled probes. Generated reachability tasks cannot replace real repositories, yet they expose failure modes that repository-level scores blur: premature stops, invalid edges, branch switches, over-exploration, and trace/answer disagreement. Those signals are especially important for ICSE-style evaluation because they help explain why a model succeeds or fails, not only whether it does.
+\begin{itemize}[leftmargin=*]
+    \item For tooling:
+    \begin{itemize}[leftmargin=*]
+        \item use LLMs for explanation and triage;
+        \item rely on conventional analyses for correctness-critical computations.
+    \end{itemize}
+    \item For benchmarks:
+    \begin{itemize}[leftmargin=*]
+        \item broad benchmarks remain necessary;
+        \item controlled probes add complementary diagnostic value.
+    \end{itemize}
+\end{itemize}

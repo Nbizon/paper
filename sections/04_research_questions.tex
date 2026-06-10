@@ -1,4 +1,32 @@
 \section{Research Questions}
 \label{sec:research-questions}
 
-The study separates the benchmark artifact from the empirical behavior observed on it. \researchq{0} asks what controlled factors and oracle conventions are needed to generate a diagnostic benchmark for LLM control-flow reasoning. \researchq{1} asks how requested reasoning budget affects final-answer, chain, trace, completeness, and emitted-reasoning metrics. \researchq{2} asks what the emitted chains reveal about the relationship between the model's path-level evidence and its final answer. \papertodo{Restore the full research-question table only if the final page budget allows.}
+\begin{itemize}[leftmargin=*]
+    \item \researchq{1}: overall performance on reachability tasks
+    \begin{itemize}[leftmargin=*]
+        \item what level of performance LLMs reach on controlled reachability tasks between methods;
+        \item which metrics must be examined beyond the final answer alone.
+    \end{itemize}
+    \item \researchq{2}: effect of structural difficulty factors
+    \begin{itemize}[leftmargin=*]
+        \item the effect of depth;
+        \item the effect of context size;
+        \item the effect of branching and code distractors.
+    \end{itemize}
+    \item \researchq{3}: comparison between control-flow and data-flow
+    \begin{itemize}[leftmargin=*]
+        \item what changes when moving from calls outside control structures to calls guarded by evaluated conditions;
+        \item which difficulties are specific to condition-sensitive reachability.
+    \end{itemize}
+    \item \researchq{4}: comparison between reasoning and non-reasoning models, including the effect of the requested reasoning budget
+    \begin{itemize}[leftmargin=*]
+        \item overall performance gaps;
+        \item robustness gaps across factors;
+        \item qualitative differences in failure modes;
+        \item which metrics improve with more budget;
+        \item where reasoning models saturate;
+        \item to what extent those gains affect traces rather than only labels.
+    \end{itemize}
+\end{itemize}
+
+\input{tables/research_questions}

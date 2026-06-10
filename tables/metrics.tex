@@ -1,16 +1,16 @@
 \begin{table*}[t]
 \centering
-\caption{Evaluation metrics used for final answers, traces, and budget behavior.}
+\caption{Evaluation metrics used for final answers, traces, and budget-related behavior.}
 \label{tab:metrics}
 \begin{tabularx}{\textwidth}{p{0.25\textwidth}X}
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & Predicted \true/\false matches the oracle label \\
-Exact-chain accuracy & Predicted method chain exactly matches the expected oracle chain after normalization; for unreachable cases this depends on the documented exploration convention \\
-Trace accuracy & Predicted trace satisfies the stricter trace representation used by the evaluator, including valid method names and valid call transitions \\
+Final-answer accuracy & The predicted \true/\false matches the oracle label \\
+Exact-chain accuracy & The predicted method chain matches the expected oracle chain exactly after normalization; for unreachable cases this depends on the documented exploration convention \\
+Trace accuracy & The predicted trace satisfies the stricter trace representation used by the evaluator, including valid method names and valid call transitions \\
 Trace completeness & Fraction of the expected trace recovered in order; invalid and empty traces receive zero \\
-Emitted reasoning length & Tokenizer-counted visible reasoning text extracted from the model response; not a runtime consumed-token counter \\
+Emitted reasoning length & Visible reasoning text counted by tokenizer and extracted from the model response; not a counter of tokens consumed at runtime \\
 \bottomrule
 \end{tabularx}
 \end{table*}

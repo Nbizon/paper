@@ -1,6 +1,6 @@
 \begin{table*}[t]
     \centering
-    \caption{Representative local motifs for the deeper-analysis failure families. Notation: \texttt{S}=source, \texttt{T}=target, \texttt{B}=node present in both reference and prediction, \texttt{E}=reference-only node, \texttt{P}=prediction-only node. Motifs compact recurring local-graph signatures rather than individual examples.}
+    \caption{Representative local motifs for the failure families in the in-depth analysis. Notation: \texttt{S}=source, \texttt{T}=target, \texttt{B}=node present in both reference and prediction, \texttt{E}=node present only in the reference, \texttt{P}=node present only in the prediction. The motifs condense recurring local graph signatures rather than individual examples.}
     \label{tab:local-motif-examples}
     \small
     \begin{tabularx}{\textwidth}{p{0.20\textwidth}p{0.25\textwidth}X}
@@ -8,16 +8,16 @@
         Failure family & Example local motif & Interpretation \\
         \midrule
         Shorter trace & \texttt{S -> B -> B; B -> E -> ...} & The prediction follows a valid prefix and then stops before the reference suffix. \\
-        Over-exploration & \texttt{S -> B -> P -> P} & The model keeps traversing prediction-only nodes after leaving the reference path. \\
+        Over-exploration & \texttt{S -> B -> P -> P} & The model continues traversing prediction-only nodes after leaving the reference path. \\
         Alternative branch & \texttt{B -> E; B -> P} & The prediction shares a prefix, then chooses a sibling or nearby branch instead of the oracle branch. \\
-        Invalid transition & \texttt{B -> P} with no graph edge & The predicted transition is not a valid local call edge. \\
-        Reachable target missed & \texttt{S -> B -> E -> T} & The target is reachable in the oracle trace, but the predicted trace omits the target-bearing suffix. \\
+        Invalid transition & \texttt{B -> P} without a graph edge & The predicted transition is not a valid local call edge. \\
+        Missed reachable target & \texttt{S -> B -> E -> T} & The target is reachable in the oracle trace, but the predicted trace omits the suffix containing the target. \\
         Longer trace & \texttt{S -> B -> T -> P} & The prediction reaches the relevant region but continues beyond the reference trace. \\
-        Order issue & \texttt{S -> B1, S -> B2} with swapped visits & The local calls are plausible, but the traversal order disagrees with the reference order. \\
-        Empty prediction & \texttt{S -> E, S -> E} & The reference has reachable outgoing structure, but the extracted prediction is empty. \\
+        Ordering issue & \texttt{S -> B1, S -> B2} with reversed visits & Local calls are plausible, but traversal order does not match the reference order. \\
+        Empty prediction & \texttt{S -> E, S -> E} & The reference contains reachable outgoing structure, but the extracted prediction is empty. \\
         Hallucinated target & \texttt{B -> P -> T} & The prediction reaches the target through a prediction-only suffix absent from the oracle path. \\
-        Target at wrong rank & \texttt{S -> T -> B} vs. \texttt{S -> B -> T} & The target appears, but at the wrong position in the traversal. \\
-        Repeated methods & \texttt{B -> P -> P} & A method or occurrence is repeated in the prediction without a matching repetition in the oracle trace. \\
+        Wrong-rank target & \texttt{S -> T -> B} vs. \texttt{S -> B -> T} & The target appears, but at the wrong position in the traversal. \\
+        Repeated methods & \texttt{B -> P -> P} & A method or occurrence is repeated in the prediction without a corresponding repetition in the oracle trace. \\
         Unresolved node & \texttt{B -> P(unresolved)} & The prediction introduces a method name that cannot be resolved in the parsed call graph. \\
         Wrong source & \texttt{P -> P; S -> E} & The predicted trace starts from a node other than the required source anchor. \\
         \bottomrule

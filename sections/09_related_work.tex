@@ -1,20 +1,15 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\papertodo{Expand this section substantially before submission: add recent LLM-for-code benchmarks, model papers/cards for the evaluated models, vLLM or serving-stack citations, work on faithful reasoning/explanation evaluation, and software-engineering literature on program comprehension and program analysis.}
-
-\subsection{Code-Generation and Code-Intelligence Benchmarks}
-
-Function-level benchmarks made LLM coding ability measurable through executable tests~\cite{chen2021codex,austin2021program}. Later suites add harder programming tasks~\cite{hendrycks2021apps}, time-aware collection~\cite{jain2024livecodebench}, and API-rich generation~\cite{zhuo2024bigcodebench}. Code-intelligence benchmarks cover tasks beyond generation~\cite{lu2021codexglue}. \benchmark differs by isolating a controlled program-flow judgment and by requiring trace-level evidence in addition to the final answer.
-
-\subsection{Software-Engineering Benchmarks for Model-Based Tools}
-
-Defects4J~\cite{just2014defects4j} and SWE-bench~\cite{jimenez2024swebench} evaluate model behavior closer to software maintenance. They are essential for external validity, but their outcomes combine many skills: understanding an issue, finding relevant code, editing correctly, and passing tests. Our benchmark is complementary. It targets one capability that such tasks often require, namely following control or data dependencies in existing code.
-
-\subsection{Program Analysis and Reachability}
-
-Reachability and call-graph construction are classic program-analysis problems. Static-analysis work studies how to build call graphs soundly and scalably~\cite{grove2001framework,tip2000scalable}. We do not claim that LLMs should replace such analyses. Instead, we treat reachability as an interpretable probe for the lightweight analysis questions increasingly asked of code assistants.
-
-\subsection{Reasoning and Explanation Evaluation}
-
-Chain-of-thought prompting showed that eliciting intermediate reasoning can improve model behavior~\cite{wei2022cot}, but software engineering raises a stricter requirement: the emitted chain should correspond to program structure. Our trace metrics and failure taxonomy evaluate that correspondence directly. This makes it possible to distinguish useful budget-driven reasoning from longer but unfaithful explanations.
+\begin{itemize}[leftmargin=*]
+    \item Working placeholder only.
+    \item This section will likely be merged with the background section in the final version.
+    \item Possible future structure:
+    \begin{itemize}[leftmargin=*]
+        \item broad-granularity LLM benchmarks for code;
+        \item program-understanding tasks and structural navigation;
+        \item evaluation of reasoning fidelity and traces;
+        \item work on control flow, data flow, and program analysis;
+        \item the role of controlled synthetic benchmarks.
+    \end{itemize}
+\end{itemize}

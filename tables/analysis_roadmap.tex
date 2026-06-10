@@ -7,12 +7,10 @@
         \toprule
         RQ & Scientific question & Figure or table & Interpretation target \\
         \midrule
-        RQ0 & Is the actually used budget observable? & \tabref{tab:budget-observability}; \tabref{tab:used-budget-by-requested}; \figref{fig:used-reasoning-budget-latex} & Separate tokenizer-counted emitted reasoning length from requested budget before making cost claims. \\
         RQ1 & What is the baseline behavior across final, chain, and trace metrics? & \figref{fig:overall-metrics-latex}; \tabref{tab:overall} & Check whether final-answer accuracy hides weak reasoning traces. \\
-        RQ2 & How does performance scale with requested budget? & \figref{fig:budget-scaling-latex}; \tabref{tab:budget} & Estimate budget sensitivity and compare model-specific gains. \\
-        RQ3 & Where does the budget saturate? & \tabref{tab:marginal-budget} & Identify the first budget step where marginal gains become negligible. \\
-        RQ4 & At 16,384 tokens, what remains hard? & \figref{fig:depth-context-latex}; \tabref{tab:high-budget-16384} & Study depth and context after giving the model maximal requested budget. \\
-        RQ5 & Are the remaining errors structural? & \figref{fig:error-taxonomy-latex}; \tabref{tab:errors} & Distinguish wrong final decisions from wrong paths and invalid traces. \\
+        RQ2 & Which structural factors remain hard? & \figref{fig:depth-context-latex}; \tabref{tab:high-budget-16384}; \tabref{tab:factors} & Study depth, context, branching, and code distractors as dataset-intrinsic difficulty factors. \\
+        RQ3 & What changes between control-flow and data-flow reachability? & Contrastive control-flow/data-flow slices & Isolate the additional difficulty introduced when method-call reachability depends on evaluated conditions. \\
+        RQ4 & How do reasoning models, non-reasoning models, and requested budgets differ? & \figref{fig:budget-scaling-latex}; \tabref{tab:budget}; \tabref{tab:marginal-budget}; \tabref{tab:budget-observability}; \tabref{tab:used-budget-by-requested}; \figref{fig:used-reasoning-budget-latex}; \figref{fig:error-taxonomy-latex}; \tabref{tab:errors} & Compare model families, estimate budget sensitivity, identify saturation, and distinguish wrong final decisions from wrong paths and invalid traces. \\
         \bottomrule
     \end{tabularx}
 \end{table*}

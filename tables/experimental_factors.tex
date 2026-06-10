@@ -6,17 +6,17 @@
 \toprule
 Factor & Values & Purpose \\
 \midrule
-Experiment family & Control flow; data-flow extension & Separate completed method-call reachability from specified value-propagation reasoning \\
+Experimental family & Control-flow; data-flow extension & Separate the already evaluated method-to-method call reachability with calls outside control structures from the still-specified condition-sensitive variant with guarded calls \\
 Graph family & Linear, tree & Separate path following from branching \\
 Context size & 100, 250, 500, 750, 1000 & Vary the amount of surrounding code \\
-Depth & 1--25 & Vary path length \\
+Depth & 1--25 & Vary the length of the path \\
 Comments & 0, 1 & Add lexical material \\
 Variables & 0--2 & Add local state \\
 Loops & 0--3 & Add control-flow distractors \\
-Conditionals & 0--3 & Add branch structure \\
-Parameters & 0--2 & Add call signatures and data flow \\
-Requested budget & 512--16,384 & Vary available reasoning tokens \\
-Question label & Reachable/unreachable & Balance positives/negatives \\
+Conditionals & 0--3 & Add branching structure \\
+Parameters & 0--2 & Add call signatures and values used by generated conditions \\
+Requested reasoning budget & 512--16,384 & Vary the available reasoning tokens \\
+Question label & Reachable / unreachable & Balance positive and negative cases \\
 \bottomrule
 \end{tabularx}
 \end{table*}
