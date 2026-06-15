@@ -289,6 +289,18 @@
   - ADR:
   - Commits:
 
+### REQ-0024
+- Status: implemented
+- Source: User request and /home/nbizon/.codex/attachments/43e9652a-532f-4689-abbd-aabff8916804/pasted-text.txt
+- Description: Revise only Section V and its directly included methodology tables so the methodology follows the requested ICSE-style experimental-protocol outline while leaving all paper sections through Research Questions unchanged.
+- Acceptance criteria: Section V uses subsections Evaluation Dataset, Experimental Factors, Model Configurations and Inference Protocol, Prompting and Output Parsing, Scoring and Analysis Plan, and Reproducibility; prompting and parsing are merged; metrics and statistical analysis are merged; baselines are removed; reasoning-budget controls are treated as configuration metadata; controlled placeholders remain for unresolved release constants.
+- Traceability:
+  - Code: sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex
+  - Tests: rg::methodology no-baseline/TODO/fence check; manual::latexmk build
+  - Docs:
+  - ADR:
+  - Commits:
+
 ## Non-Functional Requirements
 
 ### NFR-0001
@@ -355,9 +367,11 @@
 - REQ-0021 -> sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> manual::latexmk build -> commit::pending
 - REQ-0022 -> sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> rg::sections targeted TODO check; manual::latexmk build -> commit::pending
 - REQ-0023 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology targeted TODO/fence check; manual::latexmk build -> commit::pending
+- REQ-0024 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology no-baseline/TODO/fence check; manual::latexmk build -> commit::pending
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
 
 ## Change Log
+- 2026-06-15 - Revised Section V to the requested ICSE experimental-protocol outline without changing sections through Research Questions.
 - 2026-06-15 - Rewrote Section V around the inspected generation and inference scripts, keeping unresolved dataset and serving parameters as controlled placeholders.
 - 2026-06-15 - Rewrote the abstract, introduction, related work, and benchmark design around the diagnostic benchmark framing requested for ICSE Research Track presentation.
 - 2026-06-15 - Reworked Sections I, II, and III to reduce repetition and clarify the narrative progression from motivation to positioning to benchmark design.

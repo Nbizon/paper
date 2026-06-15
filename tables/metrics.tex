@@ -7,7 +7,7 @@
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & Fraction of instances where the parsed \true/\false answer matches the oracle label; \texttt{NO\_RESPONSE} counts as incorrect in strict scores. \\
+Final-answer accuracy & Fraction of instances where the normalized reachability decision matches the oracle label; \texttt{NO\_RESPONSE} counts as incorrect in strict scores. \\
 Canonical execution-trace accuracy & Fraction of instances where the parsed trace exactly equals the canonical execution-oriented oracle trace. \\
 Trace completeness & Ordered-recall score over the canonical oracle trace. The predicted trace must start at the oracle source; skipped oracle nodes are allowed, but unmatched predicted nodes stop later credit. \\
 Graph-valid exploration accuracy & Fraction of instances where the predicted trace follows executable transitions and satisfies the family-specific target condition: a valid source-to-target path for positive queries, or a complete executable source-reachable region for negative queries. \\

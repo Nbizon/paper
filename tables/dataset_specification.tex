@@ -1,14 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Dataset-release fields. Values remain controlled placeholders until the frozen generation configuration is selected.}
+\caption{Evaluation-dataset release constants. Values remain controlled placeholders until the stabilized rerun is complete.}
 \label{tab:dataset-spec}
 \scriptsize
 \begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.07\textwidth}p{0.07\textwidth}p{0.09\textwidth}p{0.09\textwidth}p{0.16\textwidth}X}
 \toprule
-Family & Classes & Instances & Context sizes & Distances & Pos/neg balance & Guards and code-surface factors \\
+Family & Classes & Queries & Context sizes & Trace lengths & Pos/neg balance & Guard and code-surface metadata \\
 \midrule
-Unguarded & \texttt{[C\_U]} & \texttt{[Q\_U]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated calls are executable; final comments, variables, parameters, and loops settings are \texttt{[SURF\_U]}. \\
-Condition-aware & \texttt{[C\_G]} & \texttt{[Q\_G]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated \texttt{if} guards may make visible calls non-executable; final guard and parameter settings are \texttt{[GUARD]}. \\
+Unguarded & \texttt{[C\_U]} & \texttt{[Q\_U]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated calls are executable; final code-surface settings are \texttt{[SURF\_U]}. \\
+Condition-aware & \texttt{[C\_G]} & \texttt{[Q\_G]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated guards may make visible calls non-executable; final guard settings are \texttt{[GUARD]}. \\
 \bottomrule
 \end{tabularx}
 \end{table*}
