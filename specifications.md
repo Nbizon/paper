@@ -277,6 +277,18 @@
   - ADR:
   - Commits:
 
+### REQ-0023
+- Status: implemented
+- Source: User request and inspected generator/inference scripts
+- Description: Rewrite Section V so the methodology reads naturally, reflects the Java tree-generation and vLLM reasoning-budget inference scripts, and leaves unresolved dataset and serving parameters as controlled placeholders.
+- Acceptance criteria: Section V is native LaTeX without Markdown fences; it describes dataset release, experimental factors, model serving, prompting, parsing, metrics, statistics, baselines, and reproducibility; dataset/model tables avoid final numeric claims and visible TODOs for parameters the author has not fixed.
+- Traceability:
+  - Code: sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex
+  - Tests: rg::methodology targeted TODO/fence check; manual::latexmk build
+  - Docs:
+  - ADR:
+  - Commits:
+
 ## Non-Functional Requirements
 
 ### NFR-0001
@@ -342,9 +354,11 @@
 - REQ-0020 -> figures/*.tex; sections/03_benchmark_design.tex; sections/06_results.tex; sections/07_discussion.tex -> manual::latexmk build -> commit::pending
 - REQ-0021 -> sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> manual::latexmk build -> commit::pending
 - REQ-0022 -> sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> rg::sections targeted TODO check; manual::latexmk build -> commit::pending
+- REQ-0023 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology targeted TODO/fence check; manual::latexmk build -> commit::pending
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
 
 ## Change Log
+- 2026-06-15 - Rewrote Section V around the inspected generation and inference scripts, keeping unresolved dataset and serving parameters as controlled placeholders.
 - 2026-06-15 - Rewrote the abstract, introduction, related work, and benchmark design around the diagnostic benchmark framing requested for ICSE Research Track presentation.
 - 2026-06-15 - Reworked Sections I, II, and III to reduce repetition and clarify the narrative progression from motivation to positioning to benchmark design.
 - 2026-06-15 - Harmonized paper figures with the Figure 1 visual direction and improved readability of axes, panels, legends, bars, and placeholders.

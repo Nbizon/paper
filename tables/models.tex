@@ -1,20 +1,17 @@
 \begin{table*}[!t]
 \centering
-\caption{Planned final model set. Detailed size, context-window, and license/source checks remain TODOs before submission and are tracked outside the main text.}
+\caption{Model-configuration fields for the frozen evaluation. The final checkpoint list and serving details remain to be fixed.}
 \label{tab:models}
 \scriptsize
-\begin{tabularx}{\textwidth}{p{0.27\textwidth}p{0.22\textwidth}p{0.21\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}p{0.22\textwidth}p{0.22\textwidth}X}
 \toprule
-Model identifier & Planned inference mode & Reasoning-budget control & Metadata TODOs \\
+Configuration & Inference mode & Reasoning-budget handling & Metadata recorded \\
 \midrule
-GPT-OSS 20B & Explicit reasoning-output setting & \TODO{verify interface} & size/context/license/source \\
-Qwen3.6 35B-A3B & Thinking enabled or disabled per protocol & \TODO{verify token-level support} & size/context/license/source \\
-DeepSeek-R1 Distill Qwen 32B & Reasoning-distilled setting & \TODO{verify serving behavior} & size/context/license/source \\
-QwQ 32B & Qwen reasoning setting & \TODO{verify interface} & size/context/license/source \\
-Gemma 4 26B-A4B IT & \TODO{finalize thinking/direct mode} & \TODO{verify or mark absent} & size/context/license/source \\
-Qwen2.5 Coder 32B Instruct & Standard instruction setting & Not used unless verified & size/context/license/source \\
-Qwen2.5 32B Instruct & Standard instruction setting & Not used unless verified & size/context/license/source \\
-Mistral Small 3.1 24B Instruct & Standard instruction setting & \TODO{verify or mark absent} & size/context/license/source \\
+\texttt{[MODEL\_CONFIG\_1]} & \texttt{[MODE\_1]} & \texttt{[BUDGET\_CONTROL\_1]} & checkpoint, size, context, license/source, serving settings \\
+\texttt{[MODEL\_CONFIG\_2]} & \texttt{[MODE\_2]} & \texttt{[BUDGET\_CONTROL\_2]} & checkpoint, size, context, license/source, serving settings \\
+\texttt{[MODEL\_CONFIG\_3]} & \texttt{[MODE\_3]} & \texttt{[BUDGET\_CONTROL\_3]} & checkpoint, size, context, license/source, serving settings \\
+\texttt{[MODEL\_CONFIG\_4]} & \texttt{[MODE\_4]} & \texttt{[BUDGET\_CONTROL\_4]} & checkpoint, size, context, license/source, serving settings \\
+\texttt{[MODEL\_CONFIG\_5]} & \texttt{[MODE\_5]} & \texttt{[BUDGET\_CONTROL\_5]} & checkpoint, size, context, license/source, serving settings \\
 \bottomrule
 \end{tabularx}
 \end{table*}

@@ -1,104 +1,69 @@
 \section{Experimental Methodology}
 \label{sec:methodology}
 
-\subsection{Experimental Scope and Rerun Protocol}
+This section describes how \benchmark is evaluated once a dataset release has been frozen. The benchmark definition in \secref{sec:benchmark-design} fixes the meaning of an instance, the syntactic and executable call graphs, and the canonical trace. The methodology below focuses on the experimental protocol: which generated instances are retained, how models are served, how prompts are constructed, how outputs are parsed, and how scores are analyzed. The final dataset parameters are still open and are therefore recorded as controlled placeholders rather than fixed claims.
 
-Existing results are preliminary: they helped calibrate prompts, inspect budget effects, and catch task misunderstandings. Quantitative claims will be made only after rerunning the frozen protocol. \TODO{Rerun all final experiments with finalized datasets, prompts, model identifiers, parsing rules, metrics, and inference settings.}
+\subsection{Dataset Release}
 
-The benchmark instance is a tuple:
-\[
-(\text{Java class}, \text{source}, \text{target}, \text{family}, y, \tau, m),
-\]
-where $y$ is the oracle final answer, $\tau$ is the canonical execution-oriented trace, and $m$ is metadata recording generation factors such as context size, signed canonical distance, label polarity, code-surface configuration, and task family.
-The label $y$ is the Boolean reachability label: $y=\true$ when the target method is reachable from the source method in the executable call graph, and $y=\false$ otherwise. The trace $\tau$ is evaluated separately from this label.
+The evaluation unit is one validated source--target query over one generated Java class. Each retained query has an oracle Boolean label, an oracle canonical trace, and metadata describing the generation factors. The frozen release will contain \texttt{[N\_CLASSES]} generated classes and \texttt{[N\_INSTANCES]} queries. It will also record the final context-size grid, trace-length range, question count per retained trace length, guard settings, parameter settings, and random seeds as \texttt{[DATASET\_CONFIGURATION]}.
 
-\subsection{Experimental Factors}
-
-The empirical study focuses on four primary factors:
-\begin{itemize}[leftmargin=*]
-    \item \textbf{Canonical execution distance:} the number of canonical exploration steps required to reach the target for positive queries, or to exhaust the reachable region for negative queries.
-    \item \textbf{Class size:} the number of generated methods in the Java class, operationalized through planned context sizes 100, 250, and 500. \TODO{Confirm that the frozen datasets use exactly context sizes 100, 250, and 500.}
-    \item \textbf{Query polarity:} whether the target is reachable or unreachable from the source. The generator samples balanced positive and negative questions at each retained distance.
-    \item \textbf{Condition-aware guards:} the number and placement of generated \texttt{if} statements that may contain visible but non-executable calls.
-\end{itemize}
-Other surface factors, including comments, local variables, parameters, loops, and declaration order, are retained as metadata for secondary analyses. In the inspected tree configuration, loops do not contain generated reachability calls.
-
-\subsection{Dataset and Task Families}
-
-The main comparison uses unguarded and condition-aware families with the same question format and output schema. The current design does not pair instances, abstract graphs, or source-target pairs one-to-one across families; comparisons therefore use matched factor distributions rather than paired tests unless the frozen dataset changes. The default tree sweep requests four questions per depth, but this value may change with the final generation parameters. \TODO{Confirm the final \texttt{n\_questions} value used to generate the frozen datasets.}
+The dataset is produced by the benchmark generator rather than sampled from repositories. In the current generator, the default full sweep is restricted to Java and tree-shaped programs. The generator materializes each context as a directory containing the Java class, the prompt context, reachability questions, oracle chains, method names, and configuration metadata. For each requested trace length, it selects positive and negative queries in balanced pairs when both are available; depths that cannot supply enough valid pairs contribute fewer instances or are omitted from the retained release.
 
 \input{tables/dataset_specification}
 
-We use the syntactic and executable graph terminology defined in \secref{sec:benchmark-design}. The dataset table records which factors remain fixed and which are varied in the planned study.
+\subsection{Experimental Factors}
 
-\subsection{Canonical Trace and Signed Distance}
+The primary factors are task family, signed canonical trace length, generated class size, query polarity, and model configuration. For condition-aware instances, we additionally analyze guard-related metadata such as the number of generated \texttt{if} statements and whether predicted transitions use calls that are syntactically visible but not executable. Other code-surface settings, including comments, local variables, loops, method parameters, and declaration order, are retained as metadata and used only when they are part of the frozen dataset configuration.
 
-The evaluator uses the canonical trace defined in \secref{sec:benchmark-design}. Listing~\ref{lst:canonical-trace} summarizes the generator convention inspected for this revision.
+The unguarded and condition-aware families are compared at the level of matched factor distributions. Unless the final release explicitly pairs the same abstract graph and query across families, we do not treat family comparisons as paired observations.
 
-\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,frame=single,caption={Canonical execution-oriented trace used by the generator.},label={lst:canonical-trace}]
-CanonicalTrace(src, tgt, maxD):
-    trace = ExecPrefix(src, maxD + 1)
-    if tgt at index i:
-        return trace[0:i+1], +i
-    if subtree complete:
-        return trace, -(len(trace)-1)
-    otherwise:
-        skip negative query
-\end{lstlisting}
+\subsection{Model Serving and Inference}
 
-In the inspected tree generator, stored signed distance is the target position for positive queries and the explored reachable-region size minus one for negative queries.
-
-\subsection{Models and Local Inference Setup}
-
-All evaluated models are run locally on the Jean Zay supercomputer operated by IDRIS~\cite{cnrs2024jeanzay}. We group them by deployed inference mode rather than by model name alone, and record whether the serving stack exposes a reasoning-budget control.
+We evaluate \texttt{[N\_MODELS]} locally served LLM configurations. A configuration is not just a checkpoint name: it includes the serving backend, precision, tensor parallelism, context limit, decoding parameters, output budget, and whether the deployment exposes a reasoning-budget control. Reporting at the configuration level is necessary because the same checkpoint can behave differently under different serving and budget settings.
 
 \input{tables/models}
 
-The intended serving stack is vLLM 0.22.0 on Jean Zay IDRIS, with one H100 80GB GPU per model and FP8 serving. Reasoning-capable configurations use up to 16,384 requested reasoning tokens plus 2,048 final-answer tokens; non-reasoning configurations use the corresponding combined output allowance. Temperature, top-$p$, and exact model-specific decoding defaults follow each model provider's recommendation unless the final protocol overrides them. \TODO{Verify final checkpoint identifiers, model-specific recommended decoding parameters, and which serving configurations expose a real reasoning-budget control.}
+The intended serving stack uses vLLM on the Jean Zay supercomputer operated by IDRIS~\cite{cnrs2024jeanzay}. The inference runner starts a local OpenAI-compatible vLLM server, resolves model-context and GPU-memory settings, reads generated experiment directories, and writes one result file per directory. Final serving values, including backend version, GPU type, precision, tensor-parallel size, concurrency, context limit, and memory-utilization settings, are recorded as \texttt{[SERVING\_CONFIGURATION]}.
 
-\subsection{Prompting Protocol}
+For reasoning-budget experiments, the runner supports an explicit sweep over requested reasoning budgets. When thinking mode is enabled, it first requests a bounded reasoning segment, then continues from that segment with a separate final-answer budget. When thinking mode is disabled or unavailable, the same task is run as a direct answer generation with the configured answer budget. The final paper will report budget effects only for configurations where the serving stack actually exposes and enforces the requested reasoning-budget control.
 
-The prompt states the task and JSON schema without naming a particular traversal algorithm. The unguarded prompt does not mention condition evaluation; the condition-aware prompt tells the model to use generated values and guards when deciding whether a visible call executes. In both families, the trace is the explored call sequence in code order, not a shortest path unless the oracle trace has that form.
+\subsection{Prompting}
 
-The required output schema contains \texttt{final\_answer} and \texttt{trace}. \TODO{Insert complete unguarded and condition-aware prompt templates in the appendix or anonymized artifact.} \TODO{Confirm whether the illustrative trace example is identical across all models and task families.}
+Each prompt contains the generated Java class, the source method, the target method, and the required JSON output schema. It does not expose oracle labels, oracle traces, generator metadata, or evaluator internals. The required object has two fields: \texttt{final\_answer}, a Boolean reachability prediction, and \texttt{trace}, an ordered list of method names.
+
+The prompt template differs only where the task family requires it. The unguarded template asks the model to follow method calls from the queried source. The condition-aware template additionally instructs the model to account for generated values and guards when deciding whether a visible call executes. The complete prompt templates and any illustrative examples are frozen before inference and included in the anonymized artifact as \texttt{[PROMPT\_ARTIFACT]}.
 
 \subsection{Output Parsing}
 
-The parser extracts the last parsable JSON object from each output. Extra prose is ignored if at least one object can be decoded; when several objects appear, the final parsable one is used. A case is counted as \texttt{NO\_RESPONSE} when no valid object provides an extractable \texttt{final\_answer}, or when the output is truncated before that field appears. The trace field is normalized from a JSON list or common string separators when possible.
+Model outputs are parsed after inference by a deterministic parser. The parser extracts the final valid JSON object when extra text appears before or after the answer. A case is marked \texttt{NO\_RESPONSE} when no valid object can be decoded, when \texttt{final\_answer} is missing or cannot be interpreted as a Boolean, or when generation ends before an extractable answer appears.
 
-The main paper uses strict scores: \texttt{NO\_RESPONSE} counts as incorrect for accuracy-like metrics. We do not plan conditional appendix scores that exclude \texttt{NO\_RESPONSE}.
+The \texttt{trace} field is expected to be a JSON list of method names. Normalization is deliberately limited: it may handle unambiguous formatting variants, but it must not invent method names or repair semantically invalid traces. All primary accuracy metrics use strict scoring, so \texttt{NO\_RESPONSE} counts as incorrect and is also reported as a separate failure mode.
 
 \subsection{Metrics}
 
 \input{tables/metrics}
 
-Trace completeness follows the inspected evaluator: the predicted trace must start with the oracle source, then receives ordered-recall credit for oracle nodes recovered in canonical order; skipped oracle nodes are allowed, but an unmatched predicted node prevents later predicted nodes from contributing.
+The metrics are designed to separate answer correctness from trace behavior. Final-answer accuracy measures the Boolean label only. Exact canonical trace accuracy requires the full predicted trace to match the oracle trace. Trace completeness gives ordered-recall credit for oracle methods recovered in canonical order, starting from the queried source. Graph-valid exploration checks whether predicted transitions are executable and whether the trace satisfies the family-specific stopping condition. Syntactic-call bias is evaluated on condition-aware instances by detecting predicted transitions that follow visible calls excluded from the executable graph by generated guards.
 
 \subsection{Statistical Analysis}
 
-Final analyses should report 95\% confidence intervals for the main proportions. Because the two task families are not currently paired instance-by-instance, comparisons should use independent-proportion intervals or regression models with matched factors. Candidate fixed effects include task family, canonical distance, class size, polarity, number of \texttt{if} guards, and model; trace completeness can be analyzed with bootstrap estimates or a bounded-outcome model. \TODO{Finalize the statistical model once the frozen dataset design and result table shape are fixed.}
+The final analysis reports uncertainty for all primary proportions and bounded trace-completeness scores. The exact confidence-interval procedure is \texttt{[CI\_METHOD]}, and the trace-completeness interval procedure is \texttt{[TRACE\_CI\_METHOD]}. Factor-level analyses use the frozen metadata rather than post-hoc labels inferred from source text.
+
+For the main factor analysis, candidate predictors are task family, signed canonical trace length, class size, query polarity, guard count, model configuration, and selected interactions justified by the research questions. If multiple queries come from the same generated class, the analysis accounts for within-class dependence using \texttt{[DEPENDENCE\_MODEL]}. Model-by-factor breakdowns that are not part of the preregistered analysis plan are treated as exploratory.
 
 \subsection{Baselines and Sanity Checks}
 
-The evaluated LLMs are the primary systems under test rather than baselines in the classical sense. Simple non-LLM baselines help calibrate task difficulty and interpret failures.
+The LLM configurations are the systems under study. Non-LLM baselines are used to calibrate interpretation, not to compete with the oracle.
 
 \begin{itemize}[leftmargin=*]
-    \item \textbf{Random-label baseline.} This baseline predicts a reachability label according to the empirical label distribution and emits an empty or minimal trace. It calibrates final-answer accuracy under label balance.
-    \item \textbf{Syntactic-call baseline.} This baseline treats every syntactically visible method call as executable. It is expected to perform well on unguarded instances but to fail on condition-aware instances when false-branch calls are visible but non-executable.
-    \item \textbf{Shortest-executable-path baseline.} Given the executable call graph, this baseline emits the shortest path from source to target for positive queries and a reachability label for negative queries. It separates semantic reachability from the stricter canonical exploration convention.
-    \item \textbf{Oracle-traversal sanity check.} This deterministic check runs the same canonical traversal used by the oracle over the validated executable call graph. It should achieve perfect scores and serves as an implementation sanity check rather than a competing method.
+    \item \textbf{Random-label baseline.} Predicts according to the empirical label distribution and emits a minimal trace, calibrating Boolean accuracy under label balance.
+    \item \textbf{Syntactic-call baseline.} Treats every visible call as executable, estimating how far source-level call visibility alone can go.
+    \item \textbf{Shortest-executable-path baseline.} Uses the executable graph to answer reachability and emit a shortest path for positive queries, separating semantic reachability from the stricter canonical trace convention.
+    \item \textbf{Oracle-traversal sanity check.} Recomputes labels and traces from the validated executable graph and should match the stored oracle by construction.
 \end{itemize}
 
-\TODO{Confirm which non-LLM baselines are implemented in the final artifact.}
+The final set of reported baselines is \texttt{[MAIN\_BASELINES]}. Any implementation-only sanity checks are documented in the artifact rather than treated as experimental systems.
 
-\subsection{Why Evaluate Canonical Traces?}
+\subsection{Reproducibility}
 
-The canonical trace is stricter than a reachability path. A shortest path can show that the target is reachable, but it does not test the requested execution-oriented exploration convention. We therefore report exact trace accuracy, trace completeness, and graph-valid exploration separately, distinguishing semantic reachability, valid transitions, and strict oracle-order agreement.
-
-\subsection{Oracle Validation}
-
-Given the validated executable call graph, the oracle-traversal sanity check solves each query by construction. The validation pipeline checks compilation, materialized call consistency, reachability labels, canonical traces, and condition evaluation for guarded calls.
-
-\subsection{Artifact and Reproducibility}
-
-The reproducibility package will record the frozen datasets, prompts, inference settings, parsing and evaluation scripts, statistical scripts, and dashboard tooling. \TODO{Insert anonymized artifact URL and specify which raw model outputs can be shared.}
+The anonymized artifact will contain the frozen dataset, generated Java programs, oracle metadata, prompt templates, inference configurations, raw or filtered model outputs when shareable, parser and metric implementations, statistical scripts, and dashboard materials. The review artifact location is \texttt{[ARTIFACT\_URL]}. When model-license or storage constraints prevent sharing raw outputs, the artifact records the restriction and provides parsed outputs sufficient to reproduce the reported tables.

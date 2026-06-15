@@ -1,14 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Planned dataset specification. Values that depend on final generation remain TODOs until the frozen datasets are produced.}
+\caption{Dataset-release fields. Values remain controlled placeholders until the frozen generation configuration is selected.}
 \label{tab:dataset-spec}
-\small
-\begin{tabularx}{\textwidth}{p{0.16\textwidth}p{0.09\textwidth}p{0.10\textwidth}p{0.14\textwidth}p{0.12\textwidth}p{0.12\textwidth}X}
+\scriptsize
+\begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.07\textwidth}p{0.07\textwidth}p{0.09\textwidth}p{0.09\textwidth}p{0.16\textwidth}X}
 \toprule
 Family & Classes & Instances & Context sizes & Distances & Pos/neg balance & Guards and code-surface factors \\
 \midrule
-Unguarded & \TODO{count} & \TODO{count} & 100, 250, 500 \TODO{confirm frozen values} & 1--25 \TODO{confirm frozen values} & Balanced by construction at retained depths & Generated calls are executable; comments, variables, parameters, and loops are recorded as non-reachability-changing surface factors. \\
-Condition-aware & \TODO{count} & \TODO{count} & 100, 250, 500 \TODO{confirm frozen values} & 1--25 \TODO{confirm frozen values} & Balanced by construction at retained depths & Generated \texttt{if} guards may make visible calls non-executable; local variables and parameters determine guard outcomes. \\
+Unguarded & \texttt{[C\_U]} & \texttt{[Q\_U]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated calls are executable; final comments, variables, parameters, and loops settings are \texttt{[SURF\_U]}. \\
+Condition-aware & \texttt{[C\_G]} & \texttt{[Q\_G]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated \texttt{if} guards may make visible calls non-executable; final guard and parameter settings are \texttt{[GUARD]}. \\
 \bottomrule
 \end{tabularx}
 \end{table*}
