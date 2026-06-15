@@ -265,6 +265,18 @@
   - ADR:
   - Commits:
 
+### REQ-0022
+- Status: implemented
+- Source: User request and /home/nbizon/.codex/attachments/8fdc50b5-f759-42ae-b3a7-d4509ca29faf/pasted-text.txt
+- Description: Rewrite the Abstract, Introduction, Related Work, and ReachabilityBench Design sections in a mature ICSE Research Track style that frames ReachabilityBench as a controlled diagnostic benchmark for executable program-structure reasoning.
+- Acceptance criteria: The abstract uses controlled bracketed placeholders instead of visible TODOs; the introduction follows the requested six-paragraph contribution structure; related work uses four analytical subsections; the design section formally defines instances, syntactic and executable graphs, generation, guards, canonical traces, signed canonical trace length, dataset placeholders, and oracle validation without unsupported empirical claims.
+- Traceability:
+  - Code: sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex
+  - Tests: rg::sections targeted TODO check; manual::latexmk build
+  - Docs:
+  - ADR:
+  - Commits:
+
 ## Non-Functional Requirements
 
 ### NFR-0001
@@ -329,9 +341,11 @@
 - REQ-0019 -> main.tex -> manual::latexmk build -> commit::pending
 - REQ-0020 -> figures/*.tex; sections/03_benchmark_design.tex; sections/06_results.tex; sections/07_discussion.tex -> manual::latexmk build -> commit::pending
 - REQ-0021 -> sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> manual::latexmk build -> commit::pending
+- REQ-0022 -> sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex -> rg::sections targeted TODO check; manual::latexmk build -> commit::pending
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
 
 ## Change Log
+- 2026-06-15 - Rewrote the abstract, introduction, related work, and benchmark design around the diagnostic benchmark framing requested for ICSE Research Track presentation.
 - 2026-06-15 - Reworked Sections I, II, and III to reduce repetition and clarify the narrative progression from motivation to positioning to benchmark design.
 - 2026-06-15 - Harmonized paper figures with the Figure 1 visual direction and improved readability of axes, panels, legends, bars, and placeholders.
 - 2026-06-12 - Aligned the post-RQ manuscript structure with the author's revised three research questions and enabled page and line numbering for review.

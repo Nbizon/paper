@@ -1,47 +1,48 @@
-\section{Background and Related Work}
+\section{Related Work}
 \label{sec:background}
+\label{sec:related-work}
 
-\subsection{Code and Software-Engineering Benchmarks}
+\subsection{Code Generation and SE Benchmarks}
 
-LLM evaluation for code has largely been shaped by benchmarks that test whether a system can produce useful code or solve realistic software-engineering tasks. HumanEval, MBPP, and APPS evaluate function-level or programming-problem synthesis with executable tests~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE collects code-understanding and code-generation tasks across multiple datasets~\cite{lu2021codexglue}. More recent benchmarks broaden the setting: SWE-bench evaluates repository-level issue resolution from real GitHub issues~\cite{jimenez2024swebench}, while LiveCodeBench and BigCodeBench emphasize newer programming problems and more complex library-using generation tasks~\cite{jain2024livecodebench,zhuo2024bigcodebench}. Defects4J provides a reproducible Java bug and testing infrastructure that is often used in program-repair research, although it is not primarily an LLM benchmark~\cite{just2014defects4j}.
+Code benchmarks for LLMs span from function-level synthesis to repository-level software-engineering tasks. HumanEval, MBPP, and APPS evaluate whether models can synthesize code that satisfies executable tests or programming-problem specifications~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE collects code-understanding and code-generation tasks across multiple datasets~\cite{lu2021codexglue}. SWE-bench shifts the unit of evaluation to real GitHub issues and repository patches~\cite{jimenez2024swebench}. LiveCodeBench and BigCodeBench broaden code-generation evaluation with newer programming problems and more complex library-using tasks~\cite{jain2024livecodebench,zhuo2024bigcodebench}. Defects4J is not primarily an LLM benchmark, but it remains an important Java bug corpus and testing infrastructure for controlled repair studies~\cite{just2014defects4j}.
 
-These benchmarks are the right place to measure end-to-end usefulness, but they are less suited to isolating one structural capability. A failed patch may reflect poor localization, weak API knowledge, insufficient context use, brittle editing, or a misunderstanding of program structure. \benchmark makes the complementary trade-off: it fixes the source-program form, query schema, and trace convention so that failures can be related to controlled structural factors.
+These benchmarks are central for measuring task success, but they intentionally combine many abilities. A benchmark score may reflect problem decomposition, API recall, test use, patch editing, dependency handling, or local structural reasoning. \benchmark makes a complementary trade-off. It narrows the program form and query schema to isolate executable inter-method reachability, so that failures can be analyzed by controlled structural factors rather than only by aggregate task success.
 
-\TODO{Verify and cite all related-work claims, including benchmark scope, dataset construction, and evaluation protocols.}
+\subsection{Program Behavior and Code Reasoning Benchmarks}
 
-\subsection{Code Reasoning and Semantic-Structure Benchmarks}
+Several benchmarks move closer to program behavior and semantic structure. CRUXEval asks models to infer inputs or outputs for short Python functions~\cite{gu2024cruxeval}. REval studies runtime behavior such as coverage, paths, state, and output~\cite{chen2024reval}. CORE evaluates static-analysis-oriented reasoning tasks including data dependency, control dependency, and information flow across multiple languages~\cite{xie2025core}. TraceEval is especially close in spirit because it evaluates execution-verified semantic reasoning and runtime call structure across languages~\cite{li2026traceeval}. RE2-Bench highlights the importance of testing code reasoning in real-world settings and cautions against treating synthetic tasks as substitutes for real-program evaluation~\cite{liu2025re2bench}.
 
-Several benchmarks move closer to the structure of program behavior. CRUXEval asks models to predict inputs or outputs for short Python functions~\cite{gu2024cruxeval}. REval evaluates runtime behavior, including coverage, paths, state, and output~\cite{chen2024reval}. CORE studies static-analysis tasks such as data dependency, control dependency, and information flow across C/C++, Java, and Python~\cite{xie2025core}. TraceEval is especially relevant because it asks models to recover runtime call structure from execution-verified programs across multiple languages~\cite{li2026traceeval}. RE2-Bench provides an important caution for this line of work: synthetic code-reasoning tasks can underrepresent real-world complexity and should not be treated as a substitute for real-program evaluation~\cite{liu2025re2bench}.
-
-\benchmark occupies a deliberately narrower point in this design space. It gives direct control over canonical distance, class size, query polarity, and condition-aware guards, at the cost of using generated single-class programs rather than real projects. That control is difficult to obtain from real repositories, where naming, architecture, task difficulty, tests, and execution behavior are naturally entangled. TraceEval is more ecological but less parameterized; CORE is broader but not centered on one executable-reachability task; and CRUXEval and REval focus on execution behavior without the same Java inter-method factorization.
+\benchmark differs in the experimental control it seeks. It deliberately uses a narrower Java setting to obtain oracle-supervised control over canonical trace length, class size, polarity, and guards. This choice does not make realistic benchmarks less important; instead, it makes a different measurement possible. The benchmark asks whether a model can recover a validated executable call relation and a specified trace convention when confounding factors such as repository scale, API knowledge, and natural task ambiguity are minimized.
 
 \begin{table}[t]
 \centering
-\caption{Positioning of \benchmark relative to representative code and software-engineering benchmarks.}
+\caption{Analytical positioning of \benchmark relative to representative code and software-engineering benchmarks.}
 \label{tab:benchmark-positioning}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
+\scriptsize
+\setlength{\tabcolsep}{1.8pt}
 \renewcommand{\arraystretch}{1.08}
-\begin{tabularx}{\columnwidth}{p{0.27\columnwidth}p{0.25\columnwidth}X}
+\begin{tabularx}{\columnwidth}{p{0.2\columnwidth}cccccX}
 \toprule
-Benchmark & Main signal & Relation to \benchmark \\
+Benchmark & Real. & Ctrl. & Oracle & Trace & Syn./exec. & Primary distinction \\
 \midrule
-HumanEval / MBPP / APPS & Code generation with tests & Tests generated solutions; reachability is only indirect. \\
-SWE-bench & Repository issue resolution & More realistic, but less diagnostic for one structural capability. \\
-CRUXEval / REval & Execution reasoning & Targets runtime behavior rather than Java inter-method reachability traces. \\
-CORE / CoRe & Static-analysis tasks & Broader task suite; \benchmark isolates executable reachability. \\
-TraceEval & Runtime call structure & Closest related work; more realistic, while \benchmark gives explicit factor control. \\
-\benchmark & Method reachability with traces & Generated Java classes with exact labels, canonical traces, and condition-aware distractors. \\
+HumanEval / MBPP / APPS & Low--Med. & Med. & Tests & No & No & Code generation success. \\
+SWE-bench & High & Low & Tests & No & No & Repository issue resolution. \\
+CRUXEval / REval & Low--Med. & Med. & Yes & Partial & No & Runtime behavior reasoning. \\
+CORE & Med. & Med. & Yes & No & No & Static-analysis task suite. \\
+TraceEval & Med.--High & Med. & Yes & Yes & No & Execution-verified call behavior. \\
+This work & Low--Med. & High & Yes & Yes & Yes & Controlled executable reachability. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Reachability and Program Analysis}
 
-Reachability is a standard notion in program analysis. In a call graph, nodes represent methods and directed edges represent possible calls. A method-reachability query asks whether a target method can be reached from a source method by following those edges. Call-graph construction and reachability analysis have been studied for decades~\cite{grove2001framework,tip2000scalable}, and mature analysis tools are usually the right mechanism when the goal is to answer such queries in deployed software.
+Reachability is a foundational notion in program analysis. In a call graph, nodes represent methods and directed edges represent possible calls; method reachability asks whether a target method can be reached from a source by following those edges. Call-graph construction and reachability analysis have long been studied in static and dynamic analysis~\cite{grove2001framework,tip2000scalable}, and mature analysis tools are the right mechanism when the goal is to answer reachability questions for deployed software.
 
-In \benchmark, reachability is the controlled substrate for evaluation rather than the end-user problem being solved. The generated call graph provides the oracle and the validation mechanism: each program has known executable edges, labels, and canonical traces. This lets the evaluation separate cases that would otherwise be collapsed into a single answer, including valid paths, shortcuts, non-existent edges, missing intermediate methods, and calls that are visible in the source but disabled by generated conditions.
+\benchmark uses reachability differently. The benchmark is not a proposal to replace program analysis with LLMs. It uses generated programs as controlled experimental instruments: the generator defines the intended syntactic and executable graphs, the validator checks that the Java source realizes them, and the evaluator compares model outputs against oracle labels and traces. This makes reachability useful as a diagnostic substrate for studying structural reasoning under exact supervision.
 
-\subsection{Trace Outputs and Evaluation}
+\subsection{Trace Outputs and Diagnostic Evaluation}
 
-\benchmark asks for a trace in addition to the Boolean answer. The trace is not treated as evidence of hidden cognition; it is an observable output artifact that can be checked against the executable graph. A model that answers correctly but emits an invalid transition is different from a model that follows the graph but stops early, and both are different from a model that confuses syntactic call presence with executable reachability. The next section defines the generated programs, task families, and oracle convention that make these checks possible.
+Trace outputs provide a way to evaluate more than the final Boolean answer. In \benchmark, a trace is not treated as evidence of a model's hidden reasoning process; it is an externally checkable output artifact. This distinction matters because two models with the same final-answer accuracy may exhibit different structural behavior: one may follow executable edges in the canonical order, another may skip intermediate calls, and another may follow a syntactically visible call that cannot execute.
+
+The trace requirement turns these differences into measurable outcomes. Exact canonical trace accuracy tests adherence to the oracle convention, trace completeness measures how much of the oracle exploration is recovered, graph-valid exploration checks whether reported transitions exist in the executable graph, and syntactic-call bias detects confusion between visible and executable calls. This diagnostic evaluation complements end-to-end task benchmarks by making structural failure modes explicit.
