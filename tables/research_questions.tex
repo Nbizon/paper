@@ -1,15 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Research questions and main measurements.}
+\caption{Research questions and main measurements. Reasoning-budget analyses are included under RQ2 only for models and serving configurations with verified budget controls.}
 \label{tab:research-questions}
 \begin{tabularx}{\textwidth}{p{0.08\textwidth}p{0.44\textwidth}X}
 \toprule
 RQ & Question & Main measurements \\
 \midrule
-\researchq{1} & How well do LLMs perform on controlled reasoning tasks about reachability between methods? & Final-answer accuracy, exact-chain accuracy, trace accuracy, trace completeness, and overall comparison across task families and model families \\
-\researchq{2} & How do structural difficulty factors affect performance on these tasks? & Effects of depth, context size, branching, and code distractors \\
-\researchq{3} & How does performance differ between control-flow and data-flow reachability tasks? & Control-flow / data-flow gaps, contrastive cases, and difficulties specific to condition evaluation and guarded calls \\
-\researchq{4} & What differences appear between reasoning and non-reasoning models on these tasks, and how does the requested reasoning budget affect reasoning models? & Gaps in level, robustness, saturation, failure modes, marginal gains across budgets, and the relationship between label improvement and trace improvement \\
+\researchq{1} & How accurately do LLMs solve executable method-reachability queries, and how do structural factors affect final-answer and trace-level performance? & Final-answer accuracy, exact canonical trace accuracy, trace completeness, graph-valid exploration, \texttt{NO\_RESPONSE}, canonical execution distance, class size, polarity, and condition-aware guard effects \\
+\researchq{2} & Which models and inference modes are most effective on \benchmark, and do reasoning-oriented configurations yield robust improvements? & Model-by-family scores, deployed inference mode, verified reasoning-budget controls, budget curves, saturation estimates, trace metrics, and invalid-output rates \\
+\researchq{3} & What do model-generated traces reveal about reachability reasoning? & Answer--trace consistency, graph-valid exploration, recurrent error families, syntactic-call bias, and representative local motifs \\
 \bottomrule
 \end{tabularx}
 \end{table*}

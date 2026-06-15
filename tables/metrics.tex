@@ -1,16 +1,17 @@
-\begin{table*}[t]
+\begin{table*}[!t]
 \centering
-\caption{Main evaluation metrics. The main paper reports strict scores where \texttt{NO\_RESPONSE} counts as incorrect; appendix tables also report conditional scores excluding \texttt{NO\_RESPONSE}.}
+\caption{Main evaluation metrics. The main paper reports strict scores where \texttt{NO\_RESPONSE} counts as incorrect.}
 \label{tab:metrics}
+\small
 \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & Whether the predicted \true/\false answer matches the oracle label. \\
-Canonical execution-trace accuracy & Whether the predicted trace exactly matches the canonical execution-oriented oracle trace. \\
-Trace completeness & Fraction of the canonical execution trace recovered in order by the model. \\
-Graph-valid exploration accuracy & Whether the predicted exploration is structurally valid with respect to the generated call graph; positive traces must reach the target, and negative traces must cover the reachable region without reaching the target. \\
-\texttt{NO\_RESPONSE} rate & Fraction of cases with no extractable final answer, invalid JSON, truncated structured output, or schema violation. \\
+Final-answer accuracy & Fraction of instances where the parsed \true/\false answer matches the oracle label; \texttt{NO\_RESPONSE} counts as incorrect in strict scores. \\
+Canonical execution-trace accuracy & Fraction of instances where the parsed trace exactly equals the canonical execution-oriented oracle trace. \\
+Trace completeness & Ordered-recall score over the canonical oracle trace. The predicted trace must start at the oracle source; skipped oracle nodes are allowed, but unmatched predicted nodes stop later credit. \\
+Graph-valid exploration accuracy & Fraction of instances where the predicted trace follows executable transitions and satisfies the family-specific target condition: a valid source-to-target path for positive queries, or a complete executable source-reachable region for negative queries. \\
+\texttt{NO\_RESPONSE} rate & Fraction of cases where the parser cannot extract a final answer from the last parsable JSON object, or no valid JSON object is found. \\
 \bottomrule
 \end{tabularx}
 \end{table*}

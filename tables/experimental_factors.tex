@@ -1,12 +1,12 @@
 \begin{table*}[t]
 \centering
-\caption{Experimental factors exposed by the generator. The completed experiments use call reachability as the semantic target; the data-flow family is specified but not empirically evaluated in this paper.}
+\caption{Experimental factors exposed by the generator. The final paper focuses on method reachability as the semantic target and compares unguarded reachability with condition-aware reachability.}
 \label{tab:experimental-factors}
 \begin{tabularx}{\textwidth}{p{0.18\textwidth}p{0.25\textwidth}X}
 \toprule
 Factor & Values & Purpose \\
 \midrule
-Experimental family & Control-flow; data-flow extension & Separate the already evaluated method-to-method call reachability with calls outside control structures from the still-specified condition-sensitive variant with guarded calls \\
+Experimental family & Unguarded; condition-aware & Separate method-to-method reachability with calls outside control structures from the condition-aware variant with guarded calls \\
 Graph family & Linear, tree & Separate path following from branching \\
 Context size & 100, 250, 500, 750, 1000 & Vary the amount of surrounding code \\
 Depth & 1--25 & Vary the length of the path \\

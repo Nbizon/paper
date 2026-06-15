@@ -3,12 +3,12 @@
     \begin{tikzpicture}[
         >=Latex,
         node distance=0.55cm and 0.55cm,
-        phase/.style={draw=gray!65, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
+        phase/.style={draw=gray!65, fill=gray!4, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
         artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
         eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
         warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
-        arrow/.style={->, gray!75, line width=0.75pt},
-        dasharrow/.style={->, dashed, gray!70, line width=0.75pt}
+        arrow/.style={rb edge},
+        dasharrow/.style={rb optional edge}
     ]
         \node[phase] (graph) {Tree-shaped\\call graph};
         \node[artifact, right=of graph] (java) {Java class\\generation};

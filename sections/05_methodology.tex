@@ -3,39 +3,102 @@
 
 \subsection{Experimental Scope and Rerun Protocol}
 
-Existing results are preliminary. They were used to calibrate prompting, inspect budget effects, and avoid task misunderstandings. The final paper requires rerunning all experiments with the finalized model list, datasets, prompt variants, metrics, and budgets. \redtodo{Rerun all final experiments with the finalized protocol.}
+Existing results are preliminary: they helped calibrate prompts, inspect budget effects, and catch task misunderstandings. Quantitative claims will be made only after rerunning the frozen protocol. \TODO{Rerun all final experiments with finalized datasets, prompts, model identifiers, parsing rules, metrics, and inference settings.}
 
-The main comparison uses both task families over the same reachability question and trace-based evaluation protocol. The planned distance grid covers absolute canonical distances 1 to 25 and context sizes 100, 250, and 500. Positive and negative queries are sampled for every distance level.
+The benchmark instance is a tuple:
+\[
+(\text{Java class}, \text{source}, \text{target}, \text{family}, y, \tau, m),
+\]
+where $y$ is the oracle final answer, $\tau$ is the canonical execution-oriented trace, and $m$ is metadata recording generation factors such as context size, signed canonical distance, label polarity, code-surface configuration, and task family.
+The label $y$ is the Boolean reachability label: $y=\true$ when the target method is reachable from the source method in the executable call graph, and $y=\false$ otherwise. The trace $\tau$ is evaluated separately from this label.
 
-\subsection{Models and Local Execution}
+\subsection{Experimental Factors}
 
-All evaluated models are run locally on Jean, which allows us to control the requested reasoning budget and collect the reasoning text emitted by the model when available. Emitted reasoning remains an observable output artifact; we do not assume that it fully captures the model's internal computation.
+The empirical study focuses on four primary factors:
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Canonical execution distance:} the number of canonical exploration steps required to reach the target for positive queries, or to exhaust the reachable region for negative queries.
+    \item \textbf{Class size:} the number of generated methods in the Java class, operationalized through planned context sizes 100, 250, and 500. \TODO{Confirm that the frozen datasets use exactly context sizes 100, 250, and 500.}
+    \item \textbf{Query polarity:} whether the target is reachable or unreachable from the source. The generator samples balanced positive and negative questions at each retained distance.
+    \item \textbf{Condition-aware guards:} the number and placement of generated \texttt{if} statements that may contain visible but non-executable calls.
+\end{itemize}
+Other surface factors, including comments, local variables, parameters, loops, and declaration order, are retained as metadata for secondary analyses. In the inspected tree configuration, loops do not contain generated reachability calls.
+
+\subsection{Dataset and Task Families}
+
+The main comparison uses unguarded and condition-aware families with the same question format and output schema. The current design does not pair instances, abstract graphs, or source-target pairs one-to-one across families; comparisons therefore use matched factor distributions rather than paired tests unless the frozen dataset changes. The default tree sweep requests four questions per depth, but this value may change with the final generation parameters. \TODO{Confirm the final \texttt{n\_questions} value used to generate the frozen datasets.}
+
+\input{tables/dataset_specification}
+
+We use the syntactic and executable graph terminology defined in \secref{sec:benchmark-design}. The dataset table records which factors remain fixed and which are varied in the planned study.
+
+\subsection{Canonical Trace and Signed Distance}
+
+The evaluator uses the canonical trace defined in \secref{sec:benchmark-design}. Listing~\ref{lst:canonical-trace} summarizes the generator convention inspected for this revision.
+
+\begin{lstlisting}[basicstyle=\ttfamily\footnotesize,frame=single,caption={Canonical execution-oriented trace used by the generator.},label={lst:canonical-trace}]
+CanonicalTrace(src, tgt, maxD):
+    trace = ExecPrefix(src, maxD + 1)
+    if tgt at index i:
+        return trace[0:i+1], +i
+    if subtree complete:
+        return trace, -(len(trace)-1)
+    otherwise:
+        skip negative query
+\end{lstlisting}
+
+In the inspected tree generator, stored signed distance is the target position for positive queries and the explored reachable-region size minus one for negative queries.
+
+\subsection{Models and Local Inference Setup}
+
+All evaluated models are run locally on the Jean Zay supercomputer operated by IDRIS~\cite{cnrs2024jeanzay}. We group them by deployed inference mode rather than by model name alone, and record whether the serving stack exposes a reasoning-budget control.
 
 \input{tables/models}
 
-\redtodo{Verify exact Hugging Face availability, licenses, model sizes, context lengths, and local compatibility on Jean for all 8 models before final submission.}
-\redtodo{Verify whether each model should be classified as reasoning or non-reasoning in the final paper, based on official model documentation.}
-
-\subsection{Budget Settings}
-
-The main comparison uses a best-effort budget setting with a comparable total generation allowance across model families. Reasoning models receive a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. Non-reasoning models receive a total generation budget of 18,432 tokens. This setup gives each model a generous opportunity to solve the task while keeping the total generation allowance comparable. We do not claim that this makes reasoning and non-reasoning models identical in computational cost or internal allocation.
-
-Budget sensitivity is a secondary analysis limited to reasoning models. For control-flow reachability, requested reasoning budgets range from 512 to 16,384. Existing preliminary results suggest saturation around 8,192, but final experiments will be rerun. \redtodo{Recompute budget-saturation and smallest-budget-to-95\%-max-final-answer-accuracy after final control-flow reruns.} \redtodo{Do not generalize control-flow budget saturation to condition-aware reachability unless new experiments support it.}
+The intended serving stack is vLLM 0.22.0 on Jean Zay IDRIS, with one H100 80GB GPU per model and FP8 serving. Reasoning-capable configurations use up to 16,384 requested reasoning tokens plus 2,048 final-answer tokens; non-reasoning configurations use the corresponding combined output allowance. Temperature, top-$p$, and exact model-specific decoding defaults follow each model provider's recommendation unless the final protocol overrides them. \TODO{Verify final checkpoint identifiers, model-specific recommended decoding parameters, and which serving configurations expose a real reasoning-budget control.}
 
 \subsection{Prompting Protocol}
 
-The final prompt was calibrated using preliminary experiments to make sure models understood the task, produced valid JSON, and were not instructed to use a named traversal algorithm. The prompt defines the trace as an explored call sequence, not as the shortest path. It tells the model to follow method calls in the order they appear in the code, start from the caller, and continue until the target is reached or no further reachable calls remain.
+The prompt states the task and JSON schema without naming a particular traversal algorithm. The unguarded prompt does not mention condition evaluation; the condition-aware prompt tells the model to use generated values and guards when deciding whether a visible call executes. In both families, the trace is the explored call sequence in code order, not a shortest path unless the oracle trace has that form.
 
-For control-flow instances, the prompt does not mention condition evaluation. For condition-aware instances, the prompt states that the model must account for conditions and variable values that determine whether guarded calls are executed. The prompt includes a small illustrative example where the expected trace is \texttt{["A", "B", "C", "D", "E"]}; this clarifies that traces should list the explored call sequence in code order, rather than only a shorter source-target chain.
+The required output schema contains \texttt{final\_answer} and \texttt{trace}. \TODO{Insert complete unguarded and condition-aware prompt templates in the appendix or anonymized artifact.} \TODO{Confirm whether the illustrative trace example is identical across all models and task families.}
 
-\redtodo{Insert complete prompt templates in the appendix.}
+\subsection{Output Parsing}
+
+The parser extracts the last parsable JSON object from each output. Extra prose is ignored if at least one object can be decoded; when several objects appear, the final parsable one is used. A case is counted as \texttt{NO\_RESPONSE} when no valid object provides an extractable \texttt{final\_answer}, or when the output is truncated before that field appears. The trace field is normalized from a JSON list or common string separators when possible.
+
+The main paper uses strict scores: \texttt{NO\_RESPONSE} counts as incorrect for accuracy-like metrics. We do not plan conditional appendix scores that exclude \texttt{NO\_RESPONSE}.
 
 \subsection{Metrics}
 
 \input{tables/metrics}
 
-The main paper reports compact strict scores only: \texttt{NO\_RESPONSE} is counted as incorrect. Appendix tables will report both strict and conditional scores, where conditional scores exclude \texttt{NO\_RESPONSE} from the denominator. \texttt{NO\_RESPONSE} includes cases where no \texttt{final\_answer} can be extracted, no valid JSON can be parsed, the output is truncated before producing the required structured answer, or the model does not follow the output schema.
+Trace completeness follows the inspected evaluator: the predicted trace must start with the oracle source, then receives ordered-recall credit for oracle nodes recovered in canonical order; skipped oracle nodes are allowed, but an unmatched predicted node prevents later predicted nodes from contributing.
 
-\subsection{Oracle Validation Reminder}
+\subsection{Statistical Analysis}
 
-Before evaluation, the oracle-validation pipeline checks compilation, materialized call consistency, positive and negative reachability labels, canonical traces, and condition evaluation for guarded calls. We use programmatic analysis tools for oracle validation and dataset sanity checks, not as competing baselines. A deterministic program-analysis algorithm can solve the generated reachability task by construction; the scientific question is whether LLMs can recover and explain this structure from generated Java code.
+Final analyses should report 95\% confidence intervals for the main proportions. Because the two task families are not currently paired instance-by-instance, comparisons should use independent-proportion intervals or regression models with matched factors. Candidate fixed effects include task family, canonical distance, class size, polarity, number of \texttt{if} guards, and model; trace completeness can be analyzed with bootstrap estimates or a bounded-outcome model. \TODO{Finalize the statistical model once the frozen dataset design and result table shape are fixed.}
+
+\subsection{Baselines and Sanity Checks}
+
+The evaluated LLMs are the primary systems under test rather than baselines in the classical sense. Simple non-LLM baselines help calibrate task difficulty and interpret failures.
+
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Random-label baseline.} This baseline predicts a reachability label according to the empirical label distribution and emits an empty or minimal trace. It calibrates final-answer accuracy under label balance.
+    \item \textbf{Syntactic-call baseline.} This baseline treats every syntactically visible method call as executable. It is expected to perform well on unguarded instances but to fail on condition-aware instances when false-branch calls are visible but non-executable.
+    \item \textbf{Shortest-executable-path baseline.} Given the executable call graph, this baseline emits the shortest path from source to target for positive queries and a reachability label for negative queries. It separates semantic reachability from the stricter canonical exploration convention.
+    \item \textbf{Oracle-traversal sanity check.} This deterministic check runs the same canonical traversal used by the oracle over the validated executable call graph. It should achieve perfect scores and serves as an implementation sanity check rather than a competing method.
+\end{itemize}
+
+\TODO{Confirm which non-LLM baselines are implemented in the final artifact.}
+
+\subsection{Why Evaluate Canonical Traces?}
+
+The canonical trace is stricter than a reachability path. A shortest path can show that the target is reachable, but it does not test the requested execution-oriented exploration convention. We therefore report exact trace accuracy, trace completeness, and graph-valid exploration separately, distinguishing semantic reachability, valid transitions, and strict oracle-order agreement.
+
+\subsection{Oracle Validation}
+
+Given the validated executable call graph, the oracle-traversal sanity check solves each query by construction. The validation pipeline checks compilation, materialized call consistency, reachability labels, canonical traces, and condition evaluation for guarded calls.
+
+\subsection{Artifact and Reproducibility}
+
+The reproducibility package will record the frozen datasets, prompts, inference settings, parsing and evaluation scripts, statistical scripts, and dashboard tooling. \TODO{Insert anonymized artifact URL and specify which raw model outputs can be shared.}

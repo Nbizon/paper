@@ -1,0 +1,14 @@
+\begin{table*}[t]
+\centering
+\caption{Planned dataset specification. Values that depend on final generation remain TODOs until the frozen datasets are produced.}
+\label{tab:dataset-spec}
+\small
+\begin{tabularx}{\textwidth}{p{0.16\textwidth}p{0.09\textwidth}p{0.10\textwidth}p{0.14\textwidth}p{0.12\textwidth}p{0.12\textwidth}X}
+\toprule
+Family & Classes & Instances & Context sizes & Distances & Pos/neg balance & Guards and code-surface factors \\
+\midrule
+Unguarded & \TODO{count} & \TODO{count} & 100, 250, 500 \TODO{confirm frozen values} & 1--25 \TODO{confirm frozen values} & Balanced by construction at retained depths & Generated calls are executable; comments, variables, parameters, and loops are recorded as non-reachability-changing surface factors. \\
+Condition-aware & \TODO{count} & \TODO{count} & 100, 250, 500 \TODO{confirm frozen values} & 1--25 \TODO{confirm frozen values} & Balanced by construction at retained depths & Generated \texttt{if} guards may make visible calls non-executable; local variables and parameters determine guard outcomes. \\
+\bottomrule
+\end{tabularx}
+\end{table*}

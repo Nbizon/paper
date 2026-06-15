@@ -1,29 +1,50 @@
 \section{Results}
 \label{sec:results}
 
-The final results section will be organized by research question. Current quantitative results are preliminary and must not be presented as final evidence. \redtodo{Insert final control-flow results.} \redtodo{Insert final condition-aware results.}
+This section is a result scaffold: quantitative values remain preliminary and are not used as evidence. All empirical claims will be filled in only after the stabilized rerun. \TODO{Insert final results after the stabilized rerun.}
 
-\subsection{\researchq{1}: Overall Performance and Trace Quality}
+\subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
 \input{tables/overall_performance}
 
-RQ1 reports final-answer accuracy, canonical execution-trace accuracy, trace completeness, graph-valid exploration accuracy, and \texttt{NO\_RESPONSE} rate for each model and task family. The main table reports strict scores only. Full appendix tables will include conditional scores that exclude \texttt{NO\_RESPONSE} from the denominator.
+RQ1 reports final-answer accuracy, canonical-trace exact match, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE} rate for each model and task family. It then analyzes how canonical execution distance, class size, query polarity, and condition-aware guards affect final-answer and trace-level behavior. The main table uses strict scoring: invalid or absent answers count as incorrect for accuracy-like metrics.
 
-\redtodo{Replace the planned table with final strict scores for all eight models and both task families.}
+\TODO{Insert final strict scores for all models and both task families.}
 
-\subsection{\researchq{2}: Task Family and Structural Factors}
+\begin{figure}[t]
+    \centering
+    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by canonical distance.}}}
+    \caption{Effect of canonical execution distance on reachability performance.}
+    \label{fig:distance-effect}
+\end{figure}
 
-RQ2 analyzes the effect of task family and structural difficulty. We report absolute performance for each task family, but focus the comparative analysis on the degradation from control-flow reachability to condition-aware reachability. Because both families share the same reachability question, output schema, and trace-based evaluation protocol, the performance drop isolates the additional difficulty introduced by guarded calls and condition evaluation.
+\begin{figure}[t]
+    \centering
+    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by class size.}}}
+    \caption{Effect of generated class size on reachability performance.}
+    \label{fig:class-size-effect}
+\end{figure}
 
-The analysis distinguishes graph-structural factors from code-surface factors. Graph-structural factors include signed canonical distance, tree depth, tree shape, branching, source-target position, and positive versus negative queries. Code-surface factors include context size, comments, local variables, loops, \texttt{if} statements, parameters, and method order shuffling. The tree-expansion parameter $p$ is fixed and is not treated as a main experimental factor.
+\begin{figure}[t]
+    \centering
+    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of syntactic-call bias by number of condition-aware guards.}}}
+    \caption{Effect of condition-aware guards on syntactic-call bias.}
+    \label{fig:if-effect}
+\end{figure}
 
-\redtodo{Insert final factor analysis, including degradation in percentage points from control-flow to condition-aware reachability.}
+\TODO{Insert final distance, class-size, polarity, condition-aware guard, and interaction analyses.}
 
-\subsection{\researchq{3}: Reasoning Budget Analysis}
+\subsection{\researchq{2}: Models and Inference Modes}
 
-RQ3 is limited to reasoning models that expose requested reasoning-budget control. For control-flow reachability, we analyze budgets from 512 to 16,384 requested reasoning tokens and report the smallest requested reasoning budget needed to reach at least 95\% of the maximum observed final-answer accuracy for each reasoning model. We also report \texttt{NO\_RESPONSE} rate across budgets.
+RQ2 compares model configurations as deployed, including intended inference mode and whether the serving stack exposes verified reasoning-budget controls. The analysis avoids treating model family names alone as the unit of comparison: the same base model may behave differently under different serving modes, output budgets, or reasoning controls.
 
-Budget sensitivity is secondary to the main benchmark comparison. We do not make reasoning versus non-reasoning the central story, and we do not claim that equal total generation allowance implies equal compute cost or equal internal allocation.
+For configurations with verified requested reasoning-budget controls, we analyze budgets from 512 to 16,384 requested reasoning tokens and report the smallest budget that reaches at least 95\% of the model's maximum observed final-answer accuracy. We also track trace metrics and \texttt{NO\_RESPONSE} across budgets. Budget sensitivity is not used to make claims about configurations whose serving stack does not expose a verified control.
 
-\redtodo{Insert final control-flow budget curves and smallest-budget-to-95\%-max-final-answer-accuracy values.}
-\redtodo{Do not claim condition-aware budget saturation until condition-aware budget experiments are run.}
+\TODO{Insert final model and inference-mode comparison, including budget-sensitivity results only for verified budget-controllable settings.}
+\TODO{Do not claim condition-aware budget saturation unless condition-aware budget experiments are actually run.}
+
+\subsection{\researchq{3}: Trace-Level Reasoning and Error Patterns}
+
+RQ3 analyzes what emitted traces reveal about reachability reasoning. The analysis separates answer--trace consistency, graph-valid exploration, recurrent error families, and syntactic-call bias, where a model follows a visible call that the executable graph excludes. Because the current unguarded and condition-aware datasets are not paired instance-by-instance, family comparisons should use matched factor distributions rather than paired tests.
+
+\TODO{Insert final answer--trace consistency, graph-valid exploration, error-family, local-motif, and syntactic-call-bias analyses.}

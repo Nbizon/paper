@@ -5,41 +5,87 @@
 
 \subsection{Task Definition}
 
-Each benchmark instance contains a generated Java class, a source method, a target method, and a question: does the source method call the target method directly or indirectly? The model must return a JSON object with two fields: \texttt{final\_answer}, a Boolean reachability label, and \texttt{trace}, an ordered list of method names.
+\benchmark evaluates one question under a fixed output contract. Each instance gives the model a generated Java class, a source method, and a target method, then asks whether execution starting at the source can reach the target through direct or indirect method calls. The oracle label is this Boolean reachability relation: \true{} if the target is reachable in the executable call graph, and \false{} otherwise. The required output is a JSON object with a Boolean \texttt{final\_answer} and a \texttt{trace}, an ordered list of method names interpreted under the benchmark's traversal convention.
 
-Control-flow reachability and condition-aware reachability share this question and output schema. In control-flow reachability, method calls are placed outside control-flow structures; calls are not guarded by \texttt{if}, \texttt{for}, \texttt{while}, or other constructs; every generated method call is active for reachability. Variables, comments, loops, and other code-surface elements may exist only if they do not affect method-call reachability.
+The same schema is used for two task families. In unguarded reachability, generated calls are not placed behind \texttt{if}, \texttt{for}, or \texttt{while} guards, so every generated call is executable. In condition-aware reachability, a call may remain unguarded or may appear inside a generated \texttt{if} statement; a false condition leaves the call visible in the source but removes it from the executable call graph. Loops are not used to guard calls in the final task definition.
 
-In condition-aware reachability, method calls may remain outside control-flow structures or appear inside \texttt{if} statements. Calls inside branches whose conditions evaluate to false are visible in the source code but are not executable. The model must therefore distinguish syntactic call presence from executable reachability. Calls are not guarded by loops in the final task definition.
+\subsection{Dataset Generation Pipeline}
+
+The dataset starts from tree-shaped call graphs. The pipeline samples unique Java method names, builds an ordered abstract call tree, materializes it as a single Java class, and samples positive and negative questions from the realized structure. The resulting artifacts include the Java source, prompt context, questions, oracle traces, and configuration metadata.
+
+This design keeps the oracle simple enough to validate while varying properties that matter for LLM evaluation. Context size, source-target distance, label polarity, comments, local variables, parameters, loops, and conditionals are controlled by configuration. Label polarity refers only to whether the target is reachable from the source, not to trace correctness. Method declarations are shuffled in the emitted class, so declaration order is not a shortcut for the oracle traversal.
 
 \subsection{Syntactic and Executable Call Graphs}
 
-Condition-aware reachability separates two graphs. The \emph{syntactic call graph} contains all method calls visible in the Java source code, including calls inside non-passing \texttt{if} branches. The \emph{executable call graph} contains only calls that are actually executed under the generated variable values and conditions. A guarded call may therefore belong to the syntactic call graph while being absent from the executable call graph used by the oracle.
+Condition-aware instances have two relevant call graphs. The \emph{syntactic call graph} contains all method calls visible in the Java source, including calls inside branches that do not execute. The \emph{executable call graph} keeps only calls that run under the generated values and conditions. A guarded call can therefore be present in the source program while absent from the oracle graph.
 
-This distinction creates a characteristic error mode: \emph{syntactic-call bias}. A model exhibits syntactic-call bias when it treats a visible method call as evidence of reachability even though the call is inside a non-executed branch and is absent from the executable call graph.
+This distinction is part of the benchmark semantics, not a post-hoc error category. Later, \secref{sec:error-analysis} uses \emph{syntactic-call bias} for the model failure mode in which a visible call is treated as executable even though it appears only in a non-executed branch.
 
 \subsection{Tree-Shaped Graph Generation}
 
-The final benchmark focuses on tree-shaped call graphs generated from randomized pseudo-binary trees. Nodes correspond to Java methods, directed edges correspond to method calls, and generated graphs are acyclic. The current benchmark does not include inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, or multi-class projects.
+The benchmark uses acyclic, tree-shaped call graphs generated from randomized pseudo-binary trees. Nodes correspond to Java methods, and directed edges correspond to generated method calls. The tree is ordered: when a method body is materialized, child order determines the order of call statements. This makes the canonical trace code-aligned while declaration order remains uninformative.
 
-The generator starts from an ordered tree. It preserves child order when materializing method bodies, so the order of call statements inside each generated Java method is code-aligned with the ordered abstract graph. The declarations of methods inside the generated class are shuffled to prevent models from exploiting declaration order. Method order shuffling is part of the benchmark design, not an experimental ablation.
-
-We fix the tree-expansion parameter to $p = 0.65$, based on a preliminary calibration study aimed at producing non-degenerate trees with enough candidate positive and negative queries across the targeted canonical-distance range. \redtodo{Verify that $p = 0.65$ is used consistently in all final datasets.} \redtodo{Add or reference calibration evidence explaining why $p = 0.65$ was selected.}
-
-\subsection{Canonical Execution-Oriented Trace}
-
-The oracle trace is a canonical execution-oriented traversal trace. It is graph-defined and code-aligned. The generator creates an ordered tree-shaped call graph and materializes the order of children as the textual order of call statements inside each Java method body. Therefore, the oracle traversal follows the ordered call graph and the order in which calls appear in the generated Java code.
-
-For positive queries, the final answer is \true, and the trace corresponds to the first execution-consistent exploration that reaches the target. The trace follows method calls in canonical execution-oriented order and is not necessarily the shortest source-target path. For negative queries, the final answer is \false, and the trace corresponds to the canonical execution-oriented exploration from the source until the reachable region has been exhausted without reaching the target.
-
-For condition-aware instances, the canonical trace follows the executable call graph. Calls in false \texttt{if} branches are excluded from the canonical trace, even if they are syntactically present in the source code.
+Tree construction proceeds breadth-first over nodes selected for expansion. Let $u$ be the node currently processed, and let $L(u)$ and $R(u)$ denote its left and right children. When enough method names remain, the generator creates both children:
+\[
+    u \rightarrow L(u), \qquad u \rightarrow R(u).
+\]
+The left child may then receive up to two additional children. Two independent Bernoulli variables control this local expansion:
+\[
+    X_{LL}(u) \sim \mathrm{Bernoulli}(p),
+    \qquad
+    X_{LR}(u) \sim \mathrm{Bernoulli}(p).
+\]
+If $X_{LL}(u)=1$, the generator creates $L(u) \rightarrow L(L(u))$; if $X_{LR}(u)=1$, it creates $L(u) \rightarrow R(L(u))$. \figref{fig:local-tree-rule} summarizes the local rule.
 
 \begin{figure}[t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
     >=Latex,
-    method/.style={draw, rounded corners=2pt, minimum width=1.05cm, minimum height=0.5cm, align=center, font=\scriptsize},
-    edge/.style={->, thick},
+    x=1cm,
+    y=1cm,
+    method/.style={rb method, minimum width=1.35cm},
+    det/.style={rb edge},
+    opt/.style={rb optional edge},
+    note/.style={font=\scriptsize, align=center}
+]
+\node[method] (u) at (0,0) {$u$};
+\node[method] (l) at (-1.4,-1.0) {$L(u)$};
+\node[method] (r) at (1.4,-1.0) {$R(u)$};
+\node[method] (ll) at (-2.2,-2.0) {$L(L(u))$};
+\node[method] (lr) at (-0.6,-2.0) {$R(L(u))$};
+\draw[det] (u) -- node[note, above left] {always} (l);
+\draw[det] (u) -- node[note, above right] {always} (r);
+\draw[opt] (l) -- node[note, left] {$X_{LL}(u)$} (ll);
+\draw[opt] (l) -- node[note, right] {$X_{LR}(u)$} (lr);
+\node[rb panel title, text width=4.2cm] at (0,-2.75) {Optional edges are sampled independently with probability $p$.};
+\end{tikzpicture}
+}
+\caption{Local pseudo-binary expansion rule used for tree-shaped instances. The deterministic children preserve a simple tree backbone, while the optional children introduce controlled branching and sibling subtrees for negative reachability queries.}
+\Description{A node u has deterministic left and right children. The left child has two optional children, each controlled by an independent Bernoulli variable.}
+\label{fig:local-tree-rule}
+\end{figure}
+
+The role of $p$ is intentionally local and easy to interpret. For each expanded node, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Larger values create more branching and more sibling subtrees, which are useful for negative queries where the target is present in the class but unreachable from the queried source. Because the method-name budget is finite, the final levels may be truncated; labels and traces are always computed from the realized tree, not from an idealized full tree.
+
+We fix the tree-expansion parameter to $p = 0.65$, based on a preliminary calibration of how $p$ affects the number of usable questions per generated class, especially at deeper canonical distances. This value is a generation parameter rather than a main experimental factor. \TODO{Add or reference calibration evidence explaining why $p = 0.65$ was selected.}
+
+\subsection{From Graph to Java Code}
+
+After constructing the abstract tree, the generator emits one Java method per node. For each edge $u \rightarrow v$, the body of method $u$ contains a call to method $v$. In unguarded instances, these calls are executable by construction. In condition-aware instances, selected calls are placed inside generated \texttt{if} statements whose truth values determine whether they belong to the executable graph. Other code-surface elements vary the amount and shape of source code around the calls, but they are not intended to change reachability.
+
+\subsection{Canonical Execution-Oriented Trace}
+
+The oracle trace is defined over the executable graph and aligned with the generated code. Because child order is materialized as the order of call statements, the oracle explores calls as they appear inside each method body.
+
+For positive queries, the trace is the first execution-consistent exploration that reaches the target. It is not necessarily the shortest path. For negative queries, the trace exhausts the region reachable from the source without finding the target. In condition-aware instances, this traversal follows the executable call graph, not the larger syntactic graph.
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    method/.style={rb method, minimum width=1.05cm},
+    edge/.style={rb edge},
     visit/.style={font=\scriptsize, fill=white, inner sep=1pt}
 ]
 \node[method] (a) at (0,0) {A};
@@ -55,8 +101,8 @@ For condition-aware instances, the canonical trace follows the executable call g
 \draw[edge] (b) -- node[visit, right] {3} (e);
 \draw[edge] (c) -- node[visit, left] {6} (f);
 \draw[edge] (c) -- node[visit, right] {7} (g);
-\draw[->, very thick, modelblue] ($(a.east)+(0.05,0.05)$) .. controls (3.0,-0.4) and (3.0,-2.0) .. node[visit, right] {positive: A to G} ($(g.east)+(0.05,0)$);
-\draw[->, dashed, very thick, modelorange] ($(c.west)+(0,0.05)$) .. controls (0.2,-1.0) and (-0.3,-1.5) .. node[visit, above] {negative: C to E} ($(e.north east)+(0,0.03)$);
+\draw[->, line width=1pt, modelblue] ($(a.east)+(0.05,0.05)$) .. controls (3.0,-0.4) and (3.0,-2.0) .. node[visit, right] {positive: A to G} ($(g.east)+(0.05,0)$);
+\draw[rb optional edge, line width=1pt] ($(c.west)+(0,0.05)$) .. controls (0.2,-1.0) and (-0.3,-1.5) .. node[visit, above] {negative: C to E} ($(e.north east)+(0,0.03)$);
 \end{tikzpicture}
 }
 \caption{Canonical execution-oriented traversal on a tree-shaped call graph. The trace follows ordered call statements, so a positive trace can include earlier explored methods before reaching the target, and a negative trace exhausts the source's reachable region.}
@@ -66,26 +112,25 @@ For condition-aware instances, the canonical trace follows the executable call g
 
 \subsection{Signed Canonical Distance}
 
-The main distance is canonical execution-trace distance, not shortest-path distance in the abstract graph. For positive queries, distance is the number of execution-consistent traversal steps required to reach the target from the source. For negative queries, distance is defined over the canonical exploration performed from the source before concluding that the target is unreachable. Distances are signed: $+d$ for positive queries and $-d$ for negative queries. We use absolute canonical distance or target distance level for $d \in \{1,\ldots,25\}$.
-
-\redtodo{Verify in the generator code that the signed distance stored in reachability\_questions.txt corresponds exactly to canonical execution-trace distance.}
+The benchmark records a signed canonical distance for each query. Positive queries use $+d$, where $d$ is the target position in the canonical trace. Negative queries use $-d$, where $d$ is the size of the explored source-reachable region minus one. The sign mirrors the Boolean label, while the magnitude gives a trace-based difficulty proxy.
 
 \subsection{Dataset Configuration}
 
-The final planned dataset uses tree-shaped call graphs only, $p = 0.65$, context sizes 100, 250, and 500, absolute canonical distances 1 to 25, and positive and negative queries for each distance level. For each task family, the planned size is:
-\[
-\begin{aligned}
-N ={}& \texttt{nb\_context} \times \texttt{nb\_if} \times \texttt{nb\_loop} \times \texttt{nb\_comment}\\
-& \times \texttt{nb\_depths} \times \texttt{nb\_params} \times \texttt{nb\_vars} \times 2\\
-& \times \texttt{nb\_questions\_per\_depth}.
-\end{aligned}
-\]
-The factor 2 corresponds to positive and negative queries. The target design balances the two task families: $N_{control-flow} = N_{condition-aware}$. \redtodo{Confirm final value of \texttt{nb\_questions\_per\_depth}; current provisional value is 4.}
+The planned sweep uses tree-shaped graphs only. It varies context sizes 100, 250, and 500 and targets absolute canonical distances from 1 to 25. For each retained distance, the generator samples balanced positive and negative questions. \TODO{Confirm final value of \texttt{nb\_questions\_per\_depth}; current provisional value is 4.}
 
-\subsection{Benchmark Outputs and Metadata}
+% \subsection{Benchmark Outputs and Metadata}
 
-Each generated case is stored in a directory containing the generated Java class, task prompt, reachability questions, oracle traces, method list, and configuration metadata. The metadata records context size, distance range, comments, variables, loops, conditionals, parameters, and task-family configuration.
+% Each generated case is stored in a directory containing the generated Java class, task prompt, reachability questions, oracle traces, method list, and configuration metadata. The file-level schema is intentionally simple:
+% \begin{itemize}[leftmargin=*]
+%     \item \texttt{TheClass.java}: generated Java source program;
+%     \item \texttt{system.txt}: task instructions and source-code context shown to the model;
+%     \item \texttt{reachability\_questions.txt}: source-target questions, including signed canonical distance;
+%     \item \texttt{chains.txt}: oracle traces aligned with the question order;
+%     \item \texttt{methods.txt}: generated method names;
+%     \item \texttt{config.json}: context size, distance range, comments, variables, loops, conditionals, parameters, and task-family configuration.
+% \end{itemize}
+% This metadata is part of the benchmark design. It lets later analyses aggregate failures by graph structure, code-surface factors, label polarity, and distance without reverse-engineering those factors from source text.
 
 \subsection{Oracle Validation}
 
-We validate generated instances using a programmatic oracle-validation pipeline. This pipeline checks that the generated Java code compiles, that the materialized method calls match the intended tree-shaped call graph, and that sampled positive and negative queries agree with the reachability relation induced by the generated program. It also validates that oracle traces follow the benchmark's canonical execution-oriented traversal. For condition-aware instances, the validation additionally checks that generated variables and conditions correctly determine whether guarded calls are executed.
+Generated instances are checked by a programmatic oracle-validation pipeline. The validator checks that the Java source compiles, that materialized method calls match the intended tree-shaped graph, and that sampled positive and negative queries agree with the reachability relation induced by the generated program. It also checks that oracle traces follow the canonical execution-oriented traversal. For condition-aware instances, validation additionally checks that generated variables and conditions correctly determine whether guarded calls execute.

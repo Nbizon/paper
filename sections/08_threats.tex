@@ -1,24 +1,32 @@
-\section{Discussion and Limitations}
+\section{Discussion and Threats to Validity}
 \label{sec:discussion}
 
-\subsection{Complementarity with Realistic Benchmarks}
+\subsection{Construct Validity}
 
-\benchmark is a diagnostic benchmark, not a replacement for realistic software-engineering benchmarks. Existing code benchmarks are valuable for measuring end-to-end performance on realistic tasks. \benchmark is complementary: it isolates a lower-level structural capability that may be hidden inside broader software-engineering tasks.
+\benchmark measures observable answers and emitted traces for generated method-reachability questions. Trace correctness is not a direct measurement of hidden model cognition: a model may emit the right trace for the wrong reason, or answer correctly while giving an invalid path. Likewise, reasoning text from locally run models is an output artifact, not a complete record of internal computation. Reporting answer, trace, exploration, and invalid-output metrics reduces the risk of overinterpreting any single signal.
 
-\subsection{Synthetic Java}
+\subsection{Internal Validity}
 
-\benchmark uses generated Java programs rather than real-world repositories. This limits direct ecological validity: the benchmark does not capture the full complexity of naming conventions, architectural patterns, dependencies, side effects, or domain semantics found in real projects. However, this synthetic design is intentional. It allows us to control structural difficulty, generate balanced positive and negative queries, compute exact oracle labels and traces, and validate instances automatically.
+The main internal-validity risks are generator defects, oracle mismatch, prompt ambiguity, parsing failures, and uncontrolled inference settings. The oracle-validation pipeline checks compilation, materialized call consistency, positive and negative reachability labels, canonical traces, and condition evaluation for guarded calls. Before quantitative claims are made, the final protocol must also freeze prompt templates, model identifiers, decoding parameters, and budget settings.
 
-\subsection{Task Scope}
+\TODO{Rerun all final experiments after freezing datasets, prompts, model versions, inference settings, and evaluation scripts.}
 
-The current benchmark targets Java and materializes each instance as a single class containing many generated methods. It does not include inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, multi-class projects, or cyclic call graphs. Current graphs are acyclic tree-shaped structures. Condition-aware reachability is limited to \texttt{if} statements and does not claim arbitrary control-flow or loop-guarded call reachability.
+\subsection{External Validity}
+
+\benchmark trades ecological realism for oracle labels, parameterized factors, and trace-level validation. It uses generated Java programs rather than real repositories, so it does not capture the full complexity of naming conventions, architectural patterns, dependencies, side effects, or domain semantics found in production code. The same restriction gives the benchmark its diagnostic value: individual factors can be varied while keeping the task and oracle stable.
+
+The current benchmark targets Java and materializes each instance as a single class with many methods. It does not measure full Java comprehension, realistic project-level reasoning, inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, multi-class designs, cyclic call graphs, realistic naming conventions, rich data flow, arbitrary loop-guarded reachability, or human-written architecture. Current graphs are acyclic trees, and condition-aware reachability is limited to \texttt{if} statements.
 
 The generator starts from abstract call graphs, so the core design is partly language-agnostic. Extending the benchmark to other languages would require a new materialization and validation backend, as well as language-specific prompt examples.
 
-\subsection{Trace and Reasoning Limitations}
+\benchmark isolates a lower-level structural capability that may be hidden inside broader software-engineering tasks. Its results should therefore be read as evidence about executable method reachability under controlled conditions, not as a direct estimate of performance on full maintenance workflows.
 
-Trace correctness is an observable-output metric, not a direct measurement of hidden model cognition. A model may produce a correct trace for the wrong internal reason, or a correct final answer with an invalid trace. Likewise, emitted reasoning text from locally run models is an observable output artifact; we do not assume that it fully captures internal computation.
+\subsection{Conclusion Validity}
 
-\subsection{External Claims}
+Current quantitative results are preliminary. Final claims require a stabilized rerun, consistent handling of \texttt{NO\_RESPONSE}, and analyses that separate answer accuracy, trace quality, graph-valid exploration, structural-factor effects, model-configuration differences, and budget effects where controls are verified. Because the current unguarded and condition-aware datasets are not paired instance-by-instance, family comparisons should not be analyzed as paired tests unless the frozen dataset changes. Results may also be sensitive to prompt format, JSON extraction, serving configuration, decoding parameters, and model-version drift. Budget sensitivity should remain part of the model/inference-mode analysis rather than a standalone claim unless additional experiments show that it explains failures across both task families.
 
-Model availability, licenses, model sizes, context lengths, and reasoning-budget support are temporally unstable. The final paper must verify and cite these claims from official sources before submission. \redtodo{Verify exact model identifiers, sizes, licenses, context lengths, and Jean compatibility.}
+\subsection{Reproducibility and Artifact Availability}
+
+Model availability, licenses, model sizes, context lengths, and reasoning-budget support are temporally unstable. The final paper must verify and cite these claims from official sources before submission. \TODO{Verify exact model identifiers, sizes, licenses, context lengths, and Jean Zay compatibility.}
+
+The intended artifact should include datasets, generation code, prompt templates, evaluation scripts, oracle validators, and dashboard materials. During review, links must preserve double-anonymous requirements; after acceptance, public links should be made stable when possible. \TODO{Add anonymized artifact URL, artifact contents checklist, and public-release plan.}

@@ -1,6 +1,6 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\benchmark is a controlled Java benchmark for evaluating whether LLMs can answer and explain method-reachability questions under exact oracle supervision. The benchmark is designed as a diagnostic complement to realistic software-engineering benchmarks: it isolates an elementary structural capability, separates final-answer correctness from trace quality, and supports controlled variation across task families and difficulty factors.
+\benchmark evaluates whether LLMs can infer executable inter-method reachability and produce oracle-consistent traces from Java source code. By isolating this structural task, the benchmark separates answer correctness from trace quality and makes distance, class size, query polarity, and condition-aware guards analyzable as distinct factors.
 
-The final ICSE study will compare control-flow and condition-aware reachability, quantify degradation introduced by guarded calls and condition evaluation, and analyze requested reasoning-budget effects for reasoning models. The current draft records the stabilized protocol and the remaining validation work. \redtodo{Replace this conclusion with final empirical insights after the final reruns.}
+\TODO{Replace this conclusion with final empirical insights after the frozen rerun, including the strongest structural factors, model and inference-mode differences, condition-aware guard effects, and dominant trace-level error families.}

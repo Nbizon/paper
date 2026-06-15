@@ -1,17 +1,17 @@
 \section{Error Analysis}
 \label{sec:error-analysis}
 
-Beyond aggregate metrics, we conduct a semi-quantitative error analysis using an interactive deeper-analysis dashboard. The dashboard groups trace failures by structural parameters, reasoning budget, and local graph motifs. We use it to identify recurrent error families, such as syntactic-call bias in condition-aware instances, where models follow visible but non-executable calls. These error-family counts complement the main metrics by explaining why performance degrades when reachability depends on conditions.
+Beyond aggregate metrics, we conduct a semi-quantitative error analysis with an interactive dashboard that groups trace failures by structural parameters, model configuration, reasoning-budget setting when applicable, and local graph motifs. This analysis identifies recurrent error families, including syntactic-call bias in condition-aware instances, where models follow visible but non-executable calls.
 
 \begin{figure}[t]
 \centering
 \resizebox{\columnwidth}{!}{%
 \begin{tikzpicture}[
     >=Latex,
-    method/.style={draw, rounded corners=2pt, minimum width=1.0cm, minimum height=0.48cm, align=center, font=\scriptsize},
-    code/.style={draw=gray!70, rounded corners=2pt, align=left, inner sep=5pt, font=\scriptsize, text width=4.7cm},
-    edge/.style={->, thick},
-    bad/.style={->, very thick, dashed, modelorange}
+    method/.style={rb method, minimum width=1.0cm},
+    code/.style={rb code, text width=4.7cm},
+    edge/.style={rb edge},
+    bad/.style={rb optional edge, line width=1pt}
 ]
 \node[method] (a) at (0,0) {A};
 \node[method] (b) at (-1.2,-1.0) {B};
@@ -32,6 +32,8 @@ Beyond aggregate metrics, we conduct a semi-quantitative error analysis using an
 \label{fig:syntactic-call-bias}
 \end{figure}
 
-The final taxonomy may include syntactic-call bias, missing intermediate nodes, early stopping, over-exploration, invalid transition, target hallucination, positive shortcut, negative over-exploration, wrong source, repeated methods, and order violation. \redtodo{Finalize the error-family taxonomy after rerunning final experiments and inspecting the deeper-analysis dashboard.}
+\input{tables/error_taxonomy}
 
-The dashboard is used as a semi-quantitative tool rather than as a source of primary benchmark metrics. The main paper will include one representative visualization or schematic example, while full dashboard screenshots and usage notes belong in the appendix or artifact documentation. \redtodo{Add final deeper-analysis figure and dashboard appendix reference.}
+\TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
+
+The taxonomy explains mechanisms behind aggregate degradation. Syntactic-call bias tests whether condition-aware failures come from treating visible calls as executable; missing-node and shortcut errors capture answers that are correct without recovering the required execution-oriented trace. The dashboard supports this interpretation but is not the source of the primary benchmark scores. The main paper includes one representative schematic example; full screenshots and usage notes belong in the appendix or artifact documentation. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}

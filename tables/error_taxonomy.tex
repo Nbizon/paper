@@ -1,25 +1,25 @@
-\begin{table*}[t]
-    \centering
-    \caption{Aggregated chain-level failure families derived from the in-depth analysis dashboard. Rates are normalized by the full set of evaluated cases in scope. The families are not mutually exclusive: a single incorrect trace can contribute to several interpretable characteristics.}
-    \label{tab:errors}
-    \small
-    \begin{tabular}{lrrr}
-        \toprule
-        Failure family & Gemma & GPT-OSS & Qwen \\
-        \midrule
-        Shorter trace & 31.7\% & 38.5\% & 18.0\% \\
-        Over-exploration & 14.6\% & 31.5\% & 7.5\% \\
-        Alternative branch & 12.4\% & 26.6\% & 6.2\% \\
-        Invalid transition & 11.8\% & 22.7\% & 4.9\% \\
-        Missed reachable target & 8.1\% & 18.3\% & 7.0\% \\
-        Longer trace & 7.8\% & 19.3\% & 4.9\% \\
-        Ordering issue & 6.2\% & 9.5\% & 7.9\% \\
-        Empty prediction & 4.0\% & 6.7\% & 6.1\% \\
-        Hallucinated target & 1.0\% & 1.7\% & 0.6\% \\
-        Wrong-rank target & 1.0\% & 5.1\% & 1.3\% \\
-        Repeated methods & 0.6\% & 5.5\% & 1.0\% \\
-        Unresolved node & 0.2\% & 4.0\% & 1.1\% \\
-        Wrong source & $<0.1$\% & $<0.1$\% & 0.4\% \\
-        \bottomrule
-    \end{tabular}
+\begin{table*}[!t]
+\centering
+\caption{Planned error-family taxonomy. Counts remain TODOs until final reruns and dashboard inspection are complete.}
+\label{tab:error-taxonomy}
+\tiny
+\setlength{\tabcolsep}{2pt}
+\begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.27\textwidth}p{0.21\textwidth}p{0.055\textwidth}p{0.055\textwidth}p{0.15\textwidth}}
+\toprule
+Error family & Definition & Detection method & $n$ & \% & Example \\
+\midrule
+Syntactic-call bias & Follows a visible call that is not executable under generated guards. & Compare predicted edges with executable graph. & \TODO{n} & \TODO{\%} & false guarded call \\
+Missing intermediate nodes & Skips one or more oracle methods. & Trace alignment. & \TODO{n} & \TODO{\%} & $A,C$ for $A,B,C$ \\
+Early stopping & Ends before oracle exploration is complete. & Prefix and coverage checks. & \TODO{n} & \TODO{\%} & source only \\
+Over-exploration & Adds reachable but non-oracle exploration after the stopping point. & Oracle stop-condition check. & \TODO{n} & \TODO{\%} & past target \\
+Invalid transition & Predicts an edge absent from the executable graph. & Edge-validity check. & \TODO{n} & \TODO{\%} & cross branch \\
+Target hallucination & Mentions a target or method name not present in the generated class. & Method-list check. & \TODO{n} & \TODO{\%} & unknown name \\
+Positive shortcut & Gives a reachable label with a shortest-path-like trace that omits required exploration. & Canonical-trace comparison. & \TODO{n} & \TODO{\%} & path only \\
+Negative over-exploration & Negative trace explores outside the source-reachable region. & Reachable-region check. & \TODO{n} & \TODO{\%} & sibling subtree \\
+Wrong source & Starts the trace from a method other than the queried source. & First-node check. & \TODO{n} & \TODO{\%} & target first \\
+Repeated methods & Repeats methods in an acyclic tree trace. & Duplicate check. & \TODO{n} & \TODO{\%} & $A,B,A$ \\
+Order violation & Uses valid methods but not in canonical order. & Ordered oracle comparison. & \TODO{n} & \TODO{\%} & sibling swap \\
+Invalid JSON / schema failure & Output cannot be parsed into the required schema. & Parser status. & \TODO{n} & \TODO{\%} & missing field \\
+\bottomrule
+\end{tabularx}
 \end{table*}

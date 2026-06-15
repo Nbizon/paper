@@ -7,10 +7,9 @@
         \toprule
         RQ & Scientific question & Figure or table & Interpretation target \\
         \midrule
-        RQ1 & What is the baseline behavior across final, chain, and trace metrics? & \figref{fig:overall-metrics-latex}; \tabref{tab:overall} & Check whether final-answer accuracy hides weak reasoning traces. \\
-        RQ2 & Which structural factors remain hard? & \figref{fig:depth-context-latex}; \tabref{tab:high-budget-16384}; \tabref{tab:factors} & Study depth, context, branching, and code distractors as dataset-intrinsic difficulty factors. \\
-        RQ3 & What changes between control-flow and data-flow reachability? & Contrastive control-flow/data-flow slices & Isolate the additional difficulty introduced when method-call reachability depends on evaluated conditions. \\
-        RQ4 & How do reasoning models, non-reasoning models, and requested budgets differ? & \figref{fig:budget-scaling-latex}; \tabref{tab:budget}; \tabref{tab:marginal-budget}; \tabref{tab:budget-observability}; \tabref{tab:used-budget-by-requested}; \figref{fig:used-reasoning-budget-latex}; \figref{fig:error-taxonomy-latex}; \tabref{tab:errors} & Compare model families, estimate budget sensitivity, identify saturation, and distinguish wrong final decisions from wrong paths and invalid traces. \\
+        RQ1 & How accurate are executable reachability answers and traces under controlled structural variation? & \figref{fig:overall-metrics-latex}; \tabref{tab:overall}; \figref{fig:distance-effect}; \figref{fig:class-size-effect}; \figref{fig:if-effect}; \tabref{tab:factors} & Check whether final-answer accuracy hides weak traces, and estimate how distance, class size, polarity, and condition-aware guards change both signals. \\
+        RQ2 & Which models and inference modes are most effective? & \figref{fig:budget-scaling-latex}; \tabref{tab:budget}; \tabref{tab:marginal-budget}; \figref{fig:used-reasoning-budget-latex} & Compare deployed model configurations and estimate budget sensitivity only where the serving stack exposes verified controls. \\
+        RQ3 & What trace-level failure mechanisms explain aggregate performance? & \figref{fig:error-taxonomy-latex}; \tabref{tab:error-taxonomy}; \figref{fig:syntactic-call-bias} & Interpret answer--trace inconsistencies, invalid explorations, recurrent error families, and syntactic-call bias. \\
         \bottomrule
     \end{tabularx}
 \end{table*}
