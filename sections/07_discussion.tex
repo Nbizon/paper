@@ -1,7 +1,21 @@
-\section{Error Analysis}
+\section{Understanding Trace Errors}
 \label{sec:error-analysis}
 
-Aggregate scores indicate how often a model configuration fails, but they do not explain what happened in the generated trace. We therefore complement the main metrics with an error analysis. An interactive dashboard groups failed traces according to structural factors, model configuration, verified reasoning budget when available, and local graph motif. These groups are used to count recurring error types and inspect representative examples.
+The metrics used in \researchq{3} indicate whether a trace is correct, complete, or graph-valid. However, two incorrect traces can fail for different reasons. One may stop too early, while another may continue through a call that cannot execute. We therefore classify the errors before inspecting individual examples.
+
+\subsection{From a Failed Trace to an Error Type}
+
+Each predicted trace is compared with the method list, the executable graph, and the canonical trace. This comparison produces the taxonomy shown in Table~\ref{tab:error-taxonomy}. The categories are not inferred from generated explanations. They are detected from observable differences between the predicted trace and the oracle.
+
+\input{tables/error_taxonomy}
+
+The order of the checks makes it possible to separate several levels of failure. We first verify that the response can be parsed and that the trace starts from the requested source. We then check whether the methods exist and whether consecutive methods are connected by executable edges. Finally, we compare the exploration order and stopping point with the canonical trace. A response can satisfy an early check and still fail a later one. For example, all reported transitions can be executable even when the model stops before reaching the target.
+
+\TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
+
+\subsection{When Visible Code Does Not Execute}
+
+Condition-aware programs introduce one error that can be identified more precisely. A call can appear explicitly in the source code while its condition is false. If the model follows this call, the transition exists in $G_{\mathit{syn}}$ but not in $G_{\mathit{exec}}$. We call this behavior syntactic-call bias because the trace follows the visible syntax without reproducing the runtime condition.
 
 \begin{figure}[t]
 \centering
@@ -27,15 +41,15 @@ Aggregate scores indicate how often a model configuration fails, but they do not
 };
 \end{tikzpicture}
 }
-\caption{Example of syntactic-call bias. The call to \texttt{C} is visible in the source code, but its condition is false. It is therefore absent from the executable graph and the oracle trace.}
+\caption{Example of syntactic-call bias. The call to \texttt{C} is present in the method, but the generated value makes its condition false.}
 \Description{A small call-graph and code schematic showing a true guarded call and a false guarded call.}
 \label{fig:syntactic-call-bias}
 \end{figure}
 
-\input{tables/error_taxonomy}
+Figure~\ref{fig:syntactic-call-bias} illustrates this difference. Both calls can be found by reading the method body, but only \texttt{B} is executed for the generated value. The oracle trace therefore excludes \texttt{C}. This error is different from hallucinating a method or inventing an edge, because the model follows code that really exists but does not execute.
 
-\TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
+\subsection{Using the Errors for Diagnosis}
 
-The taxonomy connects a decrease in a metric with a concrete behavior in the trace. Syntactic-call bias, for example, indicates that the model treated a visible call as executable without evaluating its condition. Missing-node and shortcut errors represent another situation: the final answer can be correct even though required calls are absent from the trace. Invalid transitions, incorrect starting methods, repeated methods, and stopping errors describe other differences between the predicted trace and the oracle.
+An interactive dashboard groups the detected errors by model configuration, structural factors, reasoning budget when verified, and local graph motif. We use these groups to determine whether an error appears repeatedly under the same conditions. For example, a model may return correct Boolean answers while frequently omitting intermediate methods, or it may increasingly follow disabled calls as the number of conditions grows.
 
-The dashboard is used to inspect these patterns, but it does not define the main benchmark scores. These scores are computed by the frozen evaluator. The paper presents one schematic example, while more detailed views and instructions for using the dashboard are provided in the appendix or artifact. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}
+The dashboard does not define the benchmark scores. All metrics and error labels are computed by the frozen evaluator before the examples are inspected. The examples are then used to explain a measured pattern, not to establish it. The main paper presents only the patterns needed to answer \researchq{3}; the complete dashboard and its usage instructions are provided in the artifact. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}

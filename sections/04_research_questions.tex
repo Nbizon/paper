@@ -1,12 +1,16 @@
 \section{Research Questions}
 \label{sec:research-questions}
 
-We organize our evaluation around three research questions. The first studies whether models answer reachability questions correctly and how controlled factors affect their performance. The second compares the different model and inference configurations. The third analyzes the traces returned by the models to understand the errors that are not visible from the final answer alone.
+The objective of the evaluation is not only to rank the models. We also want to identify which properties of a reachability question make it difficult and determine whether the returned trace supports the final answer. We therefore study three research questions.
 
-\begin{itemize}[leftmargin=*]
-    \item \researchq{1}: How accurately do LLMs solve executable method-reachability questions, and how is their performance affected by canonical trace length, class size, query polarity, and condition-aware guards?
-    \item \researchq{2}: How do model and inference configurations compare on \benchmark, and how stable are the improvements obtained with verified reasoning controls?
-    \item \researchq{3}: What information do model-generated traces provide about answer--trace consistency, graph-valid exploration, recurring errors, and syntactic-call bias?
-\end{itemize}
+\noindent\researchq{1}: \emph{How accurately do LLMs solve executable method-reachability questions, and how is their performance affected by trace length, class size, query polarity, and condition-aware guards?}
 
-\input{tables/research_questions}
+This first question establishes the general performance of the models and relates their errors to the factors controlled by the generator.
+
+\noindent\researchq{2}: \emph{How do model and inference configurations compare on \benchmark, and how stable are the improvements obtained with verified reasoning controls?}
+
+This question determines whether the observed differences come from the evaluated model configuration and whether increasing the reasoning budget continues to improve the answer and the trace.
+
+\noindent\researchq{3}: \emph{What information do model-generated traces provide about the errors made by LLMs?}
+
+The last question compares each trace with the oracle graph. It studies whether the trace is consistent with the final answer, whether it follows executable calls, and which error patterns occur repeatedly.

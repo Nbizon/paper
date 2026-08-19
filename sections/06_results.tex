@@ -1,17 +1,17 @@
 \section{Results}
 \label{sec:results}
 
-The final experiments have not yet been completed. This section therefore presents the structure that will be used to report the results, without using preliminary values to support conclusions. The placeholders will be replaced after the dataset, model configurations, and evaluation scripts have been frozen and the complete experiment has been run again. \TODO{Insert final results after the stabilized rerun.}
+The final experiment has not yet been completed. We therefore keep the result-dependent parts of this section as explicit placeholders. The structure below shows how each research question will be answered, but no preliminary value is used to support a conclusion. \TODO{Insert final results after the stabilized rerun.}
 
 \subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
 \input{tables/overall_performance}
 
-We first report strict final-answer and trace scores for each model and task family. The comparison includes exact canonical trace accuracy, trace completeness, graph-valid exploration, and the \texttt{NO\_RESPONSE} rate. Invalid and missing outputs remain in the denominator. The results therefore represent the complete evaluation pipeline and not only the responses that can be parsed.
+We answer \researchq{1} in two steps. First, we report the general performance of each model on the two task families. Table~\ref{tab:overall} presents the strict final-answer score together with exact trace accuracy, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE}. Keeping missing and invalid responses in the denominator shows the performance of the complete system, including its ability to follow the required format.
 
 \TODO{Insert final strict scores for all models and both task families.}
 
-We then analyze performance according to the structural factors controlled by the benchmark. Figures~\ref{fig:distance-effect} and~\ref{fig:class-size-effect} show the effects of canonical trace length and class size. Figure~\ref{fig:if-effect} focuses on calls that are visible in the source code but disabled by condition-aware guards.
+Second, we use the generator metadata to separate the effect of each structural factor. Figure~\ref{fig:distance-effect} studies how performance changes when the model must follow a longer execution. Figure~\ref{fig:class-size-effect} studies whether additional methods make the relevant calls more difficult to identify. Figure~\ref{fig:if-effect} then measures the effect of visible calls that are disabled by generated conditions. Polarity is analyzed separately because a negative question requires the model to establish that no executable path reaches the target.
 
 \begin{figure}[t]
     \centering
@@ -38,15 +38,17 @@ We then analyze performance according to the structural factors controlled by th
 
 \subsection{\researchq{2}: Models and Inference Configurations}
 
-The second analysis compares the complete configurations listed in Table~\ref{tab:models}. A checkpoint can behave differently depending on its serving mode, context limit, output budget, or reasoning control. For this reason, the results are reported for configurations and not only for model names.
+For \researchq{2}, the comparison unit is the complete configuration listed in Table~\ref{tab:models}. We first compare all configurations under their frozen inference settings. This shows which deployed systems obtain the highest answer and trace scores without assuming that a checkpoint behaves identically under every serving mode.
 
-For configurations with a verified reasoning-budget control, we test requested budgets from 512 to 16,384 tokens. We report the smallest budget that reaches at least 95\% of the highest final-answer accuracy observed for that configuration. We then check whether trace quality and the \texttt{NO\_RESPONSE} rate follow the same evolution. We do not report conclusions about reasoning budgets for deployments where the control has not been confirmed.
+We then study reasoning budget only for configurations where this value is verified. Requested budgets range from 512 to 16,384 tokens. For each configuration, we identify the smallest budget that reaches at least 95\% of its highest observed final-answer accuracy. We compare this point with the evolution of trace quality and \texttt{NO\_RESPONSE}. This makes it possible to determine whether a larger budget improves only the final decision or also the execution trace. No budget conclusion is reported for a deployment whose control is not confirmed.
 
 \TODO{Insert final model and inference-mode comparison, including budget-sensitivity results only for verified budget-controllable settings.}
 \TODO{Do not claim condition-aware budget saturation unless condition-aware budget experiments are actually run.}
 
 \subsection{\researchq{3}: Trace-Level Reasoning and Error Patterns}
 
-Finally, we compare each Boolean answer with the corresponding trace. We check whether the trace starts from the requested source, follows executable edges, stops at the correct point, and is consistent with the final answer. For condition-aware questions, we also record whether the model follows a call that is present in the source code but disabled during execution. The two task families are not currently paired instance by instance. Their comparison therefore uses similar factor distributions and unpaired confidence intervals.
+\researchq{3} starts from the cases that cannot be explained by the final answer alone. For each response, we compare the Boolean decision with the methods reported in the trace. We first check that the trace starts from the requested source. We then verify every transition and determine whether the model stops at the correct point. This separates a correct answer supported by an executable trace from a correct answer associated with missing or impossible calls.
+
+For condition-aware questions, we additionally check whether an invalid transition corresponds to a call that is visible in the code but disabled at runtime. The error analysis in Section~\ref{sec:error-analysis} uses these checks to group recurring behaviors. Because the two task families are not paired instance by instance, their aggregate differences are estimated with unpaired intervals over similar factor distributions.
 
 \TODO{Insert final answer--trace consistency, graph-valid exploration, error-family, local-motif, and syntactic-call-bias analyses.}

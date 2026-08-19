@@ -221,9 +221,9 @@
 - Status: implemented
 - Source: User request
 - Description: Align the paper sections after Research Questions with the author's revised three-RQ framing.
-- Acceptance criteria: The RQ table, Results section, analysis roadmap, discussion/threats, and conclusion use three RQs: RQ1 for reachability accuracy and structural factors, RQ2 for model and inference-mode comparison including verified reasoning-budget analyses, and RQ3 for trace-level reasoning and error patterns.
+- Acceptance criteria: The Research Questions and Results sections, analysis roadmap, discussion/threats, and conclusion use three RQs: RQ1 for reachability accuracy and structural factors, RQ2 for model and inference-mode comparison including verified reasoning-budget analyses, and RQ3 for trace-level reasoning and error patterns.
 - Traceability:
-  - Code: sections/04_research_questions.tex; tables/research_questions.tex; sections/06_results.tex; tables/analysis_roadmap.tex; sections/07_discussion.tex; sections/08_threats.tex; sections/10_conclusion.tex
+  - Code: sections/04_research_questions.tex; sections/06_results.tex; tables/analysis_roadmap.tex; sections/07_discussion.tex; sections/08_threats.tex; sections/10_conclusion.tex
   - Tests: rg::RQ4; manual::latexmk build
   - Docs:
   - ADR:
@@ -303,9 +303,9 @@
 
 ### REQ-0025
 - Status: implemented
-- Source: User request, using the author-provided Abstract and Introduction as the style reference
-- Description: Rewrite the complete paper in the author's English style, using simple and direct sentences while preserving the scientific content.
-- Acceptance criteria: The author-provided Abstract and Introduction define the target voice; every included section and active table uses the same direct and progressive style; scientific definitions, citations, oracle conventions, controlled placeholders, and result-dependent TODOs remain intact.
+- Source: User request and clarification, using the author-provided Abstract and Introduction as the style and reasoning reference
+- Description: Reconstruct the complete paper as if written by the author, changing the organization of sections, order of ideas, paragraph objectives, transitions, and sentence construction rather than performing a vocabulary-level rewrite.
+- Acceptance criteria: The author-provided Abstract and Introduction define the target reasoning pattern; Related Work progresses from end-task evaluation to diagnostic evaluation; Benchmark Design follows the construction of an instance from graph to validated oracle; Methodology follows the chronological experiment pipeline; Results and error analysis are organized by the questions they answer; scientific definitions, citations, oracle conventions, placeholders, and result-dependent TODOs remain intact.
 - Traceability:
   - Code: sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex; sections/04_research_questions.tex; sections/05_methodology.tex; sections/06_results.tex; sections/07_discussion.tex; sections/08_threats.tex; sections/10_conclusion.tex; sections/11_data_availability.tex; tables/research_questions.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex; tables/overall_performance.tex; tables/error_taxonomy.tex; figures/pipeline.tex
   - Tests: manual::latexmk build; manual::full-paper editorial review
@@ -384,6 +384,7 @@
 - REQ-0025 -> sections/*.tex; active tables; figures/pipeline.tex -> manual::latexmk build; manual::full-paper editorial review -> commit::pending
 
 ## Change Log
+- 2026-08-19 - Reconstructed the manuscript's argument, section organization, paragraph logic, and experimental narrative after the author clarified that a surface-level stylistic rewrite was insufficient.
 - 2026-08-19 - Rewrote the complete manuscript using the author-provided Abstract and Introduction as the English style reference.
 - 2026-08-17 - Rewrote the complete manuscript in natural scientific English using the reference report's direct, progressive explanatory style.
 - 2026-06-15 - Revised Section V to the requested ICSE experimental-protocol outline without changing sections through Research Questions.

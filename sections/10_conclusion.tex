@@ -1,8 +1,10 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we introduced \benchmark, a benchmark designed to study whether LLMs can follow executable calls between Java methods. The benchmark generates Java programs and their oracle call graphs together. It can therefore vary trace length, class size, query polarity, and guarded calls while keeping exact labels and traces. By asking for both a Boolean answer and an ordered trace, the evaluation can also distinguish a correct final answer from a trace that follows the actual execution of the program.
+Existing software-engineering benchmarks mainly show whether an LLM completes a task. \benchmark was introduced to study one of the capabilities that can contribute to this result: following executable calls between methods. The benchmark generates the call graph before the Java program. It therefore knows the expected reachability answer and the sequence of methods that must be explored.
+
+This construction makes two types of analysis possible. First, the generator can vary trace length, class size, polarity, and generated conditions while keeping the task unchanged. Second, the oracle can compare the final answer with the returned trace. A correct answer can therefore be separated from a trace that skips methods, follows an invalid call, or treats a disabled call as executable.
 
 \TODO{Replace this paragraph with final empirical insights after the frozen rerun, including the strongest structural factors, model and inference-mode differences, condition-aware guard effects, and dominant trace-level error families.}
 
-\benchmark is intended to complement realistic software-engineering benchmarks. Repository-level tasks evaluate whether a model can complete a full workflow, while \benchmark isolates one structural capability that can contribute to this performance. Its main objective is therefore diagnostic. It connects model behavior with controlled properties of the generated programs and makes recurring trace errors measurable.
+The objective of \benchmark is not to replace program-analysis tools or realistic repository benchmarks. Program-analysis tools remain the appropriate solution for computing reachability in real software, while repository benchmarks measure whether an LLM can complete a full developer task. \benchmark provides a complementary diagnostic setting. It makes it possible to connect model errors with controlled properties of a program and to measure behaviors that are hidden by the final answer alone.
