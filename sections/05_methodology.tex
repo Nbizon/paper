@@ -1,102 +1,102 @@
 \section{Experimental Methodology}
 \label{sec:methodology}
 
-This section specifies the protocol used to evaluate model configurations on the frozen \benchmark release. The benchmark construction, oracle semantics, canonical-trace convention, and research questions are defined in Sections~\ref{sec:benchmark-design} and~\ref{sec:research-questions}; we do not restate them here. Instead, we describe the operational choices that determine how instances are selected, prompted, served to models, parsed, scored, and analyzed. All choices in this section are fixed before the final evaluation run. No prompt template, parser rule, metric definition, model setting, or statistical procedure is changed after inspecting final test outputs.
-
-Release-specific constants that depend on the stabilized rerun are shown as bracketed placeholders and are instantiated in the camera-ready artifact.
+This section describes how we evaluate the models on the generated questions. The protocol covers the construction of the evaluation set, model serving, prompting, output parsing, scoring, and statistical analysis. All these choices are fixed before the final experiment and are not changed after inspecting the model results. Values that depend on the final release are kept between brackets until the dataset and configurations are frozen.
 
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-The evaluation set contains \texttt{[N\_INSTANCES]} validated source--target queries drawn from \texttt{[N\_CLASSES]} generated Java classes. It covers the context-size grid \texttt{[CONTEXT\_SIZES]}, the signed canonical trace-length range \texttt{[TRACE\_LENGTH\_RANGE]}, the task families \texttt{[TASK\_FAMILIES]}, the guard settings \texttt{[GUARD\_SETTINGS]}, the code-surface settings \texttt{[PARAMETER\_SETTINGS]}, and the random seeds \texttt{[RANDOM\_SEEDS]}. The realized positive/negative balance is \texttt{[POSITIVE\_NEGATIVE\_BALANCE]}.
+The evaluation set contains \texttt{[N\_INSTANCES]} validated questions sampled from \texttt{[N\_CLASSES]} generated Java classes. It covers context sizes \texttt{[CONTEXT\_SIZES]}, signed trace lengths \texttt{[TRACE\_LENGTH\_RANGE]}, task families \texttt{[TASK\_FAMILIES]}, guard settings \texttt{[GUARD\_SETTINGS]}, code-surface settings \texttt{[PARAMETER\_SETTINGS]}, and random seeds \texttt{[RANDOM\_SEEDS]}. The final proportion of positive and negative questions is \texttt{[POSITIVE\_NEGATIVE\_BALANCE]}.
 
-Instances are retained only if the generator and validator agree on compilation, method inventory, oracle label, canonical trace, executable graph metadata, and guard metadata when applicable. For each requested trace length, positive and negative queries are selected in balanced pairs whenever both labels are available. When a factor cell cannot provide both polarities, the realized counts are reported and that cell is excluded from analyses requiring exact balance.
+An instance is included only when the generation and validation stages agree on the compiled list of methods, the reachability label, the canonical trace, and the executable graph. For condition-aware instances, they must also agree on the guard metadata. At each requested trace length, we select positive and negative questions in pairs when both are available. If a configuration does not contain both polarities, we report the actual number of questions and exclude it from analyses that require an exact balance.
 
-Each generated class is stored as a self-contained experiment directory containing the Java source, prompt context, sampled queries, oracle metadata, method list, graph metadata, guard metadata, and generation configuration. The inference runner consumes this directory structure unchanged. Downstream parsing and scoring operate only on stored model outputs and frozen oracle files.
+Each generated class is stored in a separate experiment directory. This directory contains the Java source code, the prompt context, the questions, the list of methods, the oracle graphs, the guard metadata, and the generation configuration. The inference program reads these files without modifying them. The parser and evaluator then use the saved model responses and the same oracle files.
 
 \input{tables/dataset\_specification}
 
 \subsection{Experimental Factors}
 \label{subsec:experimental-factors}
 
-The primary factors are task family, signed canonical trace length, generated class size, query polarity, and model configuration. For condition-aware instances, we additionally analyze guard-specific metadata: the number of generated guards, the number of syntactically visible but non-executable calls, and whether a predicted transition follows such a disabled call.
+The main experimental factors are the task family, signed canonical trace length, class size, query polarity, and model configuration. For condition-aware questions, we also record the number of guards, the number of visible calls disabled by these guards, and whether the predicted trace follows one of the disabled calls.
 
-Code-surface features such as comments, local variables, method parameters, loops, and declaration order are treated as primary factors only when they are enabled in the frozen evaluation configuration. Otherwise, they are recorded for descriptive analysis but are not used to support confirmatory claims.
+The generator can also vary comments, local variables, method parameters, loops, and method declaration order. We analyze one of these elements as a primary factor only when it is varied systematically in the final configuration. Otherwise, it is kept as descriptive metadata and is not used to support confirmatory conclusions.
 
-When comparing task families, we use matched factor distributions whenever the frozen release supports them. Unless the release explicitly pairs the same abstract query across unguarded and condition-aware variants, family-level comparisons are treated as unpaired.
+When possible, the two task families are compared using the same factor distributions. However, the current generator does not automatically create an unguarded and a condition-aware version of the same abstract question. Unless this paired generation is added to the final release, comparisons between the two families are treated as unpaired.
 
 \subsection{Model Configurations}
 \label{subsec:model-configurations}
 
-We evaluate deployed model configurations rather than checkpoint names alone. A configuration consists of the checkpoint identifier, model revision when available, serving backend, backend version, precision, tensor-parallel setting, maximum context length, chat template, decoding parameters, output-token budget, stop criteria, batching or concurrency setting, and any exposed reasoning-budget control.
+We compare complete model configurations rather than checkpoint names alone. Each configuration records the checkpoint and its revision, the serving backend and version, numerical precision, tensor parallelism, context limit, chat template, decoding parameters, output-token budget, stopping criteria, concurrency, and any reasoning control provided by the backend.
 
 \input{tables/models}
 
-All configurations are served locally through an OpenAI-compatible interface. For each model--instance pair, the runner submits one request using the frozen prompt template and stores the raw response together with request metadata, response metadata, wall-clock status, decoding parameters, and failure status. Failed requests are retried according to the fixed policy \texttt{[RETRY\_POLICY]}. If all retries fail, the instance remains in the denominator and is scored as \texttt{NO\_RESPONSE}.
+All configurations are served locally through an OpenAI-compatible endpoint. For every pair of model configuration and benchmark instance, the runner sends one request using the frozen prompt. It stores the raw response, request and response metadata, execution status, decoding parameters, and any failure information. Requests follow the fixed retry policy \texttt{[RETRY\_POLICY]}. If all attempts fail, the instance remains in the evaluation and receives the status \texttt{NO\_RESPONSE}.
 
-Run manifests record the hardware configuration, backend invocation, precision, tensor-parallel size, context limit, output budget, concurrency setting, random seed when supported, memory-related settings, and full command-line arguments. Decoding is deterministic whenever the backend supports deterministic execution. If deterministic execution is not guaranteed by the backend, this limitation is recorded in the manifest.
+The run manifest contains the information required to reproduce each deployment. This includes the hardware, backend command, precision, tensor-parallel size, context and output limits, concurrency, random seed when supported, memory settings, and complete command-line arguments. We use deterministic decoding when it is supported by the backend. If complete determinism cannot be obtained, this limitation is recorded in the manifest.
 
-Reasoning-budget analyses are performed only for configurations where the serving stack exposes a verifiable budget control and the run metadata confirms that the requested control was accepted. Budget results are therefore interpreted as properties of specific deployed configurations, not of checkpoint families in general.
+Some backends provide an explicit reasoning-budget control. We study this factor only when the control is documented and the saved run metadata confirms that the requested value was used. A reasoning-budget result therefore applies to the evaluated deployment configuration and not necessarily to every deployment of the same checkpoint.
 
 \subsection{Prompt Calibration and Final Prompting}
 \label{subsec:prompt-calibration}
 
-Prompt calibration is performed on a separate pilot set generated with disjoint random seeds and excluded from the final benchmark release. The pilot set is used only to select the prompt template and parser-facing output schema. No pilot instance or output contributes to the reported evaluation.
+Before running the final evaluation, we calibrate the prompt on a pilot dataset generated with different random seeds. Pilot questions are not included in the benchmark release or in the reported results. They are used only to select the instruction template and the output format.
 
-Candidate prompts are compared across multiple model configurations using a fixed multi-criteria rule: JSON extractability, schema compliance, final-answer accuracy, exact trace accuracy, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE} rate. The selected prompt is the variant with the best overall trade-off under this rule, not the prompt that maximizes one metric for one model. After selection, the prompt text, examples, schema, and family-specific wording are frozen.
+We compare candidate prompts on several model configurations. The comparison considers JSON extraction, schema compliance, final-answer accuracy, exact trace accuracy, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE}. We select the prompt that provides the most consistent result across these criteria and configurations. We do not select a prompt only because it maximizes one metric for one model. After this step, the wording, examples, and output schema are frozen.
 
-The final prompt contains the task instruction, the generated Java class, the queried source and target methods, the required JSON schema, and illustrative positive and negative examples. Both task families use the same schema:
+The final prompt contains the task instructions, the generated Java class, the source and target methods, the required schema, and one positive and one negative example. Both task families use the same JSON structure:
 \begin{verbatim}
 {
-"final\_answer": true | false,
-"trace": ["methodName0", "methodName1", ...]
+"final_answer": true | false,
+"trace": [
+  "methodName0", "methodName1", ...
+]
 }
 \end{verbatim}
-Family-specific wording is limited to the reachability semantics. The trace field is always evaluated, including when the Boolean answer is correct.
+Only the definition of executable reachability differs between the two task families. In both cases, the trace is evaluated independently of the Boolean answer.
 
 \subsection{Parsing and Normalization}
 \label{subsec:parsing}
 
-Parsing is deterministic and model-agnostic. The parser searches each raw response for valid JSON objects and selects the final parsable object. An output is marked as \texttt{NO\_RESPONSE} if no valid JSON object is found, if a required field is missing, or if \texttt{final\_answer} cannot be normalized to a Boolean value.
+The parser uses the same deterministic rules for all models. It searches the raw response for valid JSON objects and selects the last object that can be parsed. The status \texttt{NO\_RESPONSE} is assigned when no valid object is found, when a required field is missing, or when \texttt{final\_answer} cannot be converted into a Boolean value.
 
-Trace normalization is conservative. The parser accepts exact method names under the frozen normalization rules and rejects ambiguous repairs. It does not invent method names, correct misspellings, infer omitted methods, reorder traces, replace aliases, or complete partial paths. A predicted method is valid only if it matches a method in the generated class. This policy prevents model-specific or evaluator-specific repair from influencing the results.
+Trace normalization is intentionally limited. Each predicted method name must match a method declared in the generated class according to the frozen normalization rules. The parser does not correct spelling, replace aliases, infer missing methods, change the order of entries, or complete partial traces. These restrictions ensure that the evaluator does not repair the response in a way that changes its structural content.
 
-For each output, the parser emits a structured record containing the normalized answer, normalized trace, parsing status, method-name validity diagnostics, transition diagnostics, and stop-condition diagnostics. The scoring scripts consume only these structured records and the frozen oracle metadata.
+For every response, the parser creates a structured record containing the normalized answer and trace, the parsing status, and diagnostics about method names, transitions, and stopping behavior. The scoring program uses only this record and the frozen oracle metadata.
 
 \subsection{Scoring}
 \label{subsec:scoring}
 
-The main metrics are final-answer accuracy, exact canonical trace accuracy, trace completeness, graph-valid exploration, syntactic-call bias, and \texttt{NO\_RESPONSE} rate.
+We use six complementary metrics: final-answer accuracy, exact canonical trace accuracy, trace completeness, graph-valid exploration, syntactic-call bias, and \texttt{NO\_RESPONSE} rate.
 
 \input{tables/metrics}
 
-All main accuracy-like metrics use strict scoring: \texttt{NO\_RESPONSE} counts as incorrect and is also reported separately. Exact trace accuracy requires exact equality with the oracle trace. Trace completeness gives partial ordered credit for recovering the oracle trace from the queried source. Graph-valid exploration checks predicted transitions against the executable graph and verifies the family-specific stopping condition. Syntactic-call bias is computed only for condition-aware instances and records whether a predicted transition follows a visible call disabled by the generated guard outcomes.
+All main results use strict scoring. A \texttt{NO\_RESPONSE} is therefore counted as incorrect for every accuracy-based metric and is also reported separately. Exact trace accuracy requires the complete predicted sequence to be identical to the oracle trace. Trace completeness gives partial credit when oracle methods are recovered in the correct order. Graph-valid exploration checks both the executable transitions and the expected stopping condition for the query polarity. For condition-aware questions, syntactic-call bias indicates whether the predicted trace follows a visible call whose condition is false.
 
-Non-strict scores, if reported, are placed in the appendix and labeled as conditional on extractable responses.
+If non-strict scores are reported, they are placed in the appendix and are clearly described as scores conditioned on a parsable response.
 
 \subsection{Statistical Analysis}
 \label{subsec:statistical-analysis}
 
-Results are reported by task family, model configuration, signed canonical trace length, generated class size, query polarity, and guard metadata when applicable. Because multiple queries may originate from the same generated class, we do not assume query-level independence.
+Results are reported by task family, model configuration, signed trace length, class size, polarity, and guard metadata. Several questions can be generated from the same Java class. These questions are not fully independent, and treating them as independent would underestimate uncertainty.
 
-Uncertainty is estimated with a non-parametric class-cluster bootstrap: each bootstrap replicate samples generated classes with replacement and retains all evaluated queries belonging to each sampled class. Unless otherwise stated, we report two-sided 95% percentile intervals over \texttt{[N\_BOOTSTRAP]} bootstrap replicates. The same procedure is used for proportions and bounded trace-completeness scores.
+For this reason, we compute confidence intervals with a non-parametric class-cluster bootstrap. Each bootstrap sample draws Java classes with replacement and keeps all questions associated with each selected class. Unless stated otherwise, we report two-sided 95\% percentile intervals based on \texttt{[N\_BOOTSTRAP]} repetitions. The same procedure is used for proportions and for bounded trace-completeness scores.
 
-For model configurations evaluated on the same frozen instances, pairwise differences are estimated with paired class-clustered bootstrap intervals. For unpaired family comparisons, we use unpaired class-clustered intervals and avoid paired tests. When multiple confirmatory pairwise comparisons are reported, $p$-values are adjusted with the Holm--Bonferroni procedure. Effect sizes are reported alongside significance tests.
+When two configurations are evaluated on the same instances, their difference is estimated with paired class-cluster bootstrap intervals. Comparisons between task families remain unpaired unless matched versions of the same abstract question are available. We use the Holm--Bonferroni correction for multiple confirmatory pairwise tests and report effect sizes together with significance results.
 
-Breakdowns not specified in the frozen analysis plan are labeled exploratory. No instance, class, factor cell, or model output is removed after observing model performance unless the exclusion rule was fixed before the final run.
+An analysis added after the protocol has been frozen is identified as exploratory. We do not remove a class, question, factor configuration, or response after observing model performance unless the exclusion rule was defined before the final run.
 
 \subsection{Research-Question Mapping}
 \label{subsec:rq-mapping}
 
-For \researchq{1}, we report final-answer, trace-level, graph-validity, and invalid-output metrics across structural factors. The main comparisons focus on how performance changes with canonical trace length, class size, polarity, and condition-aware guards.
+To answer \researchq{1}, we compare final-answer and trace metrics across canonical trace lengths, class sizes, polarities, and condition-aware guard settings. These comparisons show which controlled structural factors are associated with lower performance.
 
-For \researchq{2}, we compare deployed model configurations as evaluated, including serving mode and verified reasoning-budget controls when available. Budget curves are reported only for configurations with confirmed support for the requested control. For such configurations, we report the smallest requested budget that reaches at least 95% of the maximum observed final-answer accuracy, together with trace metrics and \texttt{NO\_RESPONSE} rates.
+To answer \researchq{2}, we compare the deployed configurations exactly as recorded in their manifests. When a verified reasoning control is available, we also report performance as a function of the requested budget. We identify the smallest budget that reaches at least 95\% of the highest observed final-answer accuracy for that configuration. Trace metrics and \texttt{NO\_RESPONSE} are included in the same analysis.
 
-For \researchq{3}, we analyze parsed traces using deterministic checks over oracle metadata. The analysis covers answer--trace consistency, graph-valid exploration, recurrent trace-error families, and syntactic-call bias. Representative examples are selected after aggregate counts are computed and are used only to illustrate already quantified patterns.
+To answer \researchq{3}, we use deterministic checks based on the oracle metadata. These checks classify answer--trace consistency, invalid transitions, incomplete exploration, recurring error families, and syntactic-call bias. Representative examples are selected only after the aggregate counts have been computed. They are used to illustrate an observed pattern, not to establish it.
 
 \subsection{Artifact Support}
 \label{subsec:artifact-support}
 
-The anonymized artifact contains the material needed to reproduce the evaluation pipeline: frozen benchmark data or generation configuration, generated Java programs, oracle metadata, prompt templates, inference manifests, parser implementation, metric implementation, statistical-analysis scripts, and dashboard materials when used. Raw and parsed model outputs are included when permitted by model licenses, storage constraints, and double-anonymous review requirements. Any unavailable outputs are documented with the reason for exclusion and the metadata needed to regenerate them.
+The anonymized artifact is designed to reproduce each stage of the experiment. It contains the frozen dataset or generation configuration, Java programs, oracle metadata, prompts, inference manifests, parser and metric implementations, statistical scripts, and dashboard material. Raw and parsed model outputs are also included when model licenses, storage constraints, and double-anonymous review allow their release. If an output cannot be shared, the artifact explains the reason and provides the metadata needed to generate it again.
 
 The review artifact is available at \texttt{[ARTIFACT\_URL]}.

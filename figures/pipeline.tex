@@ -16,7 +16,7 @@
         \node[artifact, right=of question] (output) {Model output\\JSON};
         \node[eval, right=of output] (evaluation) {Oracle-based\\evaluation};
 
-        \node[warn, below=of java] (control) {Control-flow:\\unguarded calls};
+        \node[warn, below=of java] (control) {Unguarded:\\all calls execute};
         \node[warn, below=of question] (condition) {Condition-aware:\\guards and conditions};
 
         \draw[arrow] (graph) -- (java);
@@ -26,7 +26,7 @@
         \draw[dasharrow] (control) -- (java);
         \draw[dasharrow] (condition) -- (java);
     \end{tikzpicture}
-    \caption{Overall \benchmark pipeline. Control-flow and condition-aware instances share the same generation, prompting, and oracle-evaluation structure; condition-aware instances add guarded calls and condition evaluation.}
+    \caption{Overview of the \benchmark pipeline. Both task families use the same generation, prompting, and evaluation steps. Condition-aware programs additionally contain guarded calls.}
     \Description{Pipeline showing tree-shaped call graph generation, Java class generation, reachability question construction, model JSON output, and oracle-based evaluation, with control-flow and condition-aware variants feeding into Java generation.}
     \label{fig:pipeline}
 \end{figure*}

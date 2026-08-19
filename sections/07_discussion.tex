@@ -1,7 +1,7 @@
 \section{Error Analysis}
 \label{sec:error-analysis}
 
-Beyond aggregate metrics, we conduct a semi-quantitative error analysis with an interactive dashboard that groups trace failures by structural parameters, model configuration, reasoning-budget setting when applicable, and local graph motifs. This analysis identifies recurrent error families, including syntactic-call bias in condition-aware instances, where models follow visible but non-executable calls.
+Aggregate scores indicate how often a model configuration fails, but they do not explain what happened in the generated trace. We therefore complement the main metrics with an error analysis. An interactive dashboard groups failed traces according to structural factors, model configuration, verified reasoning budget when available, and local graph motif. These groups are used to count recurring error types and inspect representative examples.
 
 \begin{figure}[t]
 \centering
@@ -27,7 +27,7 @@ Beyond aggregate metrics, we conduct a semi-quantitative error analysis with an 
 };
 \end{tikzpicture}
 }
-\caption{Schematic syntactic-call bias. A call to \texttt{C} is visible in the source code, but the generated condition is false, so \texttt{C} is excluded from the executable call graph and oracle trace.}
+\caption{Example of syntactic-call bias. The call to \texttt{C} is visible in the source code, but its condition is false. It is therefore absent from the executable graph and the oracle trace.}
 \Description{A small call-graph and code schematic showing a true guarded call and a false guarded call.}
 \label{fig:syntactic-call-bias}
 \end{figure}
@@ -36,4 +36,6 @@ Beyond aggregate metrics, we conduct a semi-quantitative error analysis with an 
 
 \TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
 
-The taxonomy explains mechanisms behind aggregate degradation. Syntactic-call bias tests whether condition-aware failures come from treating visible calls as executable; missing-node and shortcut errors capture answers that are correct without recovering the required execution-oriented trace. The dashboard supports this interpretation but is not the source of the primary benchmark scores. The main paper includes one representative schematic example; full screenshots and usage notes belong in the appendix or artifact documentation. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}
+The taxonomy connects a decrease in a metric with a concrete behavior in the trace. Syntactic-call bias, for example, indicates that the model treated a visible call as executable without evaluating its condition. Missing-node and shortcut errors represent another situation: the final answer can be correct even though required calls are absent from the trace. Invalid transitions, incorrect starting methods, repeated methods, and stopping errors describe other differences between the predicted trace and the oracle.
+
+The dashboard is used to inspect these patterns, but it does not define the main benchmark scores. These scores are computed by the frozen evaluator. The paper presents one schematic example, while more detailed views and instructions for using the dashboard are provided in the appendix or artifact. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}

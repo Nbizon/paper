@@ -1,14 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Evaluation-dataset release constants. Values remain controlled placeholders until the stabilized rerun is complete.}
+\caption{Composition of the evaluation set. Values between brackets will be replaced after the final dataset is generated.}
 \label{tab:dataset-spec}
 \scriptsize
 \begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.07\textwidth}p{0.07\textwidth}p{0.09\textwidth}p{0.09\textwidth}p{0.16\textwidth}X}
 \toprule
 Family & Classes & Queries & Context sizes & Trace lengths & Pos/neg balance & Guard and code-surface metadata \\
 \midrule
-Unguarded & \texttt{[C\_U]} & \texttt{[Q\_U]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated calls are executable; final code-surface settings are \texttt{[SURF\_U]}. \\
-Condition-aware & \texttt{[C\_G]} & \texttt{[Q\_G]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when enough queries exist & Generated guards may make visible calls non-executable; final guard settings are \texttt{[GUARD]}. \\
+Unguarded & \texttt{[C\_U]} & \texttt{[Q\_U]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when both labels are available & All generated calls are executable; final surface settings are \texttt{[SURF\_U]}. \\
+Condition-aware & \texttt{[C\_G]} & \texttt{[Q\_G]} & \texttt{[CTX]} & \texttt{[LEN]} & Balanced at retained trace lengths when both labels are available & Generated conditions can make visible calls non-executable; final guard settings are \texttt{[GUARD]}. \\
 \bottomrule
 \end{tabularx}
 \end{table*}

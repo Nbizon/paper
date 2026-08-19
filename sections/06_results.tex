@@ -1,50 +1,52 @@
 \section{Results}
 \label{sec:results}
 
-This section is a result scaffold: quantitative values remain preliminary and are not used as evidence. All empirical claims will be filled in only after the stabilized rerun. \TODO{Insert final results after the stabilized rerun.}
+The final experiments have not yet been completed. This section therefore presents the structure that will be used to report the results, without using preliminary values to support conclusions. The placeholders will be replaced after the dataset, model configurations, and evaluation scripts have been frozen and the complete experiment has been run again. \TODO{Insert final results after the stabilized rerun.}
 
 \subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
 \input{tables/overall_performance}
 
-RQ1 reports final-answer accuracy, canonical-trace exact match, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE} rate for each model and task family. It then analyzes how canonical execution distance, class size, query polarity, and condition-aware guards affect final-answer and trace-level behavior. The main table uses strict scoring: invalid or absent answers count as incorrect for accuracy-like metrics.
+We first report strict final-answer and trace scores for each model and task family. The comparison includes exact canonical trace accuracy, trace completeness, graph-valid exploration, and the \texttt{NO\_RESPONSE} rate. Invalid and missing outputs remain in the denominator. The results therefore represent the complete evaluation pipeline and not only the responses that can be parsed.
 
 \TODO{Insert final strict scores for all models and both task families.}
+
+We then analyze performance according to the structural factors controlled by the benchmark. Figures~\ref{fig:distance-effect} and~\ref{fig:class-size-effect} show the effects of canonical trace length and class size. Figure~\ref{fig:if-effect} focuses on calls that are visible in the source code but disabled by condition-aware guards.
 
 \begin{figure}[t]
     \centering
     \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by canonical distance.}}}
-    \caption{Effect of canonical execution distance on reachability performance.}
+    \caption{Final-answer and trace accuracy by canonical trace length.}
     \label{fig:distance-effect}
 \end{figure}
 
 \begin{figure}[t]
     \centering
     \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by class size.}}}
-    \caption{Effect of generated class size on reachability performance.}
+    \caption{Final-answer and trace accuracy by generated class size.}
     \label{fig:class-size-effect}
 \end{figure}
 
 \begin{figure}[t]
     \centering
     \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of syntactic-call bias by number of condition-aware guards.}}}
-    \caption{Effect of condition-aware guards on syntactic-call bias.}
+    \caption{Syntactic-call bias by number of condition-aware guards.}
     \label{fig:if-effect}
 \end{figure}
 
 \TODO{Insert final distance, class-size, polarity, condition-aware guard, and interaction analyses.}
 
-\subsection{\researchq{2}: Models and Inference Modes}
+\subsection{\researchq{2}: Models and Inference Configurations}
 
-RQ2 compares model configurations as deployed, including intended inference mode and whether the serving stack exposes verified reasoning-budget controls. The analysis avoids treating model family names alone as the unit of comparison: the same base model may behave differently under different serving modes, output budgets, or reasoning controls.
+The second analysis compares the complete configurations listed in Table~\ref{tab:models}. A checkpoint can behave differently depending on its serving mode, context limit, output budget, or reasoning control. For this reason, the results are reported for configurations and not only for model names.
 
-For configurations with verified requested reasoning-budget controls, we analyze budgets from 512 to 16,384 requested reasoning tokens and report the smallest budget that reaches at least 95\% of the model's maximum observed final-answer accuracy. We also track trace metrics and \texttt{NO\_RESPONSE} across budgets. Budget sensitivity is not used to make claims about configurations whose serving stack does not expose a verified control.
+For configurations with a verified reasoning-budget control, we test requested budgets from 512 to 16,384 tokens. We report the smallest budget that reaches at least 95\% of the highest final-answer accuracy observed for that configuration. We then check whether trace quality and the \texttt{NO\_RESPONSE} rate follow the same evolution. We do not report conclusions about reasoning budgets for deployments where the control has not been confirmed.
 
 \TODO{Insert final model and inference-mode comparison, including budget-sensitivity results only for verified budget-controllable settings.}
 \TODO{Do not claim condition-aware budget saturation unless condition-aware budget experiments are actually run.}
 
 \subsection{\researchq{3}: Trace-Level Reasoning and Error Patterns}
 
-RQ3 analyzes what emitted traces reveal about reachability reasoning. The analysis separates answer--trace consistency, graph-valid exploration, recurrent error families, and syntactic-call bias, where a model follows a visible call that the executable graph excludes. Because the current unguarded and condition-aware datasets are not paired instance-by-instance, family comparisons should use matched factor distributions rather than paired tests.
+Finally, we compare each Boolean answer with the corresponding trace. We check whether the trace starts from the requested source, follows executable edges, stops at the correct point, and is consistent with the final answer. For condition-aware questions, we also record whether the model follows a call that is present in the source code but disabled during execution. The two task families are not currently paired instance by instance. Their comparison therefore uses similar factor distributions and unpaired confidence intervals.
 
 \TODO{Insert final answer--trace consistency, graph-valid exploration, error-family, local-motif, and syntactic-call-bias analyses.}

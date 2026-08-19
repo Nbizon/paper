@@ -1,6 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-\benchmark evaluates whether LLMs can infer executable inter-method reachability and produce oracle-consistent traces from Java source code. By isolating this structural task, the benchmark separates answer correctness from trace quality and makes distance, class size, query polarity, and condition-aware guards analyzable as distinct factors.
+In this paper, we introduced \benchmark, a benchmark designed to study whether LLMs can follow executable calls between Java methods. The benchmark generates Java programs and their oracle call graphs together. It can therefore vary trace length, class size, query polarity, and guarded calls while keeping exact labels and traces. By asking for both a Boolean answer and an ordered trace, the evaluation can also distinguish a correct final answer from a trace that follows the actual execution of the program.
 
-\TODO{Replace this conclusion with final empirical insights after the frozen rerun, including the strongest structural factors, model and inference-mode differences, condition-aware guard effects, and dominant trace-level error families.}
+\TODO{Replace this paragraph with final empirical insights after the frozen rerun, including the strongest structural factors, model and inference-mode differences, condition-aware guard effects, and dominant trace-level error families.}
+
+\benchmark is intended to complement realistic software-engineering benchmarks. Repository-level tasks evaluate whether a model can complete a full workflow, while \benchmark isolates one structural capability that can contribute to this performance. Its main objective is therefore diagnostic. It connects model behavior with controlled properties of the generated programs and makes recurring trace errors measurable.

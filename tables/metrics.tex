@@ -1,18 +1,18 @@
 \begin{table*}[!t]
 \centering
-\caption{Main evaluation metrics. The main paper reports strict scores where \texttt{NO\_RESPONSE} counts as incorrect.}
+\caption{Metrics used to evaluate the final answer and the generated trace. In strict scores, \texttt{NO\_RESPONSE} is counted as incorrect.}
 \label{tab:metrics}
 \small
 \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & Fraction of instances where the normalized reachability decision matches the oracle label; \texttt{NO\_RESPONSE} counts as incorrect in strict scores. \\
-Canonical execution-trace accuracy & Fraction of instances where the parsed trace exactly equals the canonical execution-oriented oracle trace. \\
-Trace completeness & Ordered-recall score over the canonical oracle trace. The predicted trace must start at the oracle source; skipped oracle nodes are allowed, but unmatched predicted nodes stop later credit. \\
-Graph-valid exploration accuracy & Fraction of instances where the predicted trace follows executable transitions and satisfies the family-specific target condition: a valid source-to-target path for positive queries, or a complete executable source-reachable region for negative queries. \\
-Syntactic-call bias & Fraction of condition-aware instances where the predicted trace follows a syntactically visible call that is not executable under the generated guard outcomes. \\
-\texttt{NO\_RESPONSE} rate & Fraction of cases where the parser cannot extract a final answer from the last parsable JSON object, or no valid JSON object is found. \\
+Final-answer accuracy & Proportion of instances for which the normalized reachability answer is equal to the oracle label. In strict scores, \texttt{NO\_RESPONSE} is incorrect. \\
+Canonical execution-trace accuracy & Proportion of instances for which the parsed trace is exactly equal to the canonical oracle trace. \\
+Trace completeness & Ordered-recall score over the canonical trace. The prediction must start from the oracle source. Oracle methods can be skipped, but an unmatched predicted method stops subsequent credit. \\
+Graph-valid exploration accuracy & Proportion of instances for which the trace follows executable edges and satisfies the stopping rule: reaching the target for a positive question or covering the complete source-reachable region for a negative question. \\
+Syntactic-call bias & Proportion of condition-aware instances for which the trace follows a call that is visible in the source code but disabled by its generated condition. \\
+\texttt{NO\_RESPONSE} rate & Proportion of instances for which the parser cannot extract a valid final answer from the last parsable JSON object, or cannot find a valid JSON object. \\
 \bottomrule
 \end{tabularx}
 \end{table*}

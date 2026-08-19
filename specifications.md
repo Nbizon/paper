@@ -4,7 +4,7 @@
 - Project: ReachabilityBench ICSE 2027 paper draft
 - Repository: /home/nbizon/Thèse/Projects/paper
 - Main branch: icse2027-paper-revision
-- Last updated: 2026-06-15
+- Last updated: 2026-08-17
 - Status: active draft
 
 ## Scope
@@ -301,6 +301,18 @@
   - ADR:
   - Commits:
 
+### REQ-0025
+- Status: implemented
+- Source: User request, using the author-provided Abstract and Introduction as the style reference
+- Description: Rewrite the complete paper in the author's English style, using simple and direct sentences while preserving the scientific content.
+- Acceptance criteria: The author-provided Abstract and Introduction define the target voice; every included section and active table uses the same direct and progressive style; scientific definitions, citations, oracle conventions, controlled placeholders, and result-dependent TODOs remain intact.
+- Traceability:
+  - Code: sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex; sections/04_research_questions.tex; sections/05_methodology.tex; sections/06_results.tex; sections/07_discussion.tex; sections/08_threats.tex; sections/10_conclusion.tex; sections/11_data_availability.tex; tables/research_questions.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex; tables/overall_performance.tex; tables/error_taxonomy.tex; figures/pipeline.tex
+  - Tests: manual::latexmk build; manual::full-paper editorial review
+  - Docs:
+  - ADR:
+  - Commits:
+
 ## Non-Functional Requirements
 
 ### NFR-0001
@@ -369,8 +381,11 @@
 - REQ-0023 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology targeted TODO/fence check; manual::latexmk build -> commit::pending
 - REQ-0024 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology no-baseline/TODO/fence check; manual::latexmk build -> commit::pending
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
+- REQ-0025 -> sections/*.tex; active tables; figures/pipeline.tex -> manual::latexmk build; manual::full-paper editorial review -> commit::pending
 
 ## Change Log
+- 2026-08-19 - Rewrote the complete manuscript using the author-provided Abstract and Introduction as the English style reference.
+- 2026-08-17 - Rewrote the complete manuscript in natural scientific English using the reference report's direct, progressive explanatory style.
 - 2026-06-15 - Revised Section V to the requested ICSE experimental-protocol outline without changing sections through Research Questions.
 - 2026-06-15 - Rewrote Section V around the inspected generation and inference scripts, keeping unresolved dataset and serving parameters as controlled placeholders.
 - 2026-06-15 - Rewrote the abstract, introduction, related work, and benchmark design around the diagnostic benchmark framing requested for ICSE Research Track presentation.
