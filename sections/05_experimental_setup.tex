@@ -1,54 +1,54 @@
 \section{Experimental Setup}
 \label{sec:experimental-setup}
 
-We evaluate method-reachability reasoning under two semantics. In the \emph{unguarded} family, every call in a method body contributes to reachability. In the \emph{condition-aware} family, a call contributes only when its enclosing branch or loop is executable. Apart from this semantic distinction, both families follow the same generation grid, prompting protocol, model configurations, and scoring procedure.
+We use the two task families described in the previous section. In the unguarded family, every generated call contributes to reachability. In the condition-aware family, a call contributes only when the values in the program allow its condition to be satisfied. The generation process, prompts, models, and evaluation procedure otherwise remain the same.
 
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-For each task family, the evaluation set contains 46,656 questions generated from 1,232 Java classes. It is exactly balanced between 23,328 reachable and 23,328 unreachable queries. The generator crosses three target class sizes (100, 250, and 500 methods), nine absolute source--target distances ($\{1,4,7,10,13,16,19,22,25\}$), two comment levels, three variable levels, three loop levels, four conditional levels, and three parameter levels. This yields $3\times2\times3\times3\times4\times3=648$ configurations. For every retained distance and configuration, the dataset contains four positive and four negative questions.
+For each task family, the evaluation set contains 46,656 questions generated from 1,232 Java classes. Half of the questions have a reachable target and half have an unreachable target. The two families use the same balanced experimental design, which allows the results to be studied according to distance, class size, and the generated elements added to the code.
 
-The programs use a pseudo-binary call-tree structure with three trees of depth three and two calls per function. The generator configuration assigns a total helper-call probability of 0.2. In the unguarded family, reachability is defined over the calls that occur syntactically in method bodies. In the condition-aware family, the oracle instead evaluates literal and variable-dependent guards and retains only executable calls. Negative distances encode unreachable targets, whereas positive distances encode reachable targets.
+\vspace{0.2cm}
 
-\input{tables/dataset\_specification}
+The complete generation grid is reported in Appendix~\ref{app:experimental-config}. Keeping these parameters together makes the construction of the evaluation set explicit without interrupting the description of the experimental procedure.
 
-Each instance is archived with its Java source, question, signed generation distance, method inventory, executable graph, system prompt, and generation parameters. Historical generated chains are retained only as diagnostics and do not define the primary metrics.
+Each instance is stored with the information needed to reproduce its evaluation. This includes the Java source, the question, the signed distance, the generated methods, the executable graph, the prompt, and the generation configuration. Historical chain files are retained for diagnostic purposes, but they do not define the primary metrics.
 
 \subsection{Models and Inference}
 \label{subsec:model-configurations}
 
-We evaluate two instruction-tuned mixture-of-experts models: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}. Table~\ref{tab:models} reports the complete serving configurations. Both models receive one request per question with a requested reasoning budget of 16,384 tokens.
+We evaluate two instruction-tuned mixture-of-experts models: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}. Each model receives one request for every question, with a requested reasoning budget of 16,384 tokens.
 
-\input{tables/models}
+\vspace{0.2cm}
 
-Inference is performed through an OpenAI-compatible endpoint on the Jean Zay (IDRIS) supercomputer. Each server process uses one NVIDIA H100 80GB GPU, tensor parallelism one, bfloat16 activations, FP8 quantization, and a 262,144-token context limit. The serving backend is vLLM 0.24.0 with engine seed zero. The corresponding reasoning parser is selected for each model (\texttt{gemma4} or \texttt{qwen3}).
+Inference is performed on the Jean Zay supercomputer through an OpenAI-compatible endpoint provided by vLLM. Both models use the same hardware and general serving protocol. Only the model-specific reasoning parser changes between them. The exact checkpoints and serving parameters are reported in Appendix~\ref{app:experimental-config}.
 
 \subsection{Prompting and Response Parsing}
 \label{subsec:parsing}
 
-The system prompt contains the complete generated Java class and defines reachability according to the evaluated family. It asks the model to return a Boolean decision and the explored methods using the same two-field JSON schema in both families:
-\begin{verbatim}
-{
-  "final_answer": true | false,
-  "trace": ["m0", "m1", ...]
-}
-\end{verbatim}
+The system prompt contains the complete generated Java class and defines reachability according to the evaluated task family. The same response format is used in both cases. The model returns a JSON object containing a Boolean field named \texttt{final\_answer} and a \texttt{trace} field containing the ordered method names.
 
-The parser scans a response for JSON objects and retains the last parsable dictionary. It normalizes JSON Booleans and their string representations. If no valid object or no \texttt{final\_answer} field is found, the response is assigned \texttt{NO\_RESPONSE}. The trace is accepted as either a list or its serialized representation; method names are otherwise left unchanged. Thus, scoring does not repair misspellings, reorder methods, or complete a partial trace.
+\vspace{0.2cm}
+
+The parser scans the response and retains the last valid JSON object. It accepts Boolean values and their string representations, as well as a trace provided directly as a list or as a serialized list. If no valid object or no final answer can be recovered, the response is marked as \texttt{NO\_RESPONSE}. Method names are not corrected, reordered, or completed before evaluation.
 
 \subsection{Metrics and Analysis}
 \label{subsec:scoring}
 \label{subsec:statistical-analysis}
 
-We report two independent primary metrics, summarized in Table~\ref{tab:metrics}. Final-answer correctness evaluates only the normalized Boolean against the label. Path correctness evaluates only the returned method sequence against $G_{\mathit{exec}}$ and never incorporates the Boolean. All accuracy values use the complete question set as denominator.
+We report two primary metrics, summarized in Table~\ref{tab:metrics}. Final-answer correctness compares the Boolean returned by the model with the expected label. Path correctness compares the returned sequence of methods with the executable graph. The two values are computed independently, and every question remains in the denominator.
 
 \input{tables/metrics}
 
-Let $X=\langle x_0,\ldots,x_n\rangle$. For both polarities, $x_0=s$, nodes are unique, and every later node has a direct executable incoming edge from an earlier node. For a positive query, $x_n=t$. For a negative query, the predicted set equals the full reachable closure $R(s)$ and $t\notin R(s)$. This accepts alternative valid exploration orders while rejecting calls that cannot execute.
+The path rules are those introduced in Section~\ref{sec:benchmark-design}. A positive trace starts from the source, follows executable edges, and ends at the target. A negative trace must cover all methods reachable from the source without including the target. This evaluation accepts different valid exploration orders while rejecting methods that cannot execute.
 
-The analysis is descriptive. Scores are first aggregated over the complete balanced factorial grid and are then stratified by polarity, absolute distance, class size, and generated code factors. Factor contrasts compare the highest and lowest levels while marginalizing over the other balanced factors; they are reported as percentage-point differences and are not interpreted as causal effects. The results in Section~\ref{sec:results} are computed from the 46,656 condition-aware scored records available for each model. The retained directory \texttt{gemma-4-26B-A4B-it\_old} is an earlier scoring pass and is excluded.
+\vspace{0.2cm}
+
+The analysis is descriptive. We first compute the scores over the complete balanced set and then study how they change with the polarity of the question, the absolute distance, the class size, and the generated code factors. When two factor levels are compared, the other factors are averaged over the balanced grid. These differences are reported in percentage points and are not interpreted as causal effects.
+
+The results in the next section use the 46,656 condition-aware records available for each model. An earlier Gemma scoring directory is excluded because it does not correspond to the final executable-graph evaluation.
 
 \subsection{Reproducibility Artifacts}
 \label{subsec:artifact-support}
 
-The recorded condition-aware experiment directory preserves the full generation grid, Java programs, oracle metadata, prompts, raw model outputs, server logs, and scored CSV files. These artifacts make it possible to reconstruct every aggregate reported below and to audit the exact model, backend, hardware, reasoning budget, and evaluator used for each response.
+The condition-aware experiment directory contains the generated programs and oracle metadata, together with the prompts, raw model responses, server logs, and scored files. It can therefore be used to reconstruct the aggregates reported in the next section and to verify the configuration used for each response.

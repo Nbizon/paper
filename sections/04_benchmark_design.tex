@@ -120,13 +120,25 @@ This distinction is important because a method call can be visible in the source
 
 \subsection{Building the Executable-Graph Oracle}
 
-The generator records every direct call that belongs to the generated runtime execution in $G_{\mathit{exec}}=(V,E_{\mathit{exec}})$. For historical instances, the same edges are recovered from the generated execution trees. This excludes calls whose guards evaluate to false: a visible occurrence of \texttt{B()} in \texttt{A()} creates $(A,B)$ only when that call executes under the generated values.
+The oracle must describe the calls that can execute, rather than all the calls that are visible in the source code. For this reason, the generator records an executable graph $G_{\mathit{exec}}=(V,E_{\mathit{exec}})$. Its nodes are the generated methods, and its edges are the direct calls that belong to the generated execution.
 
-A canonical traversal is unnecessary for the primary scores and can reject an equally valid exploration order. The evaluator scores $X=\langle x_0,\ldots,x_n\rangle$ directly against $G_{\mathit{exec}}$: $x_0=s$, nodes are unique, and every $x_i$ for $i>0$ has an earlier $x_j$ such that $(x_j,x_i)\in E_{\mathit{exec}}$.
+\vspace{0.2cm}
 
-For a reachable query, the final node must be the target: $x_n=t$. For an unreachable query, there is no target endpoint requirement; the predicted set must equal the full reachable closure $R(s)$ and $t\notin R(s)$. These rules define \texttt{correctness\_path}; the Boolean decision is scored separately.
+A call protected by a false condition is therefore excluded from the graph. For example, a visible call to \texttt{B()} inside \texttt{A()} creates the edge $(A,B)$ only when the generated values allow this call to execute. For older instances, the same information is reconstructed from the execution trees produced during generation.
 
-The historical \texttt{chains.txt} serialization is therefore unnecessary for primary scoring. New datasets persist the executable graph directly; existing chain files remain only for reproducibility diagnostics.
+The model trace is evaluated directly against this graph. Let
+
+\[
+    X=\langle x_0,\ldots,x_n\rangle
+\]
+
+be the sequence returned by the model. The first method must be the source, so $x_0=s$, and a method cannot appear more than once. Every later method $x_i$ must also be connected to a method that has already appeared in the trace. In other words, there must be an earlier $x_j$ such that $(x_j,x_i)\in E_{\mathit{exec}}$.
+
+\vspace{0.2cm}
+
+This definition does not impose one traversal order. Two traces can visit independent branches in a different order and still be valid, provided that each method is introduced through an executable edge. The evaluator therefore checks whether the trace is compatible with the program instead of asking the model to reproduce one sequence chosen by the generator.
+
+For a reachable question, the last method must be the target, which gives $x_n=t$. For an unreachable question, the trace must instead cover all methods reachable from the source and must not contain the target. These rules define path correctness. The Boolean answer is evaluated separately.
 
 \begin{figure}[t]
 \centering
@@ -159,15 +171,19 @@ The historical \texttt{chains.txt} serialization is therefore unnecessary for pr
 \label{fig:canonical-traversal}
 \end{figure}
 
-The dataset associates each question with a signed generator distance $d$. Its sign encodes the label: $d>0$ for a reachable target and $d<0$ for an unreachable target. Its magnitude is a controlled generation factor and does not impose a canonical output order.
+The generated data also associate each question with a signed distance $d$. A positive value represents a reachable target, while a negative value represents an unreachable target. The absolute value is used as a controlled generation factor, but it does not define the order expected in the model trace.
+
+\vspace{0.2cm}
+
+Earlier versions of the benchmark stored one traversal in \texttt{chains.txt}. This file is kept for reproducibility, but it is not used for the primary scores. New instances store the executable graph directly so that all valid exploration orders can be evaluated in the same way.
 
 
 \subsection{Design Summary}
 
-Through this process, \benchmark turns a controlled call graph into an executable Java program, a reachability question, and an associated oracle. The two task families use the same general construction, but differ in whether every visible call can execute. This distinction allows us to study both the traversal of a call structure and the additional effect of runtime conditions.
+Through this process, \benchmark turns a controlled call graph into a Java program, a reachability question, and an executable-graph oracle. The two task families follow the same construction. They differ only in whether every visible call can execute, which makes it possible to study the additional effect of runtime conditions.
 
 \vspace{0.2cm}
 
-Each generated class is compiled before it is retained. The validator checks executable calls, recomputes reachability, and verifies generated conditions. The stored graph and label therefore describe the code presented to the LLM rather than only an unverified internal structure.
+Each generated class is compiled before it is retained. The validator then checks the executable calls, recomputes reachability, and verifies the generated conditions. The stored graph and label therefore correspond to the Java code presented to the LLM, rather than only to an internal structure used during generation.
 
 These design choices provide controlled instances whose structural properties can be varied while keeping the expected result known. The next section describes how these instances are selected and used in the experiments.

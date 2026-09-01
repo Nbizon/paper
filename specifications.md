@@ -313,6 +313,18 @@
   - ADR:
   - Commits:
 
+### REQ-0026
+- Status: implemented
+- Source: User request
+- Description: Harmonize the manuscript from ``Building the Executable-Graph Oracle'' onward with the direct explanatory style used in the opening sections, and keep detailed experimental parameter enumerations out of the main narrative.
+- Acceptance criteria: Sections IV.E, IV.F, V, and VI use short explanatory paragraphs and explicit transitions without changing the oracle definitions or reported results; the response schema is described in prose rather than as a listing; detailed dataset and serving parameters are grouped in appendix tables and referenced from the experimental setup.
+- Traceability:
+  - Code: main.tex; sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; sections/12_experimental_appendix.tex; tables/dataset_specification.tex; tables/models.tex
+  - Tests: rg::no list-like environment from Section IV.E onward; manual::latexmk build; manual::editorial comparison with Sections I--IV.D
+  - Docs:
+  - ADR:
+  - Commits:
+
 ## Non-Functional Requirements
 
 ### NFR-0001
@@ -382,8 +394,10 @@
 - REQ-0024 -> sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex -> rg::methodology no-baseline/TODO/fence check; manual::latexmk build -> commit::pending
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
 - REQ-0025 -> sections/*.tex; active tables; figures/pipeline.tex -> manual::latexmk build; manual::full-paper editorial review -> commit::pending
+- REQ-0026 -> main.tex; sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; sections/12_experimental_appendix.tex; tables/dataset_specification.tex; tables/models.tex -> rg::no list-like environments after Section IV.D; manual::latexmk build; manual::editorial comparison -> commit::pending
 
 ## Change Log
+- 2026-09-01 - Harmonized the writing from Section IV.E onward and moved detailed dataset and serving configurations to appendix tables.
 - 2026-08-19 - Reconstructed the manuscript's argument, section organization, paragraph logic, and experimental narrative after the author clarified that a surface-level stylistic rewrite was insufficient.
 - 2026-08-19 - Rewrote the complete manuscript using the author-provided Abstract and Introduction as the English style reference.
 - 2026-08-17 - Rewrote the complete manuscript in natural scientific English using the reference report's direct, progressive explanatory style.

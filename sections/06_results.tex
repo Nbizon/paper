@@ -1,41 +1,59 @@
 \section{Results}
 \label{sec:results}
 
-This section reports the condition-aware experiment after rescoring every response against the executable graph. Each model is evaluated on the same 46,656 questions, and all percentages include unparsable responses. The audit found no disagreement between the 46,656 labels and executable-graph reachability. By contrast, the former syntactic reconstruction made the target appear reachable in 13,273 of 23,328 negative questions (56.90\%), explaining the previous artificial ceiling on negative path accuracy.
+This section reports the results for condition-aware reachability. Each model is evaluated on the same 46,656 questions, and responses that cannot be parsed remain in all denominators.
+
+\vspace{0.2cm}
+
+Before computing the scores, we compared every label with the reachability obtained from the executable graph. No disagreement was found. We also applied the earlier reconstruction based on visible calls. For 13,273 of the 23,328 negative questions, this reconstruction incorrectly made the target appear reachable. This difference explains why the previous evaluation imposed an artificial limit on negative path accuracy.
 
 \subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
-Table~\ref{tab:overall} reports the two independent primary metrics. Qwen obtains the strongest result for final-answer correctness (87.98\%) and path correctness (67.43\%). Gemma reaches 84.21\% and 55.90\%, respectively. Qwen's advantage is 3.77 percentage points for the Boolean decision and 11.53 points for the evidence path. Formatting failure is more frequent for Gemma (2.24\%) than for Qwen (0.83\%).
+Table~\ref{tab:overall} reports the two primary metrics. Qwen obtains 87.98\% final-answer correctness, compared with 84.21\% for Gemma. The difference is larger for the returned paths: Qwen reaches 67.43\%, while Gemma reaches 55.90\%. Responses that cannot be parsed are also more frequent for Gemma, at 2.24\%, than for Qwen, at 0.83\%.
 
 \input{tables/overall\_performance}
 
-Distance affects path correctness more strongly than final answers (Table~\ref{tab:distance}). From distance 1 to 25, Gemma's final-answer accuracy falls by 12.54 points and its path accuracy by 36.50 points. Qwen loses 8.20 and 25.95 points, respectively. At distance 25, Boolean accuracy remains at least 80\% for both models, while path accuracy is 43.58\% for Gemma and 57.23\% for Qwen.
+Distance has a stronger effect on the paths than on the final answers. As shown in Table~\ref{tab:distance}, increasing the distance from 1 to 25 reduces Gemma's final-answer score by 12.54 percentage points and its path score by 36.50 points. For Qwen, the corresponding reductions are 8.20 and 25.95 points.
+
+\vspace{0.2cm}
+
+At distance 25, both models still answer at least 80\% of the questions correctly. Their path scores are lower, reaching 43.58\% for Gemma and 57.23\% for Qwen. This shows that a model can preserve the correct reachability decision even when the sequence used to support this decision becomes incomplete or invalid.
 
 \input{tables/distance\_performance}
 
-The marginal contrasts in Table~\ref{tab:factors} identify guards and parameters as the strongest generated factors. Moving from zero to five guards reduces path accuracy by 44.78 points for Gemma and 47.73 points for Qwen. Moving from zero to two parameter levels reduces it by 23.83 and 38.50 points. Comments, local variables, and loops have smaller marginal associations.
+Table~\ref{tab:factors} compares the lowest and highest values of each generated factor. Guards produce the largest change in path correctness. Moving from no guard to five guards reduces this score by 44.78 points for Gemma and 47.73 points for Qwen. Parameters have the next largest association, with reductions of 23.83 and 38.50 points. Comments, local variables, and loops are associated with smaller changes.
 
-Class size affects the models differently. Moving from 100 to 500 methods reduces Gemma's final accuracy from 86.81\% to 80.67\% and its path accuracy from 64.83\% to 45.45\%. Qwen's final accuracy rises slightly from 86.83\% to 88.85\%, while its path accuracy falls from 69.55\% to 64.93\%.
+\vspace{0.2cm}
+
+Class size affects the two models differently. Between 100 and 500 methods, Gemma's final-answer score decreases from 86.81\% to 80.67\%, and its path score decreases from 64.83\% to 45.45\%. Qwen's final-answer score changes little over the same range, while its path score decreases from 69.55\% to 64.93\%.
 
 \input{tables/factor\_effects}
 
 \paragraph{Answer to \researchq{1}.}
-Both models solve most condition-aware reachability decisions, with Qwen reaching 87.98\% final-answer accuracy. Path correctness is lower and degrades more sharply with distance, guards, parameters, and class size.
+Both models answer most condition-aware reachability questions correctly, with Qwen obtaining the highest score. The returned paths are less reliable and are more strongly affected by distance, guards, parameters, and class size.
 
 \subsection{\researchq{2}: Evidence from Generated Paths}
 
-Table~\ref{tab:trace-diagnostics} separates reachable and unreachable questions. On reachable queries, Qwen obtains 94.08\% final-answer correctness and 85.72\% path correctness; Gemma reaches 85.19\% and 73.96\%. For unreachable queries, path correctness falls to 49.15\% for Qwen and 37.84\% for Gemma. A positive path may stop at the target, whereas a negative path must enumerate the entire source-reachable closure and exclude the target.
+Table~\ref{tab:trace-diagnostics} separates reachable and unreachable questions. For reachable targets, Qwen obtains 94.08\% final-answer correctness and 85.72\% path correctness. Gemma obtains 85.19\% and 73.96\%, respectively.
+
+\vspace{0.2cm}
+
+The difference is larger for unreachable targets. Path correctness falls to 49.15\% for Qwen and 37.84\% for Gemma. A reachable question only requires the path to end when it reaches the target. An unreachable question requires the model to cover the complete set of methods reachable from the source. It therefore asks for a more exhaustive trace.
 
 \input{tables/trace\_diagnostics}
 
-The corrected negative scores are no longer limited by the former 43.1\% artificial ceiling because path validity ignores calls merely present in source text. Executable-graph scoring also avoids enforcing one deterministic depth-first serialization: alternative orders receive the same score when each method is introduced through an executable edge from an earlier presented method and the polarity-specific endpoint or coverage rule holds. Consequently, \texttt{correctness\_path} measures possible executable evidence rather than imitation of a generated ordering.
+The executable-graph evaluation removes the former artificial ceiling because it ignores calls that are visible in the source code but cannot execute. It also accepts different exploration orders when they follow the same executable graph. Path correctness therefore measures whether the returned sequence provides valid executable evidence, rather than whether it reproduces an order selected during generation.
 
 \paragraph{Answer to \researchq{2}.}
-The paths reveal a substantial answer--evidence gap, especially for exhaustive proofs of unreachability. Executable-graph scoring distinguishes valid alternative explorations from disconnected, incomplete, or non-executable traces without coupling this judgment to the Boolean answer.
+The paths reveal a clear difference between producing the correct answer and providing a valid sequence of calls. This difference is especially visible for unreachable targets, for which the trace must be exhaustive.
 
 \subsection{\researchq{3}: Relation to Existing Benchmarks}
 
-The present artifact contains two model configurations evaluated on the generated condition-aware benchmark, but no paired scores for these exact configurations on an external code-reasoning benchmark. A model-level correlation would in any case be uninformative with only two observations. We therefore do not report a correlation or claim that the ranking observed here transfers to existing benchmarks.
+The current experiment contains two model configurations evaluated on the condition-aware task. It does not contain results for these exact configurations on an external code-reasoning benchmark. Moreover, two models are not sufficient to study a meaningful relationship between benchmark scores.
+
+\vspace{0.2cm}
+
+We therefore report no correlation and do not assume that the ranking observed on \benchmark also applies to existing benchmarks. A broader comparison would require more models evaluated under matched configurations.
 
 \paragraph{Answer to \researchq{3}.}
-The available measurements establish performance on controlled method reachability only; they do not provide evidence for a relationship with external benchmark performance.
+The available results describe performance on controlled method reachability. They do not establish a relationship with performance on external benchmarks.

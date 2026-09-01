@@ -1,14 +1,30 @@
 \begin{table*}[t]
 \centering
-\caption{Evaluation-set specification. Both families use the same factorial grid; they differ only in whether guards affect executable reachability.}
+\caption{Detailed configuration of the evaluation set. Both task families use the same generation grid.}
 \label{tab:dataset-spec}
 \scriptsize
-\begin{tabularx}{\textwidth}{p{0.16\textwidth}p{0.08\textwidth}p{0.09\textwidth}p{0.15\textwidth}p{0.19\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.22\textwidth}p{0.24\textwidth}X}
 \toprule
-Family & Classes & Queries & Context / distance & Positive / negative & Code factors \\
+Category & Parameter & Value \\
 \midrule
-Unguarded & 1,232 & 46,656 & $\{100,250,500\}$ / $\pm\{1,4,\ldots,25\}$ & 23,328 / 23,328 & Comments $\{0,1\}$; variables, loops, and parameters $\{0,1,2\}$; conditionals $\{0,1,3,5\}$. \\
-Condition-aware & 1,232 & 46,656 & $\{100,250,500\}$ / $\pm\{1,4,\ldots,25\}$ & 23,328 / 23,328 & Comments $\{0,1\}$; variables, loops, and parameters $\{0,1,2\}$; guards $\{0,1,3,5\}$. \\
+Dataset size & Java classes & 1,232 per task family \\
+& Questions & 46,656 per task family \\
+& Question polarity & 23,328 reachable and 23,328 unreachable \\
+\midrule
+Graph generation & Target class size & $\{100,250,500\}$ methods \\
+& Absolute source--target distance & $\{1,4,7,10,13,16,19,22,25\}$ \\
+& Local tree structure & Three trees of depth three; two calls per function \\
+& Helper-call probability & 0.2 in total \\
+\midrule
+Generated code & Comments & $\{0,1\}$ \\
+& Variables, loops, and parameters & $\{0,1,2\}$ \\
+& Conditionals or guards & $\{0,1,3,5\}$ \\
+\midrule
+Factorial design & Code configurations & $3\times2\times3\times3\times4\times3=648$ \\
+& Questions per distance and configuration & Four reachable and four unreachable \\
+\midrule
+Task semantics & Unguarded & All generated direct calls contribute to reachability \\
+& Condition-aware & Only calls whose generated guards evaluate to true contribute to reachability \\
 \bottomrule
 \end{tabularx}
 \end{table*}
