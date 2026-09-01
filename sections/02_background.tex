@@ -1,18 +1,43 @@
-\section{Related Work}
+
+\section{Background and Related Work}
 \label{sec:background}
 \label{sec:related-work}
 
+Benchmarks are commonly used to turn broad model capabilities into measurable tasks. They generally define a set of problems, an expected output, and a metric used to compare systems. This provides a useful measure of overall performance, but gives less information about the reasons behind a success or a failure. This limitation is particularly important in software engineering, where a single problem can require several capabilities at the same time.
+
 \subsection{Evaluating Whether a Model Can Complete a Task}
 
-Most benchmarks for code-oriented LLMs evaluate whether a model can produce a correct final result. HumanEval, MBPP, and APPS ask models to generate functions or solve programming problems, and use tests to verify the generated code~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE extends this evaluation to several code-understanding and code-generation tasks~\cite{lu2021codexglue}. LiveCodeBench uses recent programming problems, while BigCodeBench introduces tasks that require a larger use of libraries and APIs~\cite{jain2024livecodebench,zhuo2024bigcodebench}.
+A large part of the evaluation of code-oriented LLMs focuses on their ability to produce a correct final result. For code generation, this generally means generating a function or a program and checking whether it behaves as expected.
 
-Other benchmarks move closer to the work performed by developers. SWE-bench asks models to solve real GitHub issues at the repository level~\cite{jimenez2024swebench}. Defects4J was not introduced as an LLM benchmark, but its collection of Java defects and tests is widely used to evaluate program repair~\cite{just2014defects4j}. These benchmarks are useful because they show whether a model can complete a realistic task. However, a successful result can depend on several capabilities at the same time, such as finding the relevant file, understanding an API, modifying the code, and using test feedback. They therefore provide limited information about the specific part of the task that caused a failure.
+\vspace{0.2cm}
+
+HumanEval, MBPP, and APPS follow this principle by validating generated programs with test cases~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE extends this setting to both code-generation and code-understanding problems~\cite{lu2021codexglue}, while LiveCodeBench and BigCodeBench introduce more recent or broader programming scenarios, including the use of libraries and APIs~\cite{jain2024livecodebench,zhuo2024bigcodebench}. Despite these differences, the objective remains similar: checking whether the produced result satisfies the required behavior.
+
+\vspace{0.2cm}
+
+Some evaluations move closer to the actual work of developers. SWE-bench, for example, asks LLMs to solve real GitHub issues at the repository level~\cite{jimenez2024swebench}. Defects4J provides real Java defects together with their associated tests and is widely used to study program repair~\cite{just2014defects4j}. Such settings provide a useful indication of how well a system can handle realistic software engineering problems.
+
+\vspace{0.2cm}
+
+However, this realism also makes diagnosis more difficult. Solving a repository-level issue may involve locating the relevant code, understanding methods and APIs, identifying the source of a defect, modifying the implementation, and interpreting test feedback. When the final solution is incorrect, it is therefore difficult to determine which part caused the failure.
+
+\vspace{0.2cm}
+
+These evaluations are well suited for measuring task completion, but provide less information about specific strengths and weaknesses.
 
 \subsection{Evaluating How a Model Understands a Program}
 
-Several benchmarks reduce the scope of the task to study program behavior more directly. CRUXEval asks models to infer the input or output of short Python functions~\cite{gu2024cruxeval}. REval evaluates runtime properties such as execution paths, coverage, program state, and output~\cite{chen2024reval}. CORE provides tasks based on data dependencies, control dependencies, and information flow in several languages~\cite{xie2025core}. TraceEval uses execution-verified problems to evaluate semantic reasoning and runtime call structure~\cite{li2026traceeval}. Finally, RE2-Bench studies code reasoning in real-world settings and shows the importance of relating controlled evaluations to realistic programs~\cite{liu2025re2bench}.
+Other works reduce the scope of the problem to study more specific aspects of program understanding. Instead of considering a complete development scenario, they focus on properties that can be observed and measured more directly.
 
-These benchmarks make program behavior more observable, but they do not all have the same objective. Some evaluate the prediction of a program state or output, while others evaluate several analysis tasks together. \benchmark focuses only on reachability between methods. This narrower scope allows us to modify the structure of the program while keeping the question and the expected output unchanged.
+\vspace{0.2cm}
+
+CRUXEval, for example, asks models to infer the input or output of short Python functions~\cite{gu2024cruxeval}. REval considers runtime properties such as execution paths, coverage, program states, and outputs~\cite{chen2024reval}. CORE focuses on data dependencies, control dependencies, and information flow~\cite{xie2025core}, while TraceEval relies on execution-verified examples to study runtime behavior and call structures~\cite{li2026traceeval}. RE2-Bench explores similar reasoning capabilities in more realistic programs, highlighting the importance of connecting controlled experiments with real-world code~\cite{liu2025re2bench}.
+
+\vspace{0.2cm}
+
+Compared with end-to-end software engineering evaluations, these approaches make individual properties of program behavior easier to observe. However, some of them still combine several forms of reasoning or several program-analysis problems within the same setting.
+
+\benchmark follows this diagnostic direction with a narrower objective: keeping the problem simple and well defined while controlling the properties of the code that may affect the results.
 
 \begin{table}[t]
 \centering
@@ -25,20 +50,40 @@ These benchmarks make program behavior more observable, but they do not all have
 \toprule
 Benchmark & Real. & Ctrl. & Oracle & Trace & Syn./exec. & Primary distinction \\
 \midrule
-HumanEval / MBPP / APPS & Low--Med. & Med. & Tests & No & No & Code generation success. \\
-SWE-bench & High & Low & Tests & No & No & Repository issue resolution. \\
+HumanEval / MBPP / APPS & Low--Med. & Med. & Tests & No & No & Final code-generation success. \\
+SWE-bench & High & Low & Tests & No & No & Repository-level task completion. \\
 CRUXEval / REval & Low--Med. & Med. & Yes & Partial & No & Runtime behavior reasoning. \\
-CORE & Med. & Med. & Yes & No & No & Static-analysis task suite. \\
+CORE & Med. & Med. & Yes & No & No & Program-analysis tasks. \\
 TraceEval & Med.--High & Med. & Yes & Yes & No & Execution-verified call behavior. \\
-This work & Low--Med. & High & Yes & Yes & Yes & Controlled executable reachability. \\
+\benchmark & Low--Med. & High & Yes & Yes & Yes & Controlled executable reachability. \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
 \subsection{Position of \benchmark}
 
-Reachability is a standard problem in program analysis. A call graph represents methods as nodes and possible calls as directed edges. A target method is reachable from a source method when a path connects the two nodes. Static and dynamic analyses have used this representation for many years~\cite{grove2001framework,tip2000scalable}. \benchmark does not propose an LLM as an alternative to these tools. It uses reachability because the task has an exact answer while still requiring the model to connect information distributed across several methods.
+The goal of \benchmark is not to replace realistic software engineering evaluations, but to provide a controlled setting in which LLM behavior can be studied more precisely.
 
-The main difference of \benchmark comes from the way the programs are created. The benchmark generates the call graph before generating the Java code. It therefore knows which methods are connected, which calls can execute, and which sequence of methods is expected for each question. It can also change one factor, such as trace length or class size, without changing the nature of the task.
+\vspace{0.2cm}
 
-This known structure also makes it possible to request a trace in addition to the final answer. The trace is not considered a direct representation of the model's internal reasoning. It is a generated output that can contain its own errors. However, it provides information that is absent from a Boolean answer. A model can return the correct answer while skipping a method, following an impossible transition, or using a call that is visible in the code but cannot execute. \benchmark uses the oracle graph to distinguish these cases automatically.
+Reachability is a standard problem in program analysis. In a call graph, methods are represented as nodes and calls as directed edges. A target method is reachable from a source method when a path exists between them. This representation has been widely used in static and dynamic program analysis~\cite{grove2001framework,tip2000scalable}.
+
+We use reachability because it has an exact solution while still requiring information distributed across several methods to be connected.
+
+\vspace{0.2cm}
+
+A key characteristic of \benchmark is that the call graph is generated before the corresponding Java code. The structure of each program is therefore known in advance, including the connections between methods, the calls that can actually execute, and the path between a source and a target.
+
+This generation process also makes \benchmark configurable. Properties such as depth, number of methods, number of \texttt{if} statements, or number of loops can be varied independently. This makes it possible to study the effect of individual factors on the results.
+
+Since the graph is known in advance, each query can be associated with an oracle. For a given source and target, it provides the expected Boolean answer and, when a valid path exists, the corresponding sequence of methods.
+
+The LLM is asked to return two outputs: a final answer and a trace. The latter is not treated as a direct representation of internal reasoning, since it is itself generated and may contain errors. Instead, it provides an additional observable signal beyond the Boolean result.
+
+\vspace{0.2cm}
+
+For example, the final answer may be correct even though the trace skips an intermediate method, follows a nonexistent edge, or uses a call that is visible in the code but cannot execute. Comparing this output with the oracle makes these cases detectable automatically.
+
+\vspace{0.2cm}
+
+\benchmark therefore aims to go beyond final-answer accuracy by providing information about where difficulties appear and how results evolve when controlled properties of the program are modified.

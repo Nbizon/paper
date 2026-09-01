@@ -1,17 +1,14 @@
-\begin{table*}[!t]
+\begin{table*}[t]
 \centering
-\caption{Model configurations used in the evaluation. Checkpoint and serving information will be added after the final configurations are frozen.}
+\caption{Model and serving configurations. U and C denote the unguarded and condition-aware families.}
 \label{tab:models}
 \scriptsize
-\begin{tabularx}{\textwidth}{p{0.25\textwidth}p{0.22\textwidth}p{0.22\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.26\textwidth}p{0.08\textwidth}p{0.13\textwidth}X}
 \toprule
-Configuration & Inference mode & Budget metadata & Reproducibility metadata \\
+Checkpoint & Family & Budget & Serving configuration \\
 \midrule
-\texttt{[MODEL\_CONFIG\_1]} & \texttt{[MODE\_1]} & \texttt{[BUDGET\_CONTROL\_1]} & checkpoint, size, context, license and source, serving settings \\
-\texttt{[MODEL\_CONFIG\_2]} & \texttt{[MODE\_2]} & \texttt{[BUDGET\_CONTROL\_2]} & checkpoint, size, context, license and source, serving settings \\
-\texttt{[MODEL\_CONFIG\_3]} & \texttt{[MODE\_3]} & \texttt{[BUDGET\_CONTROL\_3]} & checkpoint, size, context, license and source, serving settings \\
-\texttt{[MODEL\_CONFIG\_4]} & \texttt{[MODE\_4]} & \texttt{[BUDGET\_CONTROL\_4]} & checkpoint, size, context, license and source, serving settings \\
-\texttt{[MODEL\_CONFIG\_5]} & \texttt{[MODE\_5]} & \texttt{[BUDGET\_CONTROL\_5]} & checkpoint, size, context, license and source, serving settings \\
+\texttt{google/gemma-4-26B-A4B-it} & U, C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{gemma4} reasoning parser \\
+\texttt{Qwen/Qwen3.6-35B-A3B} & U, C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{qwen3} reasoning parser \\
 \bottomrule
 \end{tabularx}
 \end{table*}

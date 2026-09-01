@@ -1,0 +1,173 @@
+
+\section{\benchmark Design}
+\label{sec:benchmark-design}
+
+\input{figures/pipeline}
+
+\subsection{From a Call Graph to a Reachability Question}
+
+\benchmark starts from a call graph rather than directly from Java code. We first create an ordered graph, where each node is later converted into a Java method and each edge into a method call. Once the program is built, a source method $s$ and a target method $t$ are selected. The corresponding question asks whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
+
+\vspace{0.2cm}
+
+We represent one instance as
+
+\[
+    (P, s, t, f, y, G_{\mathit{exec}}, m),
+\]
+
+where $P$ is the Java program and $f$ identifies the task family. The label $y$ is \true{} when $t$ is executable from $s$, and \false{} otherwise. The oracle is the executable call graph $G_{\mathit{exec}}$; $m$ stores the generation configuration and graph properties.
+
+\vspace{0.2cm}
+
+The complete Java class, together with the source and target methods, is then provided to the LLM. Its answer must follow a JSON format containing two fields:
+
+\begin{itemize}[leftmargin=*]
+    \item \texttt{final\_answer}, containing the Boolean answer to the reachability question;
+    \item \texttt{trace}, containing the ordered sequence of methods followed from the source.
+\end{itemize}
+
+The two outputs are evaluated separately. The final answer indicates whether the reachability decision is correct, while the trace gives additional information about the sequence of calls returned by the model.
+
+\vspace{0.2cm}
+
+Figure~\ref{fig:pipeline} summarizes the complete pipeline. The program, the question, and the oracle all come from the same initial structure. After inference, the returned JSON is parsed and compared with this oracle. This ensures that the information used for evaluation remains consistent with the Java code presented to the model.
+
+
+\subsection{Generating the Call Graph}
+
+The current version of \benchmark relies on ordered acyclic trees. This structure is simple enough to keep reachability controlled, while still allowing direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
+
+The order of the children is also preserved, since it determines the order in which method calls are inserted into the Java program.
+
+\vspace{0.2cm}
+
+The tree is constructed breadth-first under a fixed method budget. Let $u$ be the node currently expanded, with $L(u)$ and $R(u)$ its left and right children. When enough methods remain available, both children are first added:
+
+\[
+    u \rightarrow L(u), \qquad u \rightarrow R(u).
+\]
+
+Additional branches can then be created below $L(u)$. The two possible edges are sampled independently:
+
+\[
+    X_{LL}(u) \sim \mathrm{Bernoulli}(p),
+    \qquad
+    X_{LR}(u) \sim \mathrm{Bernoulli}(p).
+\]
+
+If $X_{LL}(u)=1$, the edge $L(u) \rightarrow L(L(u))$ is added. Similarly, $X_{LR}(u)=1$ adds $L(u) \rightarrow R(L(u))$. Figure~\ref{fig:local-tree-rule} illustrates this local rule.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    x=1cm,
+    y=1cm,
+    method/.style={rb method, minimum width=1.35cm},
+    det/.style={rb edge},
+    opt/.style={rb optional edge},
+    note/.style={font=\scriptsize, align=center}
+]
+\node[method] (u) at (0,0) {$u$};
+\node[method] (l) at (-1.4,-1.0) {$L(u)$};
+\node[method] (r) at (1.4,-1.0) {$R(u)$};
+\node[method] (ll) at (-2.2,-2.0) {$L(L(u))$};
+\node[method] (lr) at (-0.6,-2.0) {$R(L(u))$};
+\draw[det] (u) -- node[note, above left] {always} (l);
+\draw[det] (u) -- node[note, above right] {always} (r);
+\draw[opt] (l) -- node[note, left] {$X_{LL}(u)$} (ll);
+\draw[opt] (l) -- node[note, right] {$X_{LR}(u)$} (lr);
+\node[rb panel title, text width=4.2cm] at (0,-2.75) {Optional edges are sampled independently with probability $p$.};
+\end{tikzpicture}
+}
+\caption{Local rule used to expand the generated tree. The fixed edges create the main structure, while the optional edges add branches.}
+\Description{A node u has deterministic left and right children. The left child has two optional children, each controlled by an independent Bernoulli variable.}
+\label{fig:local-tree-rule}
+\end{figure}
+
+With this rule, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Increasing $p$ creates more branches and consequently more opportunities to construct negative reachability questions. The final level can be truncated when the method budget is reached.
+
+In our current configuration, we use $p=0.65$ to obtain enough positive and negative questions. The sensitivity of the results to this parameter remains to be studied.
+
+
+\subsection{Generating the Java Program}
+
+Once the tree is available, each node is translated into one Java method. For every edge $u \rightarrow v$, a call to $v$ is inserted into the body of $u$. The order of these calls follows the order defined by the tree.
+
+\vspace{0.2cm}
+
+Method declarations, however, are shuffled in the final class. As a consequence, their position in the source file does not provide information about the execution order.
+
+The generator can also introduce comments, local variables, parameters, loops, and different declaration orders. These elements modify the code visible to the LLM without necessarily changing reachability. Conditions are treated separately, since they can directly determine whether a call is executed. In the current version, calls used to define reachability are not placed inside loops.
+
+
+\subsection{Introducing Runtime Conditions}
+
+\benchmark contains two task families built from the same general pipeline. Their main difference is whether reaching a call statement is sufficient for that call to execute.
+
+\vspace{0.2cm}
+
+In \emph{unguarded reachability}, calls are inserted directly into method bodies and not in control structures such as if and loops. Once execution reaches such a statement, the corresponding method is called. Reachability can therefore be determined from the sequence of calls present in the executable path.
+
+\vspace{0.2cm}
+
+In \emph{condition-aware reachability}, some calls are protected by generated \texttt{if} statements. The values involved in these conditions are fixed during generation, which means that their outcome is known in advance. The LLM must reproduce this evaluation from the Java program to determine which calls are actually executed.
+
+This distinction is important because a method call can be visible in the source code without belonging to the runtime execution. Condition-aware questions therefore require the model to reason not only about the control structure of the program, but also about the values that determine which branches can be taken.
+
+
+\subsection{Building the Executable-Graph Oracle}
+
+The generator records every direct call that belongs to the generated runtime execution in $G_{\mathit{exec}}=(V,E_{\mathit{exec}})$. For historical instances, the same edges are recovered from the generated execution trees. This excludes calls whose guards evaluate to false: a visible occurrence of \texttt{B()} in \texttt{A()} creates $(A,B)$ only when that call executes under the generated values.
+
+A canonical traversal is unnecessary for the primary scores and can reject an equally valid exploration order. The evaluator scores $X=\langle x_0,\ldots,x_n\rangle$ directly against $G_{\mathit{exec}}$: $x_0=s$, nodes are unique, and every $x_i$ for $i>0$ has an earlier $x_j$ such that $(x_j,x_i)\in E_{\mathit{exec}}$.
+
+For a reachable query, the final node must be the target: $x_n=t$. For an unreachable query, there is no target endpoint requirement; the predicted set must equal the full reachable closure $R(s)$ and $t\notin R(s)$. These rules define \texttt{correctness\_path}; the Boolean decision is scored separately.
+
+The historical \texttt{chains.txt} serialization is therefore unnecessary for primary scoring. New datasets persist the executable graph directly; existing chain files remain only for reproducibility diagnostics.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+    >=Latex,
+    method/.style={rb method, minimum width=1.05cm},
+    edge/.style={rb edge},
+    visit/.style={font=\scriptsize, fill=white, inner sep=1pt}
+]
+\node[method] (a) at (0,0) {A (1)};
+\node[method] (b) at (-1.4,-1.0) {B};
+\node[method] (c) at (1.4,-1.0) {C};
+\node[method] (d) at (-2.1,-2.0) {D};
+\node[method] (e) at (-0.7,-2.0) {E};
+\node[method] (f) at (0.7,-2.0) {F};
+\node[method] (g) at (2.1,-2.0) {G};
+\draw[edge] (a) -- node[visit, left] {2} (b);
+\draw[edge] (a) -- node[visit, right] {5} (c);
+\draw[edge] (b) -- node[visit, left] {3} (d);
+\draw[edge] (b) -- node[visit, right] {4} (e);
+\draw[edge] (c) -- node[visit, left] {6} (f);
+\draw[edge] (c) -- node[visit, right] {7} (g);
+\draw[->, line width=1pt, modelblue] ($(a.east)+(0.05,0.05)$) .. controls (3.0,-0.4) and (3.0,-2.0) .. node[visit, right] {positive: A to G} ($(g.east)+(0.05,0)$);
+\draw[rb optional edge, line width=1pt] ($(c.west)+(0,0.05)$) .. controls (0.2,-1.0) and (-0.3,-1.5) .. node[visit, above] {negative: C to E} ($(e.north east)+(0,0.03)$);
+\end{tikzpicture}
+}
+\caption{Executable graph used for path scoring. A positive exploration from \texttt{A} must end at \texttt{G}; a negative exploration from \texttt{C} must cover its reachable closure and exclude the target.}
+\Description{A tree-shaped executable call graph with positive and negative reachability examples.}
+\label{fig:canonical-traversal}
+\end{figure}
+
+The dataset associates each question with a signed generator distance $d$. Its sign encodes the label: $d>0$ for a reachable target and $d<0$ for an unreachable target. Its magnitude is a controlled generation factor and does not impose a canonical output order.
+
+
+\subsection{Design Summary}
+
+Through this process, \benchmark turns a controlled call graph into an executable Java program, a reachability question, and an associated oracle. The two task families use the same general construction, but differ in whether every visible call can execute. This distinction allows us to study both the traversal of a call structure and the additional effect of runtime conditions.
+
+\vspace{0.2cm}
+
+Each generated class is compiled before it is retained. The validator checks executable calls, recomputes reachability, and verifies generated conditions. The stored graph and label therefore describe the code presented to the LLM rather than only an unverified internal structure.
+
+These design choices provide controlled instances whose structural properties can be varied while keeping the expected result known. The next section describes how these instances are selected and used in the experiments.

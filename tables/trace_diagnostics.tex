@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{Primary metrics by query polarity (\%). Negative paths require complete source-reachable coverage.}
+\label{tab:trace-diagnostics}
+\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{llrrr}
+\toprule
+Model & Query & Final & Path & N/R \\
+\midrule
+Gemma & Unreachable & 83.23 & 37.84 & 3.16 \\
+Gemma & Reachable   & 85.19 & 73.96 & 1.32 \\
+Qwen  & Unreachable & 81.88 & 49.15 & 1.29 \\
+Qwen  & Reachable   & 94.08 & 85.72 & 0.36 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

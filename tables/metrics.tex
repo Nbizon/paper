@@ -1,18 +1,15 @@
-\begin{table*}[!t]
+\begin{table*}[t]
 \centering
-\caption{Metrics used to evaluate the final answer and the generated trace. In strict scores, \texttt{NO\_RESPONSE} is counted as incorrect.}
+\caption{Metrics computed by the evaluator. \texttt{NO\_RESPONSE} is counted as incorrect in all accuracy metrics.}
 \label{tab:metrics}
 \small
-\begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+\begin{tabularx}{\textwidth}{p{0.25\textwidth}X}
 \toprule
 Metric & Definition \\
 \midrule
-Final-answer accuracy & Proportion of instances for which the normalized reachability answer is equal to the oracle label. In strict scores, \texttt{NO\_RESPONSE} is incorrect. \\
-Canonical execution-trace accuracy & Proportion of instances for which the parsed trace is exactly equal to the canonical oracle trace. \\
-Trace completeness & Ordered-recall score over the canonical trace. The prediction must start from the oracle source. Oracle methods can be skipped, but an unmatched predicted method stops subsequent credit. \\
-Graph-valid exploration accuracy & Proportion of instances for which the trace follows executable edges and satisfies the stopping rule: reaching the target for a positive question or covering the complete source-reachable region for a negative question. \\
-Syntactic-call bias & Proportion of condition-aware instances for which the trace follows a call that is visible in the source code but disabled by its generated condition. \\
-\texttt{NO\_RESPONSE} rate & Proportion of instances for which the parser cannot extract a valid final answer from the last parsable JSON object, or cannot find a valid JSON object. \\
+Final-answer correctness & The normalized Boolean reachability decision equals the oracle label; the predicted path is ignored. \\
+Path correctness & The source-first, duplicate-free sequence introduces every later node through an executable edge from an earlier node. Positive paths end at the target; negative paths cover exactly the source-reachable closure and exclude the target. The final Boolean is ignored. \\
+\texttt{NO\_RESPONSE} rate & No parsable final answer is recovered from the response. \\
 \bottomrule
 \end{tabularx}
 \end{table*}

@@ -9,16 +9,14 @@
 Error family & Definition & Detection method & $n$ & \% & Example \\
 \midrule
 Syntactic-call bias & The trace follows a visible call that cannot execute under the generated condition. & Compare predicted edges with the executable graph. & \TODO{n} & \TODO{\%} & false guarded call \\
-Missing intermediate nodes & The trace omits one or more methods present in the oracle trace. & Align the predicted and oracle traces. & \TODO{n} & \TODO{\%} & $A,C$ for $A,B,C$ \\
-Early stopping & The trace ends before the required oracle exploration is complete. & Check prefixes and coverage. & \TODO{n} & \TODO{\%} & source only \\
-Over-exploration & The trace continues with reachable methods after the oracle stopping point. & Check the oracle stopping condition. & \TODO{n} & \TODO{\%} & past target \\
-Invalid transition & The trace contains an edge that is absent from the executable graph. & Check each predicted edge. & \TODO{n} & \TODO{\%} & cross branch \\
+Missing reachable nodes & A negative trace omits part of the source-reachable closure. & Compare predicted and reachable node sets. & \TODO{n} & \TODO{\%} & source only \\
+Early stopping & A positive trace ends before the target. & Check the final predicted node. & \TODO{n} & \TODO{\%} & source only \\
+Over-exploration & A positive trace continues after the target. & Check the final predicted node. & \TODO{n} & \TODO{\%} & past target \\
+Invalid introduction & A method has no executable incoming edge from any earlier predicted node. & Check executable edges from the presented set. & \TODO{n} & \TODO{\%} & cross branch \\
 Target hallucination & The trace contains a target or method name that is absent from the generated class. & Compare names with the method list. & \TODO{n} & \TODO{\%} & unknown name \\
-Positive shortcut & The answer is positive, but the trace uses a short path and omits required exploration. & Compare with the canonical trace. & \TODO{n} & \TODO{\%} & path only \\
 Negative over-exploration & A negative trace explores methods outside the region reachable from the source. & Check the source-reachable region. & \TODO{n} & \TODO{\%} & sibling subtree \\
 Wrong source & The first method in the trace is not the source specified in the question. & Check the first method. & \TODO{n} & \TODO{\%} & target first \\
 Repeated methods & The trace repeats methods even though the call graph is acyclic. & Check for duplicates. & \TODO{n} & \TODO{\%} & $A,B,A$ \\
-Order violation & The trace contains valid methods but visits them in a different order from the oracle. & Compare the ordered traces. & \TODO{n} & \TODO{\%} & sibling swap \\
 Invalid JSON / schema failure & The response cannot be parsed using the required output schema. & Check the parser status. & \TODO{n} & \TODO{\%} & missing field \\
 \bottomrule
 \end{tabularx}

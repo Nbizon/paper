@@ -5,7 +5,7 @@
 
 \benchmark measures whether a model can produce a correct reachability answer and a trace that is consistent with the executable program. It does not observe the internal reasoning that produced these outputs. A correct trace may be generated for the wrong reason, and an incorrect trace may be produced after the model has already selected the correct answer. For this reason, we interpret the trace as additional evidence about model behavior and not as a direct explanation of its internal computation.
 
-The canonical trace also represents one specific execution convention. It follows calls in source order and includes the methods executed before the target is reached. A shorter path can therefore prove that the target is reachable without matching the canonical trace. Reporting exact trace accuracy alone would treat these two situations in the same way. We reduce this problem by also reporting trace completeness and graph-valid exploration, which accept different levels of structural correctness.
+Path correctness depends on the generated executable graph. Although this avoids privileging one canonical traversal, any error in executable-edge generation would affect every path score. We mitigate this threat by auditing labels and generated chains against the graph and by reporting the Boolean and path metrics independently.
 
 \subsection{What Can Affect the Experiment}
 

@@ -5,11 +5,11 @@ The metrics used in \researchq{3} indicate whether a trace is correct, complete,
 
 \subsection{From a Failed Trace to an Error Type}
 
-Each predicted trace is compared with the method list, the executable graph, and the canonical trace. This comparison produces the taxonomy shown in Table~\ref{tab:error-taxonomy}. The categories are not inferred from generated explanations. They are detected from observable differences between the predicted trace and the oracle.
+Each predicted trace is compared with the method list and executable graph. This comparison produces the taxonomy shown in Table~\ref{tab:error-taxonomy}. The categories are detected from observable differences between the predicted trace and the graph oracle.
 
 \input{tables/error_taxonomy}
 
-The order of the checks makes it possible to separate several levels of failure. We first verify that the response can be parsed and that the trace starts from the requested source. We then check whether the methods exist and whether consecutive methods are connected by executable edges. Finally, we compare the exploration order and stopping point with the canonical trace. A response can satisfy an early check and still fail a later one. For example, all reported transitions can be executable even when the model stops before reaching the target.
+The checks separate several levels of failure. We first verify parsing, the requested source, and uniqueness. We then check that each new method has an executable edge from the previously presented region, followed by the polarity-specific stopping or coverage rule. A response can satisfy an early check and still stop before the positive target or omit part of a negative reachable closure.
 
 \TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
 
@@ -46,7 +46,7 @@ Condition-aware programs introduce one error that can be identified more precise
 \label{fig:syntactic-call-bias}
 \end{figure}
 
-Figure~\ref{fig:syntactic-call-bias} illustrates this difference. Both calls can be found by reading the method body, but only \texttt{B} is executed for the generated value. The oracle trace therefore excludes \texttt{C}. This error is different from hallucinating a method or inventing an edge, because the model follows code that really exists but does not execute.
+Figure~\ref{fig:syntactic-call-bias} illustrates this difference. Both calls can be found by reading the method body, but only \texttt{B} is executed for the generated value. The executable graph therefore excludes the edge to \texttt{C}. This differs from hallucinating a method because the model follows code that exists but does not execute.
 
 \subsection{Using the Errors for Diagnosis}
 

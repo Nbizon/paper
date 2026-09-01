@@ -1,0 +1,54 @@
+\section{Experimental Setup}
+\label{sec:experimental-setup}
+
+We evaluate method-reachability reasoning under two semantics. In the \emph{unguarded} family, every call in a method body contributes to reachability. In the \emph{condition-aware} family, a call contributes only when its enclosing branch or loop is executable. Apart from this semantic distinction, both families follow the same generation grid, prompting protocol, model configurations, and scoring procedure.
+
+\subsection{Evaluation Set}
+\label{subsec:evaluation-set}
+
+For each task family, the evaluation set contains 46,656 questions generated from 1,232 Java classes. It is exactly balanced between 23,328 reachable and 23,328 unreachable queries. The generator crosses three target class sizes (100, 250, and 500 methods), nine absolute source--target distances ($\{1,4,7,10,13,16,19,22,25\}$), two comment levels, three variable levels, three loop levels, four conditional levels, and three parameter levels. This yields $3\times2\times3\times3\times4\times3=648$ configurations. For every retained distance and configuration, the dataset contains four positive and four negative questions.
+
+The programs use a pseudo-binary call-tree structure with three trees of depth three and two calls per function. The generator configuration assigns a total helper-call probability of 0.2. In the unguarded family, reachability is defined over the calls that occur syntactically in method bodies. In the condition-aware family, the oracle instead evaluates literal and variable-dependent guards and retains only executable calls. Negative distances encode unreachable targets, whereas positive distances encode reachable targets.
+
+\input{tables/dataset\_specification}
+
+Each instance is archived with its Java source, question, signed generation distance, method inventory, executable graph, system prompt, and generation parameters. Historical generated chains are retained only as diagnostics and do not define the primary metrics.
+
+\subsection{Models and Inference}
+\label{subsec:model-configurations}
+
+We evaluate two instruction-tuned mixture-of-experts models: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}. Table~\ref{tab:models} reports the complete serving configurations. Both models receive one request per question with a requested reasoning budget of 16,384 tokens.
+
+\input{tables/models}
+
+Inference is performed through an OpenAI-compatible endpoint on the Jean Zay (IDRIS) supercomputer. Each server process uses one NVIDIA H100 80GB GPU, tensor parallelism one, bfloat16 activations, FP8 quantization, and a 262,144-token context limit. The serving backend is vLLM 0.24.0 with engine seed zero. The corresponding reasoning parser is selected for each model (\texttt{gemma4} or \texttt{qwen3}).
+
+\subsection{Prompting and Response Parsing}
+\label{subsec:parsing}
+
+The system prompt contains the complete generated Java class and defines reachability according to the evaluated family. It asks the model to return a Boolean decision and the explored methods using the same two-field JSON schema in both families:
+\begin{verbatim}
+{
+  "final_answer": true | false,
+  "trace": ["m0", "m1", ...]
+}
+\end{verbatim}
+
+The parser scans a response for JSON objects and retains the last parsable dictionary. It normalizes JSON Booleans and their string representations. If no valid object or no \texttt{final\_answer} field is found, the response is assigned \texttt{NO\_RESPONSE}. The trace is accepted as either a list or its serialized representation; method names are otherwise left unchanged. Thus, scoring does not repair misspellings, reorder methods, or complete a partial trace.
+
+\subsection{Metrics and Analysis}
+\label{subsec:scoring}
+\label{subsec:statistical-analysis}
+
+We report two independent primary metrics, summarized in Table~\ref{tab:metrics}. Final-answer correctness evaluates only the normalized Boolean against the label. Path correctness evaluates only the returned method sequence against $G_{\mathit{exec}}$ and never incorporates the Boolean. All accuracy values use the complete question set as denominator.
+
+\input{tables/metrics}
+
+Let $X=\langle x_0,\ldots,x_n\rangle$. For both polarities, $x_0=s$, nodes are unique, and every later node has a direct executable incoming edge from an earlier node. For a positive query, $x_n=t$. For a negative query, the predicted set equals the full reachable closure $R(s)$ and $t\notin R(s)$. This accepts alternative valid exploration orders while rejecting calls that cannot execute.
+
+The analysis is descriptive. Scores are first aggregated over the complete balanced factorial grid and are then stratified by polarity, absolute distance, class size, and generated code factors. Factor contrasts compare the highest and lowest levels while marginalizing over the other balanced factors; they are reported as percentage-point differences and are not interpreted as causal effects. The results in Section~\ref{sec:results} are computed from the 46,656 condition-aware scored records available for each model. The retained directory \texttt{gemma-4-26B-A4B-it\_old} is an earlier scoring pass and is excluded.
+
+\subsection{Reproducibility Artifacts}
+\label{subsec:artifact-support}
+
+The recorded condition-aware experiment directory preserves the full generation grid, Java programs, oracle metadata, prompts, raw model outputs, server logs, and scored CSV files. These artifacts make it possible to reconstruct every aggregate reported below and to audit the exact model, backend, hardware, reasoning budget, and evaluator used for each response.

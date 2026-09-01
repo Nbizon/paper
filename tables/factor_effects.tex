@@ -1,19 +1,21 @@
-\begin{table*}[t]
-    \centering
-    \caption{Preliminary contrasts between factors on the shared slice. Values are deltas in percentage points between stressed and baseline conditions, computed by comparing the highest indicated distractor level to the lowest while aggregating over the shared model/context/depth/budget slice. These are descriptive contrasts, not adjusted causal estimates.}
-    \label{tab:factors}
-    \small
-    \begin{tabular}{l rr rr rr}
-        \toprule
-        & \multicolumn{2}{c}{Gemma} & \multicolumn{2}{c}{GPT-OSS} & \multicolumn{2}{c}{Qwen} \\
-        \cmidrule(lr){2-3}\cmidrule(lr){4-5}\cmidrule(lr){6-7}
-        Factor contrast & Final & Chain & Final & Chain & Final & Chain \\
-        \midrule
-        comment: 0 -> 1 & -6.7 pp & -10.5 pp & -6.4 pp & -7.2 pp & -2.2 pp & -4.0 pp \\
-        variable: 0 -> 2 & -5.1 pp & -8.1 pp & -4.5 pp & -5.0 pp & -2.4 pp & -3.9 pp \\
-        loop: 0 -> 3 & -3.6 pp & -8.5 pp & -7.6 pp & -8.2 pp & -2.0 pp & -5.0 pp \\
-        if: 1 -> 2 & -3.6 pp & -9.5 pp & -7.5 pp & -8.3 pp & -2.4 pp & -6.1 pp \\
-        parameter: 0 -> 2 & -2.4 pp & -3.2 pp & -1.9 pp & -2.4 pp & -0.8 pp & +0.8 pp \\
-        \bottomrule
-    \end{tabular}
-\end{table*}
+\begin{table}[t]
+\centering
+\caption{Marginal endpoint contrasts on the balanced condition-aware grid. Values are percentage-point changes from the lowest to the highest listed factor level and are descriptive rather than causal.}
+\label{tab:factors}
+\scriptsize
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{Gemma} & \multicolumn{2}{c}{Qwen} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Factor contrast & Final & Path & Final & Path \\
+\midrule
+Context: 100 $\rightarrow$ 500 & $-6.14$ & $-19.39$ & $+2.02$ & $-4.62$ \\
+Distance: 1 $\rightarrow$ 25 & $-12.54$ & $-36.50$ & $-8.20$ & $-25.95$ \\
+Guards: 0 $\rightarrow$ 5 & $-23.18$ & $-44.78$ & $-21.35$ & $-47.73$ \\
+Parameters: 0 $\rightarrow$ 2 & $-13.35$ & $-23.83$ & $-15.51$ & $-38.50$ \\
+Comments: 0 $\rightarrow$ 1 & $-1.37$ & $-1.69$ & $-0.30$ & $-0.92$ \\
+Variables: 0 $\rightarrow$ 2 & $-1.86$ & $-3.72$ & $-0.96$ & $-0.24$ \\
+Loops: 0 $\rightarrow$ 2 & $-3.34$ & $-6.22$ & $-0.57$ & $-1.83$ \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,16 +1,14 @@
-\begin{table*}[!t]
-    \centering
-    \caption{Main results that will be reported after the final experiment. All metrics use strict scoring, and \texttt{NO\_RESPONSE} is counted as incorrect.}
-    \label{tab:overall}
-    \scriptsize
-    \begin{tabularx}{\textwidth}{p{0.14\textwidth}p{0.16\textwidth}XXXXX}
-        \toprule
-        Family & Model & Final acc. & Trace acc. & Trace comp. & Graph-valid & No response \\
-        \midrule
-        Unguarded & \TODO{model} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{rate} \\
-        Unguarded & \TODO{model} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{rate} \\
-        Condition-aware & \TODO{model} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{rate} \\
-        Condition-aware & \TODO{model} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{score} & \TODO{rate} \\
-        \bottomrule
-    \end{tabularx}
+\begin{table*}[t]
+\centering
+\caption{Condition-aware performance over 46,656 questions per model (\%).}
+\label{tab:overall}
+\scriptsize
+\begin{tabular}{lrrr}
+\toprule
+Model & Final answer & Path & No response \\
+\midrule
+Gemma-4-26B-A4B & 84.21 & 55.90 & 2.24 \\
+Qwen3.6-35B-A3B & \textbf{87.98} & \textbf{67.43} & \textbf{0.83} \\
+\bottomrule
+\end{tabular}
 \end{table*}

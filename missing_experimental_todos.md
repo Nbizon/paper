@@ -4,8 +4,6 @@ These TODOs depend on final reruns, finalized artifacts, or implementation verif
 
 ## Results
 
-- Insert final number of locally served LLMs.
-- Insert final number of generated instances.
 - Insert final empirical abstract takeaway about the effects of distance, class size, and condition-aware guards.
 - Insert final one-sentence empirical takeaway in the contributions.
 - Insert final strict scores for all models and both task families.
@@ -16,8 +14,6 @@ These TODOs depend on final reruns, finalized artifacts, or implementation verif
 
 ## Dataset and Oracle
 
-- Fill final dataset counts.
-- Confirm frozen context sizes and distance range.
 - Add calibration evidence or appendix pointer for `p = 0.65`.
 - Confirm final `nb_questions_per_depth`.
 
@@ -28,7 +24,7 @@ These TODOs depend on final reruns, finalized artifacts, or implementation verif
 ## Models and Inference
 
 - Verify model sizes, active parameters, context lengths, licenses, and source identifiers from official model cards.
-- Verify final local execution details that still matter for reproducibility: exact vLLM build, decoding parameters, context limits, output budgets, and model-specific reasoning-budget support.
+- Verify local execution details not recoverable from the current logs: checkpoint revisions, request-level decoding parameters, stopping criteria, timeouts/retries, and model-specific reasoning-budget semantics.
 - Verify which models expose reasoning-budget controls.
 
 ## Artifact

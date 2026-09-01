@@ -1,54 +1,41 @@
 \section{Results}
 \label{sec:results}
 
-The final experiment has not yet been completed. We therefore keep the result-dependent parts of this section as explicit placeholders. The structure below shows how each research question will be answered, but no preliminary value is used to support a conclusion. \TODO{Insert final results after the stabilized rerun.}
+This section reports the condition-aware experiment after rescoring every response against the executable graph. Each model is evaluated on the same 46,656 questions, and all percentages include unparsable responses. The audit found no disagreement between the 46,656 labels and executable-graph reachability. By contrast, the former syntactic reconstruction made the target appear reachable in 13,273 of 23,328 negative questions (56.90\%), explaining the previous artificial ceiling on negative path accuracy.
 
 \subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
-\input{tables/overall_performance}
+Table~\ref{tab:overall} reports the two independent primary metrics. Qwen obtains the strongest result for final-answer correctness (87.98\%) and path correctness (67.43\%). Gemma reaches 84.21\% and 55.90\%, respectively. Qwen's advantage is 3.77 percentage points for the Boolean decision and 11.53 points for the evidence path. Formatting failure is more frequent for Gemma (2.24\%) than for Qwen (0.83\%).
 
-We answer \researchq{1} in two steps. First, we report the general performance of each model on the two task families. Table~\ref{tab:overall} presents the strict final-answer score together with exact trace accuracy, trace completeness, graph-valid exploration, and \texttt{NO\_RESPONSE}. Keeping missing and invalid responses in the denominator shows the performance of the complete system, including its ability to follow the required format.
+\input{tables/overall\_performance}
 
-\TODO{Insert final strict scores for all models and both task families.}
+Distance affects path correctness more strongly than final answers (Table~\ref{tab:distance}). From distance 1 to 25, Gemma's final-answer accuracy falls by 12.54 points and its path accuracy by 36.50 points. Qwen loses 8.20 and 25.95 points, respectively. At distance 25, Boolean accuracy remains at least 80\% for both models, while path accuracy is 43.58\% for Gemma and 57.23\% for Qwen.
 
-Second, we use the generator metadata to separate the effect of each structural factor. Figure~\ref{fig:distance-effect} studies how performance changes when the model must follow a longer execution. Figure~\ref{fig:class-size-effect} studies whether additional methods make the relevant calls more difficult to identify. Figure~\ref{fig:if-effect} then measures the effect of visible calls that are disabled by generated conditions. Polarity is analyzed separately because a negative question requires the model to establish that no executable path reaches the target.
+\input{tables/distance\_performance}
 
-\begin{figure}[t]
-    \centering
-    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by canonical distance.}}}
-    \caption{Final-answer and trace accuracy by canonical trace length.}
-    \label{fig:distance-effect}
-\end{figure}
+The marginal contrasts in Table~\ref{tab:factors} identify guards and parameters as the strongest generated factors. Moving from zero to five guards reduces path accuracy by 44.78 points for Gemma and 47.73 points for Qwen. Moving from zero to two parameter levels reduces it by 23.83 and 38.50 points. Comments, local variables, and loops have smaller marginal associations.
 
-\begin{figure}[t]
-    \centering
-    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of final-answer and trace accuracy by class size.}}}
-    \caption{Final-answer and trace accuracy by generated class size.}
-    \label{fig:class-size-effect}
-\end{figure}
+Class size affects the models differently. Moving from 100 to 500 methods reduces Gemma's final accuracy from 86.81\% to 80.67\% and its path accuracy from 64.83\% to 45.45\%. Qwen's final accuracy rises slightly from 86.83\% to 88.85\%, while its path accuracy falls from 69.55\% to 64.93\%.
 
-\begin{figure}[t]
-    \centering
-    \fcolorbox{gray!65}{gray!4}{\parbox{0.88\columnwidth}{\centering \TODO{Insert plot of syntactic-call bias by number of condition-aware guards.}}}
-    \caption{Syntactic-call bias by number of condition-aware guards.}
-    \label{fig:if-effect}
-\end{figure}
+\input{tables/factor\_effects}
 
-\TODO{Insert final distance, class-size, polarity, condition-aware guard, and interaction analyses.}
+\paragraph{Answer to \researchq{1}.}
+Both models solve most condition-aware reachability decisions, with Qwen reaching 87.98\% final-answer accuracy. Path correctness is lower and degrades more sharply with distance, guards, parameters, and class size.
 
-\subsection{\researchq{2}: Models and Inference Configurations}
+\subsection{\researchq{2}: Evidence from Generated Paths}
 
-For \researchq{2}, the comparison unit is the complete configuration listed in Table~\ref{tab:models}. We first compare all configurations under their frozen inference settings. This shows which deployed systems obtain the highest answer and trace scores without assuming that a checkpoint behaves identically under every serving mode.
+Table~\ref{tab:trace-diagnostics} separates reachable and unreachable questions. On reachable queries, Qwen obtains 94.08\% final-answer correctness and 85.72\% path correctness; Gemma reaches 85.19\% and 73.96\%. For unreachable queries, path correctness falls to 49.15\% for Qwen and 37.84\% for Gemma. A positive path may stop at the target, whereas a negative path must enumerate the entire source-reachable closure and exclude the target.
 
-We then study reasoning budget only for configurations where this value is verified. Requested budgets range from 512 to 16,384 tokens. For each configuration, we identify the smallest budget that reaches at least 95\% of its highest observed final-answer accuracy. We compare this point with the evolution of trace quality and \texttt{NO\_RESPONSE}. This makes it possible to determine whether a larger budget improves only the final decision or also the execution trace. No budget conclusion is reported for a deployment whose control is not confirmed.
+\input{tables/trace\_diagnostics}
 
-\TODO{Insert final model and inference-mode comparison, including budget-sensitivity results only for verified budget-controllable settings.}
-\TODO{Do not claim condition-aware budget saturation unless condition-aware budget experiments are actually run.}
+The corrected negative scores are no longer limited by the former 43.1\% artificial ceiling because path validity ignores calls merely present in source text. Executable-graph scoring also avoids enforcing one deterministic depth-first serialization: alternative orders receive the same score when each method is introduced through an executable edge from an earlier presented method and the polarity-specific endpoint or coverage rule holds. Consequently, \texttt{correctness\_path} measures possible executable evidence rather than imitation of a generated ordering.
 
-\subsection{\researchq{3}: Trace-Level Reasoning and Error Patterns}
+\paragraph{Answer to \researchq{2}.}
+The paths reveal a substantial answer--evidence gap, especially for exhaustive proofs of unreachability. Executable-graph scoring distinguishes valid alternative explorations from disconnected, incomplete, or non-executable traces without coupling this judgment to the Boolean answer.
 
-\researchq{3} starts from the cases that cannot be explained by the final answer alone. For each response, we compare the Boolean decision with the methods reported in the trace. We first check that the trace starts from the requested source. We then verify every transition and determine whether the model stops at the correct point. This separates a correct answer supported by an executable trace from a correct answer associated with missing or impossible calls.
+\subsection{\researchq{3}: Relation to Existing Benchmarks}
 
-For condition-aware questions, we additionally check whether an invalid transition corresponds to a call that is visible in the code but disabled at runtime. The error analysis in Section~\ref{sec:error-analysis} uses these checks to group recurring behaviors. Because the two task families are not paired instance by instance, their aggregate differences are estimated with unpaired intervals over similar factor distributions.
+The present artifact contains two model configurations evaluated on the generated condition-aware benchmark, but no paired scores for these exact configurations on an external code-reasoning benchmark. A model-level correlation would in any case be uninformative with only two observations. We therefore do not report a correlation or claim that the ranking observed here transfers to existing benchmarks.
 
-\TODO{Insert final answer--trace consistency, graph-valid exploration, error-family, local-motif, and syntactic-call-bias analyses.}
+\paragraph{Answer to \researchq{3}.}
+The available measurements establish performance on controlled method reachability only; they do not provide evidence for a relationship with external benchmark performance.
