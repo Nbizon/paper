@@ -1,18 +1,18 @@
 \section{Experimental Setup}
 \label{sec:experimental-setup}
 
-We use the two task families described in the previous section. In the unguarded family, every generated call contributes to reachability. In the condition-aware family, a call contributes only when the values in the program allow its condition to be satisfied. The generation process, prompts, models, and evaluation procedure otherwise remain the same.
+The generator exposes the two task families described in the previous section. In the unguarded family, edge-defining calls are emitted outside guards. In the condition-aware family, a visible call contributes only when the generated values make it executable. Both families can use the same values of \texttt{n\_if}; the recorded generator mode, not this factor, identifies the family. The quantitative results reported here use the condition-aware family.
 
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-For each task family, the evaluation set contains 46,656 questions generated from 1,232 Java classes. Half of the questions have a reachable target and half have an unreachable target. The two families use the same balanced experimental design, which allows the results to be studied according to distance, class size, and the generated elements added to the code.
+The analyzed condition-aware evaluation set contains 46,656 questions generated from 1,232 Java classes. Half of the questions have a reachable target and half have an unreachable target. The generator exposes the same balanced factor grid for the unguarded family, but no score for that family is reported in this paper. The current results can therefore be studied according to distance, class size, and the generated elements added to the code, but cannot support a measured comparison between families.
 
 \vspace{0.2cm}
 
 The complete generation grid is reported in Appendix~\ref{app:experimental-config}. Keeping these parameters together makes the construction of the evaluation set explicit without interrupting the description of the experimental procedure.
 
-Each instance is stored with the information needed to reproduce its evaluation. This includes the Java source, the question, the signed distance, the generated methods, the executable graph, the prompt, and the generation configuration. Historical chain files are retained for diagnostic purposes, but they do not define the primary metrics.
+Each instance is stored with the information needed to reproduce its evaluation. This includes the Java source, the question, the signed distance, the generated methods, the executable graph, the prompt, and the generation configuration. Historical chain files, when present in older datasets, are diagnostic artifacts; they neither define a canonical traversal nor enter either primary metric.
 
 \subsection{Models and Inference}
 \label{subsec:model-configurations}
@@ -51,4 +51,4 @@ The results in the next section use the 46,656 condition-aware records available
 \subsection{Reproducibility Artifacts}
 \label{subsec:artifact-support}
 
-The condition-aware experiment directory contains the generated programs and oracle metadata, together with the prompts, raw model responses, server logs, and scored files. It can therefore be used to reconstruct the aggregates reported in the next section and to verify the configuration used for each response.
+The condition-aware experiment directory contains the generated programs and executable-graph oracle metadata, together with the prompts, raw model responses, server logs, and scored files. Its configuration records mode \texttt{d}, including for instances where \texttt{n\_if}$=0$. It can therefore be used to reconstruct the aggregates reported in the next section and to verify the family and configuration used for each response.

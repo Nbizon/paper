@@ -11,13 +11,13 @@ Applied `codex_instructions_reachabilitybench_icse2027.md` and `instructions_cod
 - Rewrote the abstract, introduction, contributions, and RQs around a controlled diagnostic benchmark framing.
 - Split the study into four RQs, with reasoning-budget analysis as a secondary RQ4.
 - Strengthened related work positioning around end-to-end code benchmarks, CRUXEval, REval, CORE/CoRe, TraceEval, and RE2-Bench.
-- Formalized the methodology: instance tuple, syntactic/executable call graphs, canonical trace, signed distance, parsing, metrics, statistics, and oracle validation.
+- Formalized the methodology: instance tuple, syntactic/executable call graphs, graph-valid path, signed distance, parsing, metrics, statistics, and oracle validation.
 - Added planned dataset specification, model, metrics, result, and error-taxonomy tables with explicit TODO placeholders.
 - Added a Data Availability section after the conclusion.
 - Preserved result-dependent TODOs rather than inventing results.
 - Removed paper-body prose that explicitly described ICSE review criteria or artifact policy instructions.
 - Recentered the argument on \benchmark as a controlled and parameterized diagnostic benchmark.
-- Added Experimental Factors, Baselines and Sanity Checks, and Why Evaluate Canonical Traces subsections.
+- Added Experimental Factors, Baselines and Sanity Checks, and path-evaluation subsections.
 - Performed a prose cleanup pass across the abstract, introduction, background, design, methodology, results scaffold, error analysis, threats, conclusion, and data-availability text to remove unnecessary repetition and vary recurring formulations.
 
 ## Script-Backed Clarifications
@@ -25,7 +25,8 @@ Applied `codex_instructions_reachabilitybench_icse2027.md` and `instructions_cod
 - Generator defaults inspected in `multi_language_experiment_generator.py`: tree-only Java sweep, context sizes 100/250/500, depths 1--25, default `n_questions=4`, and positive/negative balancing at retained depths.
 - Tree construction inspected in `method_tree.py` and `tree_chain_generator.py`: pseudo-binary BFS generation with default `p=0.65`; method declarations are shuffled after tree materialization.
 - Condition-aware generation inspected in `tree_chain_generator.py` and `control_flow_generator.py`: executable generated calls may be placed in true guards, false guards may contain visible non-executable calls, and loops are generated as surface code rather than reachability-changing calls in the inspected tree configuration.
-- Evaluator inspected in `evaluate_results.py`: the parser uses the last parsable JSON object, strict scores count `NO_RESPONSE` as incorrect, and trace completeness is an ordered-recall score that requires the predicted trace to start at the oracle source.
+- Evaluator inspected in `evaluate_results.py`: the parser uses the last parsable JSON object; final-answer correctness and path correctness are independent; no canonical-trace or completeness metric is reported.
+- Generator modes rechecked: `c` names the unguarded/control-flow family and `d` names the condition-aware/data-flow family. `n_if` is a factor within either mode, not the family selector. The reported `last_exp` configurations use mode `d`, including their `n_if=0` stratum.
 
 ## Known Risks
 

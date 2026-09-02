@@ -11,13 +11,13 @@
         Over-exploration & \texttt{S -> B -> P -> P} & The model continues traversing prediction-only nodes after leaving the reference path. \\
         Alternative branch & \texttt{B -> E; B -> P} & The prediction shares a prefix, then chooses a sibling or nearby branch instead of the oracle branch. \\
         Invalid transition & \texttt{B -> P} without a graph edge & The predicted transition is not a valid local call edge. \\
-        Missed reachable target & \texttt{S -> B -> E -> T} & The target is reachable in the oracle trace, but the predicted trace omits the suffix containing the target. \\
+        Missed reachable target & \texttt{S -> B -> E -> T} & The target is reachable in the executable graph, but the predicted path omits the suffix containing the target. \\
         Longer trace & \texttt{S -> B -> T -> P} & The prediction reaches the relevant region but continues beyond the reference trace. \\
-        Ordering issue & \texttt{S -> B1, S -> B2} with reversed visits & Local calls are plausible, but traversal order does not match the reference order. \\
+        Invalid introduction & \texttt{S -> B1, S -> B2} & A node is introduced before any earlier predicted node has an executable edge to it. \\
         Empty prediction & \texttt{S -> E, S -> E} & The reference contains reachable outgoing structure, but the extracted prediction is empty. \\
         Hallucinated target & \texttt{B -> P -> T} & The prediction reaches the target through a prediction-only suffix absent from the oracle path. \\
         Wrong-rank target & \texttt{S -> T -> B} vs. \texttt{S -> B -> T} & The target appears, but at the wrong position in the traversal. \\
-        Repeated methods & \texttt{B -> P -> P} & A method or occurrence is repeated in the prediction without a corresponding repetition in the oracle trace. \\
+        Repeated methods & \texttt{B -> P -> P} & A method is repeated even though path correctness requires a duplicate-free sequence. \\
         Unresolved node & \texttt{B -> P(unresolved)} & The prediction introduces a method name that cannot be resolved in the parsed call graph. \\
         Wrong source & \texttt{P -> P; S -> E} & The predicted trace starts from a node other than the required source anchor. \\
         \bottomrule

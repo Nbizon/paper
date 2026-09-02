@@ -27,6 +27,6 @@
         \draw[dasharrow] (condition) -- (java);
     \end{tikzpicture}
     \caption{Overview of the \benchmark pipeline. Both task families use the same generation, prompting, and evaluation steps. Condition-aware programs additionally contain guarded calls.}
-    \Description{Pipeline showing tree-shaped call graph generation, Java class generation, reachability question construction, model JSON output, and oracle-based evaluation, with control-flow and condition-aware variants feeding into Java generation.}
+    \Description{Pipeline showing tree-shaped call graph generation, Java class generation, reachability question construction, model JSON output, and oracle-based evaluation, with unguarded control-flow mode and condition-aware data-flow mode feeding into Java generation.}
     \label{fig:pipeline}
 \end{figure*}

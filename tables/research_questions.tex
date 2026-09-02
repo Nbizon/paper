@@ -6,9 +6,9 @@
 \toprule
 RQ & Question & Main measurements \\
 \midrule
-\researchq{1} & How accurately do LLMs solve executable method-reachability questions, and how is their performance affected by controlled structural factors? & Final-answer accuracy, exact trace accuracy, trace completeness, graph-valid exploration, \texttt{NO\_RESPONSE}, trace length, class size, polarity, and guard effects \\
-\researchq{2} & How do model and inference configurations compare on \benchmark, and how stable are the improvements obtained with verified reasoning controls? & Scores by model and task family, inference mode, verified reasoning controls, budget curves, saturation estimates, trace metrics, and invalid-output rates \\
-\researchq{3} & What information do model-generated traces provide about the errors made by LLMs? & Answer--trace consistency, graph-valid exploration, recurring error families, syntactic-call bias, and representative local motifs \\
+\researchq{1} & How accurately do LLMs solve executable method-reachability questions, and how is their performance affected by controlled structural factors? & Final-answer correctness, path correctness, \texttt{NO\_RESPONSE}, class size, polarity, distance, and guard effects \\
+\researchq{2} & What do model-generated paths reveal about errors on reachability tasks? & Answer--path consistency, path-rule violations, syntactic-call bias, and representative local motifs \\
+\researchq{3} & Is performance on \benchmark related to performance on existing benchmarks? & Matched external-benchmark measurements when available; no correlation claim otherwise \\
 \bottomrule
 \end{tabularx}
 \end{table*}

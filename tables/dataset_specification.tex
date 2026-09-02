@@ -1,14 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Detailed configuration of the evaluation set. Both task families use the same generation grid.}
+\caption{Detailed configuration of the analyzed condition-aware evaluation set. The generator also exposes this grid for unguarded generation, but those runs are not reported here.}
 \label{tab:dataset-spec}
 \scriptsize
 \begin{tabularx}{\textwidth}{p{0.22\textwidth}p{0.24\textwidth}X}
 \toprule
 Category & Parameter & Value \\
 \midrule
-Dataset size & Java classes & 1,232 per task family \\
-& Questions & 46,656 per task family \\
+Dataset size & Java classes & 1,232 condition-aware classes \\
+& Questions & 46,656 condition-aware questions \\
 & Question polarity & 23,328 reachable and 23,328 unreachable \\
 \midrule
 Graph generation & Target class size & $\{100,250,500\}$ methods \\
@@ -23,8 +23,8 @@ Generated code & Comments & $\{0,1\}$ \\
 Factorial design & Code configurations & $3\times2\times3\times3\times4\times3=648$ \\
 & Questions per distance and configuration & Four reachable and four unreachable \\
 \midrule
-Task semantics & Unguarded & All generated direct calls contribute to reachability \\
-& Condition-aware & Only calls whose generated guards evaluate to true contribute to reachability \\
+Task semantics & Unguarded (mode \texttt{c}) & Edge-defining calls are outside guards; \texttt{n\_if} remains a distractor factor \\
+& Condition-aware (mode \texttt{d}) & Only executable calls, including calls whose generated guards evaluate to true, contribute to reachability \\
 \bottomrule
 \end{tabularx}
 \end{table*}

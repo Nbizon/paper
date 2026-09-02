@@ -1,14 +1,14 @@
 \begin{table*}[t]
 \centering
-\caption{Model and serving configurations. U and C denote the unguarded and condition-aware families.}
+\caption{Model and serving configurations used for the reported condition-aware results.}
 \label{tab:models}
 \scriptsize
 \begin{tabularx}{\textwidth}{p{0.26\textwidth}p{0.08\textwidth}p{0.13\textwidth}X}
 \toprule
 Checkpoint & Family & Budget & Serving configuration \\
 \midrule
-\texttt{google/gemma-4-26B-A4B-it} & U, C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{gemma4} reasoning parser \\
-\texttt{Qwen/Qwen3.6-35B-A3B} & U, C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{qwen3} reasoning parser \\
+\texttt{google/gemma-4-26B-A4B-it} & C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{gemma4} reasoning parser \\
+\texttt{Qwen/Qwen3.6-35B-A3B} & C & 16,384 & vLLM 0.24.0; bfloat16/FP8; 262,144-token context; TP=1; H100 80GB; \texttt{qwen3} reasoning parser \\
 \bottomrule
 \end{tabularx}
 \end{table*}

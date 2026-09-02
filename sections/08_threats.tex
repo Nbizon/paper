@@ -5,7 +5,7 @@
 
 \benchmark measures whether a model can produce a correct reachability answer and a trace that is consistent with the executable program. It does not observe the internal reasoning that produced these outputs. A correct trace may be generated for the wrong reason, and an incorrect trace may be produced after the model has already selected the correct answer. For this reason, we interpret the trace as additional evidence about model behavior and not as a direct explanation of its internal computation.
 
-Path correctness depends on the generated executable graph. Although this avoids privileging one canonical traversal, any error in executable-edge generation would affect every path score. We mitigate this threat by auditing labels and generated chains against the graph and by reporting the Boolean and path metrics independently.
+Path correctness depends on the generated executable graph. Although this avoids privileging one canonical traversal, any error in executable-edge generation would affect every path score. We mitigate this threat by auditing labels and executable metadata against the graph and by reporting final-answer correctness and path correctness independently.
 
 \subsection{What Can Affect the Experiment}
 
@@ -25,9 +25,9 @@ The graph-level task is not specific to Java. Another language could reuse the c
 
 \subsection{What Can Be Concluded from the Scores}
 
-Several questions can be generated from the same class, which creates dependencies between observations. We therefore compute uncertainty by sampling classes rather than individual questions. The unguarded and condition-aware datasets are also not paired by construction. Their difference is analyzed with unpaired intervals unless matched versions are generated.
+Several questions can be generated from the same class, which creates dependencies between observations. We therefore compute uncertainty by sampling classes rather than individual questions. The reported experiment contains only condition-aware runs and cannot estimate a difference between families. Such a comparison requires matched or otherwise explicitly comparable runs from both generator modes.
 
-Strict scores keep \texttt{NO\_RESPONSE} in the denominator. This choice measures the complete evaluated system, but it combines task errors with formatting and serving failures. We therefore report \texttt{NO\_RESPONSE} separately and distinguish final-answer accuracy from trace metrics. Reasoning-budget results are also limited to configurations for which the control is verified. These choices prevent a single aggregate score from supporting a conclusion that the experiment does not isolate.
+Strict scores keep \texttt{NO\_RESPONSE} in the denominator. This choice measures the complete evaluated system, but it combines task errors with formatting and serving failures. We therefore report \texttt{NO\_RESPONSE} separately and distinguish final-answer correctness from path correctness. Reasoning-budget results are also limited to configurations for which the control is verified. These choices prevent a single aggregate score from supporting a conclusion that the experiment does not isolate.
 
 \subsection{Reproducibility}
 

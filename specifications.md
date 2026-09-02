@@ -4,7 +4,7 @@
 - Project: ReachabilityBench ICSE 2027 paper draft
 - Repository: /home/nbizon/Thèse/Projects/paper
 - Main branch: icse2027-paper-revision
-- Last updated: 2026-08-17
+- Last updated: 2026-09-02
 - Status: active draft
 
 ## Scope
@@ -50,10 +50,10 @@
   - Commits:
 
 ### REQ-0004
-- Status: implemented
+- Status: replaced
 - Source: codex_icse2027_reachabilitybench_spec_v1.txt
-- Description: The evaluation protocol must prioritize final-answer accuracy, canonical execution-trace accuracy, trace completeness, graph-valid exploration accuracy, and NO_RESPONSE rate.
-- Acceptance criteria: Methodology and results tables define and report the required metrics with strict-score convention in the main paper.
+- Description: The former evaluation protocol prioritized several overlapping answer and trace metrics.
+- Acceptance criteria: Replaced by REQ-0027 after the executable-graph audit showed that canonical-trace and completeness metrics do not match the accepted path definition.
 - Traceability:
   - Code: sections/05_methodology.tex; sections/06_results.tex; tables/metrics.tex; tables/overall_performance.tex
   - Tests: manual::latexmk build
@@ -173,7 +173,7 @@
 - Status: implemented
 - Source: codex_instructions_reachabilitybench_icse2027.md
 - Description: Make the experimental methodology reproducible except for final result-dependent values.
-- Acceptance criteria: Methodology defines the benchmark instance, syntactic and executable call graphs, canonical trace, signed distance, model table, local inference TODOs, prompting, parsing, metrics, statistical analysis, oracle validation, and artifact plan.
+- Acceptance criteria: Methodology defines the benchmark instance, syntactic and executable call graphs, graph-valid path semantics, signed distance, model table, local inference TODOs, prompting, parsing, metrics, statistical analysis, oracle validation, and artifact plan.
 - Traceability:
   - Code: sections/05_methodology.tex; tables/dataset_specification.tex; tables/models.tex; tables/metrics.tex
   - Tests: manual::latexmk build
@@ -269,11 +269,23 @@
 - Status: implemented
 - Source: User request and /home/nbizon/.codex/attachments/8fdc50b5-f759-42ae-b3a7-d4509ca29faf/pasted-text.txt
 - Description: Rewrite the Abstract, Introduction, Related Work, and ReachabilityBench Design sections in a mature ICSE Research Track style that frames ReachabilityBench as a controlled diagnostic benchmark for executable program-structure reasoning.
-- Acceptance criteria: The abstract uses controlled bracketed placeholders instead of visible TODOs; the introduction follows the requested six-paragraph contribution structure; related work uses four analytical subsections; the design section formally defines instances, syntactic and executable graphs, generation, guards, canonical traces, signed canonical trace length, dataset placeholders, and oracle validation without unsupported empirical claims.
+- Acceptance criteria: The abstract uses controlled bracketed placeholders instead of visible TODOs; the introduction follows the requested six-paragraph contribution structure; related work uses four analytical subsections; the design section formally defines instances, syntactic and executable graphs, generation, guards, graph-valid paths, signed distance, dataset placeholders, and oracle validation without unsupported empirical claims.
 - Traceability:
   - Code: sections/00_abstract.tex; sections/01_introduction.tex; sections/02_background.tex; sections/03_benchmark_design.tex
   - Tests: rg::sections targeted TODO check; manual::latexmk build
   - Docs:
+  - ADR:
+  - Commits:
+
+### REQ-0027
+- Status: implemented
+- Source: User correction and audited benchmark generator/evaluator, 2026-09-02
+- Description: Use generator mode `c` as the unguarded/control-flow family and mode `d` as the condition-aware/data-flow family; treat `n_if` as an independent factor; report only final-answer correctness and path correctness as independent scoring metrics.
+- Acceptance criteria: The manuscript never derives family identity from `n_if`, labels the current `last_exp` results condition-aware from their recorded mode `d`, does not claim matching unguarded results, and defines path correctness against the executable graph without a canonical traversal.
+- Traceability:
+  - Code: sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; tables/metrics.tex; tables/dataset_specification.tex; tables/models.tex
+  - Tests: manual::latexmk build; rg::active manuscript metric terminology
+  - Docs: README.md; revision_notes.md
   - ADR:
   - Commits:
 
@@ -395,8 +407,10 @@
 - NFR-0001 -> specifications.md -> git::status -> commit::pending
 - REQ-0025 -> sections/*.tex; active tables; figures/pipeline.tex -> manual::latexmk build; manual::full-paper editorial review -> commit::pending
 - REQ-0026 -> main.tex; sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; sections/12_experimental_appendix.tex; tables/dataset_specification.tex; tables/models.tex -> rg::no list-like environments after Section IV.D; manual::latexmk build; manual::editorial comparison -> commit::pending
+- REQ-0027 -> sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; tables/metrics.tex -> manual::latexmk build; rg::canonical trace -> commit::pending
 
 ## Change Log
+- 2026-09-02 - Corrected family identity to mode `c`/`d`, made `n_if` independent, and replaced canonical-trace metrics with independent final-answer and executable-path correctness.
 - 2026-09-01 - Harmonized the writing from Section IV.E onward and moved detailed dataset and serving configurations to appendix tables.
 - 2026-08-19 - Reconstructed the manuscript's argument, section organization, paragraph logic, and experimental narrative after the author clarified that a surface-level stylistic rewrite was insufficient.
 - 2026-08-19 - Rewrote the complete manuscript using the author-provided Abstract and Introduction as the English style reference.
