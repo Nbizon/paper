@@ -6,7 +6,7 @@
 
 \subsection{From a Call Graph to a Reachability Question}
 
-\benchmark starts from a call graph rather than directly from Java code. We first create an ordered graph, where each node is later converted into a Java method and each edge into a method call. Once the program is built, a source method $s$ and a target method $t$ are selected. The corresponding question asks whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
+\benchmark constructs each instance from an ordered call graph. Each node is converted into a Java method and each edge into a method call. A source method $s$ and a target method $t$ define the corresponding question: whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
 
 \vspace{0.2cm}
 
@@ -36,7 +36,7 @@ Figure~\ref{fig:pipeline} summarizes the complete pipeline. The program, the que
 
 \subsection{Generating the Call Graph}
 
-The current version of \benchmark relies on ordered acyclic trees. This structure is simple enough to keep reachability controlled, while still allowing direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
+\benchmark uses ordered acyclic trees that support controlled reachability, direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
 
 The order of the children is also preserved, since it determines the order in which method calls are inserted into the Java program.
 
@@ -87,9 +87,9 @@ If $X_{LL}(u)=1$, the edge $L(u) \rightarrow L(L(u))$ is added. Similarly, $X_{L
 \label{fig:local-tree-rule}
 \end{figure}
 
-With this rule, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Increasing $p$ creates more branches and consequently more opportunities to construct negative reachability questions. The final level can be truncated when the method budget is reached.
+With this rule, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Increasing $p$ creates more branches and consequently more opportunities to construct negative reachability questions. The final level is truncated when the method budget is reached.
 
-In our current configuration, we use $p=0.65$ to obtain enough positive and negative questions. The sensitivity of the results to this parameter remains to be studied.
+The generation probability is $p=0.65$, producing both positive and negative questions.
 
 
 \subsection{Generating the Java Program}
@@ -100,7 +100,7 @@ Once the tree is available, each node is translated into one Java method. For ev
 
 Method declarations, however, are shuffled in the final class. As a consequence, their position in the source file does not provide information about the execution order.
 
-The generator can also introduce comments, local variables, parameters, loops, and different declaration orders. These elements modify the code visible to the LLM without necessarily changing reachability. Conditions are treated separately, since they can directly determine whether a call is executed. In the current version, calls used to define reachability are not placed inside loops.
+The generator also introduces comments, local variables, parameters, loops, and different declaration orders. These elements modify the code visible to the LLM without necessarily changing reachability. Generated conditions can directly determine whether a call is executed, while loops do not contain calls used to define reachability.
 
 
 \subsection{Introducing Runtime Conditions}
@@ -124,7 +124,7 @@ The oracle must describe the calls that can execute, rather than all the calls t
 
 \vspace{0.2cm}
 
-A call protected by a false condition is therefore excluded from the graph. For example, a visible call to \texttt{B()} inside \texttt{A()} creates the edge $(A,B)$ only when the generated values allow this call to execute. For older instances, the same information is reconstructed from the execution trees produced during generation.
+A call protected by a false condition is therefore excluded from the graph. For example, a visible call to \texttt{B()} inside \texttt{A()} creates the edge $(A,B)$ only when the generated values allow this call to execute.
 
 The model trace is evaluated directly against this graph. Let
 
@@ -175,7 +175,7 @@ The generated data also associate each question with a signed distance $d$. A po
 
 \vspace{0.2cm}
 
-Earlier versions of the benchmark stored one traversal in \texttt{chains.txt}. This file is kept for reproducibility, but it is not used for the primary scores. New instances store the executable graph directly so that all valid exploration orders can be evaluated in the same way.
+Each instance stores the executable graph directly, allowing all valid exploration orders to be evaluated in the same way. Primary scores are computed from this graph.
 
 
 \subsection{Design Summary}
@@ -186,4 +186,4 @@ Through this process, \benchmark turns a controlled call graph into a Java progr
 
 Each generated class is compiled before it is retained. The validator then checks the executable calls, recomputes reachability, and verifies the generated conditions. The stored graph and label therefore correspond to the Java code presented to the LLM, rather than only to an internal structure used during generation.
 
-These design choices provide controlled instances whose structural properties can be varied while keeping the expected result known. The next section describes how these instances are selected and used in the experiments.
+The benchmark provides controlled instances whose structural properties can be varied while keeping the expected result known. The next section describes how these instances are selected and used in the experiments.
