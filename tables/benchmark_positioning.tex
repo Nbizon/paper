@@ -1,19 +1,21 @@
-\begin{table*}[t]
+\begin{table}[t]
 \centering
-\caption{Position of \benchmark relative to common LLM benchmarks for software engineering.}
+\caption{Evaluation scope and evidence in representative benchmarks. These are task distinctions, rather than ratings of benchmark quality.}
 \label{tab:benchmark-positioning}
-\begin{tabularx}{\textwidth}{p{0.17\textwidth}p{0.20\textwidth}p{0.20\textwidth}p{0.17\textwidth}X}
+\scriptsize
+\setlength{\tabcolsep}{2pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\columnwidth}{p{0.23\columnwidth}XX}
 \toprule
-Benchmark & Task & Typical oracle & Granularity & Reachability signal \\
+Benchmark & Evaluated task & Evidence or control \\
 \midrule
-HumanEval / MBPP & Function synthesis & Unit tests & Single function & Indirect \\
-APPS & Algorithmic programming & Test cases & Full program & Indirect \\
-LiveCodeBench & Live coding scenarios & Test cases / scenarios & Problem level & Indirect \\
-BigCodeBench & API-rich generation & Test cases & Function / program & Indirect \\
-CodeXGLUE & Code intelligence suite & Task-specific labels & Mixed & Partial \\
-Defects4J & Bug repair / bug testing & Regression tests & Real Java bugs & Indirect \\
-SWE-bench & Issue resolution & Repository tests & Real repositories & Indirect \\
-\benchmark & Method-to-method reachability & Generated oracle and trace & Controlled Java class & Direct \\
+HumanEval / MBPP / APPS & Generate code from a specification & Test-based functional correctness. \\
+SWE-bench & Resolve repository issues & Repository tests; multiple skills combined. \\
+CRUXEval & Infer inputs or outputs & Short generated functions with execution-derived input/output pairs. \\
+REval & Reason about runtime behavior & Paths, coverage, states, outputs, and consistency. \\
+CoRE & Recover program dependencies & Human-verified static-analysis task instances. \\
+TraceEval & Recover runtime call structure & Edges witnessed by validation execution on real-world programs. \\
+\benchmark & Decide executable method reachability & Generated factors, Boolean labels, and graph-valid exploration evidence. \\
 \bottomrule
 \end{tabularx}
-\end{table*}
+\end{table}
