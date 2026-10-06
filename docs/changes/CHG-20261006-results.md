@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "id": "CHG-20261006",
   "title": "Reproduce and explain the updated reachability results",
-  "status": "verifying",
+  "status": "completed",
   "risk": "L2",
   "created_at": "2026-10-06",
   "updated_at": "2026-10-06",
@@ -17,7 +17,9 @@
   "related_adrs": [],
   "related_issues": [],
   "related_prs": [],
-  "commits": []
+  "commits": [
+    "377a2656e14e60f5b6b4aa00ec7d01de1b371fff"
+  ]
 }
 ---
 
@@ -69,5 +71,6 @@ remain specific to two checkpoints, one dataset and one inference configuration;
 trace diagnostics cannot identify private reasoning or causal mechanisms.
 
 ## Completion
-Verified before implementation commit. Implementation/evidence SHA and final
-traceability closure are pending.
+Completed. The implementation/evidence commit is recorded above. Current
+SPEC delivery/verification states and the generated index are synchronized;
+all acceptance criteria have the evidence described in VALIDATION.md.
