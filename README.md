@@ -20,9 +20,16 @@ The archived `n_if`/`if` field corresponds to `nb_if` in the manuscript. The old
 latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 ```
 
-The wrapper uses `IEEEtran`, BibTeX, and TikZ. Result figures are native vector
-TikZ sources; no Python plotting dependency or external image is needed to build.
+The wrapper uses `IEEEtran`, BibTeX, TikZ and PGFPlots. Figures are native vectors;
+no Python plotting dependency or external image is needed to build.
 The inclusion switches in `main.tex` control which manuscript sections appear.
+
+The shared figure style is defined in `figures/styles.tex`. Diagrams use aligned
+neutral boxes and uniform arrow weights; query examples are separate from call
+edges. Result plots use a common 0–100% scale, labeled axes and visual legends.
+Gemma uses orange circles and Qwen blue squares; solid lines show answer scores
+and dashed lines path scores. Marker shapes also distinguish models in grayscale.
+Edit result plots through `scripts/render_results.py` and regenerate them.
 
 ## Reproduce the results
 

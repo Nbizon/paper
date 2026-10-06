@@ -58,34 +58,7 @@ Additional branches can then be created below $L(u)$. The two possible edges are
 
 If $X_{LL}(u)=1$, the edge $L(u) \rightarrow L(L(u))$ is added. Similarly, $X_{LR}(u)=1$ adds $L(u) \rightarrow R(L(u))$. Figure~\ref{fig:local-tree-rule} illustrates this local rule.
 
-\begin{figure}[t]
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tikzpicture}[
-    >=Latex,
-    x=1cm,
-    y=1cm,
-    method/.style={rb method, minimum width=1.35cm},
-    det/.style={rb edge},
-    opt/.style={rb optional edge},
-    note/.style={font=\scriptsize, align=center}
-]
-\node[method] (u) at (0,0) {$u$};
-\node[method] (l) at (-1.4,-1.0) {$L(u)$};
-\node[method] (r) at (1.4,-1.0) {$R(u)$};
-\node[method] (ll) at (-2.2,-2.0) {$L(L(u))$};
-\node[method] (lr) at (-0.6,-2.0) {$R(L(u))$};
-\draw[det] (u) -- node[note, above left] {always} (l);
-\draw[det] (u) -- node[note, above right] {always} (r);
-\draw[opt] (l) -- node[note, left] {$X_{LL}(u)$} (ll);
-\draw[opt] (l) -- node[note, right] {$X_{LR}(u)$} (lr);
-\node[rb panel title, text width=4.2cm] at (0,-2.75) {Optional edges are sampled independently with probability $p$.};
-\end{tikzpicture}
-}
-\caption{Local rule used to expand the generated tree. The fixed edges create the main structure, while the optional edges add branches.}
-\Description{A node u has deterministic left and right children. The left child has two optional children, each controlled by an independent Bernoulli variable.}
-\label{fig:local-tree-rule}
-\end{figure}
+\input{figures/local_tree_rule}
 
 With this rule, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Increasing $p$ creates more branches and consequently more opportunities to construct negative reachability questions. The final level is truncated when the method budget is reached.
 
@@ -140,36 +113,7 @@ This definition does not impose one traversal order. Two traces can visit indepe
 
 For a reachable question, the last method must be the target, which gives $x_n=t$. For an unreachable question, the trace must instead cover all methods reachable from the source and must not contain the target. These rules define path correctness. The Boolean answer is evaluated separately.
 
-\begin{figure}[t]
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tikzpicture}[
-    >=Latex,
-    method/.style={rb method, minimum width=1.05cm},
-    edge/.style={rb edge},
-    visit/.style={font=\scriptsize, fill=white, inner sep=1pt}
-]
-\node[method] (a) at (0,0) {A (1)};
-\node[method] (b) at (-1.4,-1.0) {B};
-\node[method] (c) at (1.4,-1.0) {C};
-\node[method] (d) at (-2.1,-2.0) {D};
-\node[method] (e) at (-0.7,-2.0) {E};
-\node[method] (f) at (0.7,-2.0) {F};
-\node[method] (g) at (2.1,-2.0) {G};
-\draw[edge] (a) -- node[visit, left] {2} (b);
-\draw[edge] (a) -- node[visit, right] {5} (c);
-\draw[edge] (b) -- node[visit, left] {3} (d);
-\draw[edge] (b) -- node[visit, right] {4} (e);
-\draw[edge] (c) -- node[visit, left] {6} (f);
-\draw[edge] (c) -- node[visit, right] {7} (g);
-\draw[->, line width=1pt, modelblue] ($(a.east)+(0.05,0.05)$) .. controls (3.0,-0.4) and (3.0,-2.0) .. node[visit, right] {positive: A to G} ($(g.east)+(0.05,0)$);
-\draw[rb optional edge, line width=1pt] ($(c.west)+(0,0.05)$) .. controls (0.2,-1.0) and (-0.3,-1.5) .. node[visit, above] {negative: C to E} ($(e.north east)+(0,0.03)$);
-\end{tikzpicture}
-}
-\caption{Executable graph used for path scoring. A positive exploration from \texttt{A} must end at \texttt{G}; a negative exploration from \texttt{C} must cover its reachable closure and exclude the target.}
-\Description{A tree-shaped executable call graph with positive and negative reachability examples.}
-\label{fig:canonical-traversal}
-\end{figure}
+\input{figures/path_scoring}
 
 The generated data also associate each question with a signed distance $d$. A positive value represents a reachable target, while a negative value represents an unreachable target. The magnitude is a generation factor, rather than the length of every accepted trace. Additional executable calls can provide shorter routes to a positive target; a negative trace must cover the source-reachable region. We therefore examine the executable graph as well as nominal distance when interpreting difficulty.
 

@@ -1,32 +1,24 @@
 \begin{figure*}[t]
-    \centering
-    \begin{tikzpicture}[
-        >=Latex,
-        node distance=0.55cm and 0.55cm,
-        phase/.style={draw=gray!65, fill=gray!4, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
-        artifact/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
-        eval/.style={draw=modelgreen!70, fill=modelgreen!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
-        warn/.style={draw=modelorange!70, fill=modelorange!5, rounded corners=2pt, align=center, inner sep=5pt, font=\scriptsize, text width=0.145\textwidth, minimum height=0.9cm},
-        arrow/.style={rb edge},
-        dasharrow/.style={rb optional edge}
-    ]
-        \node[phase] (graph) {Tree-shaped\\call graph};
-        \node[artifact, right=of graph] (java) {Java class\\generation};
-        \node[artifact, right=of java] (question) {Reachability\\question};
-        \node[artifact, right=of question] (output) {Model output\\JSON};
-        \node[eval, right=of output] (evaluation) {Oracle-based\\evaluation};
-
-        \node[warn, below=of java] (control) {Unguarded:\\\texttt{nb\_if = 0}};
-        \node[warn, below=of question] (condition) {Condition-aware:\\\texttt{nb\_if > 0}};
-
-        \draw[arrow] (graph) -- (java);
-        \draw[arrow] (java) -- (question);
-        \draw[arrow] (question) -- (output);
-        \draw[arrow] (output) -- (evaluation);
-        \draw[dasharrow] (control) -- (java);
-        \draw[dasharrow] (condition) -- (java);
-    \end{tikzpicture}
-    \caption{Overview of the \benchmark pipeline. Both task families use the same generation, prompting, and evaluation steps. Condition-aware programs additionally contain guarded calls.}
-    \Description{Pipeline from a generated call graph to Java, a reachability question, a JSON response, and oracle evaluation. Zero-condition programs form the unguarded group; positive-condition programs form the condition-aware group.}
-    \label{fig:pipeline}
+\centering
+\begin{tikzpicture}[rb diagram]
+\node[rb block] (graph) at (0,0) {\textbf{Call graph}\\Ordered tree};
+\node[rb block] (java) at (3.15,0) {\textbf{Java generation}\\Class and conditions};
+\node[rb block] (question) at (6.3,0) {\textbf{Query}\\Program, source, target};
+\node[rb block] (output) at (9.45,0) {\textbf{Model response}\\Boolean and trace};
+\node[rb block] (evaluation) at (12.6,0) {\textbf{Evaluation}\\Answer and path scores};
+\foreach \from/\to in {graph/java,java/question,question/output,output/evaluation}
+  \draw[rb edge] (\from.east) -- (\to.west);
+\node[rb query, text width=4.3cm, align=center] (families) at (3.15,-1.55)
+  {\textbf{Task family}\\
+   Unguarded: \texttt{nb\_if = 0}\\
+   Condition-aware: \texttt{nb\_if > 0}};
+\draw[rb edge] (families.north) -- (java.south);
+\node[rb block, text width=3.4cm, minimum height=0.8cm] (oracle) at (8,-2.55)
+  {\textbf{Executable-graph oracle}\\Labels and executable edges};
+\draw[rb edge] (graph.south) -- (0,-2.55) -- (oracle.west);
+\draw[rb edge] (oracle.east) -- (12.6,-2.55) -- (evaluation.south);
+\end{tikzpicture}
+\caption{Overview of the \benchmark pipeline. Both task families share the generation and evaluation steps. The generated structure supplies the executable-graph oracle used to score the answer and trace independently.}
+\Description{Five aligned stages from call graph to Java class, query, model response and evaluation. A task-family configuration feeds generation, and a separate oracle route connects the generated structure to evaluation.}
+\label{fig:pipeline}
 \end{figure*}
