@@ -11,7 +11,7 @@ A large part of the evaluation of code-oriented LLMs focuses on their ability to
 
 \vspace{0.2cm}
 
-HumanEval, MBPP, and APPS follow this principle by validating generated programs with test cases~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE extends this setting to both code-generation and code-understanding problems~\cite{lu2021codexglue}, while LiveCodeBench and BigCodeBench introduce more recent or broader programming scenarios, including the use of libraries and APIs~\cite{jain2024livecodebench,zhuo2024bigcodebench}. Despite these differences, the objective remains similar: checking whether the produced result satisfies the required behavior.
+HumanEval, MBPP, and APPS follow this principle by validating generated programs with test cases~\cite{chen2021codex,austin2021program,hendrycks2021apps}. CodeXGLUE extends this setting to both code-generation and code-understanding problems~\cite{lu2021codexglue}, while LiveCodeBench introduces time-segmented programming problems and BigCodeBench emphasizes diverse library calls and instructions~\cite{jain2025livecodebench,zhuo2025bigcodebench}. These generation evaluations check whether the produced result satisfies the required behavior. LiveCodeBench also includes execution and test-output prediction tasks, so its scope extends beyond generation alone.
 
 \vspace{0.2cm}
 
@@ -31,7 +31,7 @@ Other works reduce the scope of the problem to study more specific aspects of pr
 
 \vspace{0.2cm}
 
-CRUXEval, for example, asks models to infer the input or output of short Python functions~\cite{gu2024cruxeval}. REval considers runtime properties such as execution paths, coverage, program states, and outputs~\cite{chen2024reval}. CORE focuses on data dependencies, control dependencies, and information flow~\cite{xie2025core}, while TraceEval relies on execution-verified examples to study runtime behavior and call structures~\cite{li2026traceeval}. RE2-Bench explores similar reasoning capabilities in more realistic programs, highlighting the importance of connecting controlled experiments with real-world code~\cite{liu2025re2bench}.
+CRUXEval, for example, asks models to infer the input or output of short Python functions~\cite{gu2024cruxeval}. REval considers runtime properties such as execution paths, coverage, program states, and outputs~\cite{chen2025reval}. CoRE focuses on data dependencies, control dependencies, and information flow~\cite{xie2025core}, while TraceEval relies on execution-verified examples to study runtime behavior and call structures~\cite{li2026traceeval}. RE2-Bench explores similar reasoning capabilities in more realistic programs, highlighting the importance of connecting controlled experiments with real-world code~\cite{liu2025re2bench}.
 
 \vspace{0.2cm}
 
@@ -41,21 +41,22 @@ Compared with end-to-end software engineering evaluations, these approaches make
 
 \begin{table}[t]
 \centering
-\caption{Comparison between \benchmark and representative benchmarks for code and software engineering.}
+\caption{Evaluation scope and evidence in representative benchmarks. These are task distinctions, rather than ratings of benchmark quality.}
 \label{tab:benchmark-positioning}
 \scriptsize
-\setlength{\tabcolsep}{1.8pt}
+\setlength{\tabcolsep}{2pt}
 \renewcommand{\arraystretch}{1.08}
-\begin{tabularx}{\columnwidth}{p{0.2\columnwidth}cccccX}
+\begin{tabularx}{\columnwidth}{p{0.23\columnwidth}XX}
 \toprule
-Benchmark & Real. & Ctrl. & Oracle & Trace & Syn./exec. & Primary distinction \\
+Benchmark & Evaluated task & Evidence or control \\
 \midrule
-HumanEval / MBPP / APPS & Low--Med. & Med. & Tests & No & No & Final code-generation success. \\
-SWE-bench & High & Low & Tests & No & No & Repository-level task completion. \\
-CRUXEval / REval & Low--Med. & Med. & Yes & Partial & No & Runtime behavior reasoning. \\
-CORE & Med. & Med. & Yes & No & No & Program-analysis tasks. \\
-TraceEval & Med.--High & Med. & Yes & Yes & No & Execution-verified call behavior. \\
-\benchmark & Low--Med. & High & Yes & Yes & Yes & Controlled executable reachability. \\
+HumanEval / MBPP / APPS & Generate code from a specification & Test-based functional correctness. \\
+SWE-bench & Resolve repository issues & Repository tests; multiple skills combined. \\
+CRUXEval & Infer inputs or outputs & Short generated functions with execution-derived input/output pairs. \\
+REval & Reason about runtime behavior & Paths, coverage, states, outputs, and consistency. \\
+CoRE & Recover program dependencies & Human-verified static-analysis task instances. \\
+TraceEval & Recover runtime call structure & Edges witnessed by validation execution on real-world programs. \\
+\benchmark & Decide executable method reachability & Generated factors, Boolean labels, and graph-valid exploration evidence. \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -74,7 +75,7 @@ We use reachability because it has an exact solution while still requiring infor
 
 A key characteristic of \benchmark is that the call graph is generated before the corresponding Java code. The structure of each program is therefore known in advance, including the connections between methods, the calls that can actually execute, and the path between a source and a target.
 
-This generation process also makes \benchmark configurable. Properties such as depth, number of methods, number of \texttt{if} statements, or number of loops can be varied independently. This makes it possible to study the effect of individual factors on the results.
+This generation process also makes \benchmark configurable. Properties such as nominal distance, number of methods, number of \texttt{if} statements, or number of loops can be varied in a factorial grid. This makes it possible to study associations with individual factors, while recognizing that the generated code length also changes.
 
 Since the graph is known in advance, each query can be associated with an oracle. For a given source and target, it provides the expected Boolean answer and, when a valid path exists, the corresponding sequence of methods.
 

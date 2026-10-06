@@ -16,8 +16,8 @@
         \node[artifact, right=of question] (output) {Model output\\JSON};
         \node[eval, right=of output] (evaluation) {Oracle-based\\evaluation};
 
-        \node[warn, below=of java] (control) {Unguarded:\\all calls execute};
-        \node[warn, below=of question] (condition) {Condition-aware:\\guards and conditions};
+        \node[warn, below=of java] (control) {Unguarded:\\\texttt{nb\_if = 0}};
+        \node[warn, below=of question] (condition) {Condition-aware:\\\texttt{nb\_if > 0}};
 
         \draw[arrow] (graph) -- (java);
         \draw[arrow] (java) -- (question);
@@ -27,6 +27,6 @@
         \draw[dasharrow] (condition) -- (java);
     \end{tikzpicture}
     \caption{Overview of the \benchmark pipeline. Both task families use the same generation, prompting, and evaluation steps. Condition-aware programs additionally contain guarded calls.}
-    \Description{Pipeline showing tree-shaped call graph generation, Java class generation, reachability question construction, model JSON output, and oracle-based evaluation, with unguarded control-flow mode and condition-aware data-flow mode feeding into Java generation.}
+    \Description{Pipeline from a generated call graph to Java, a reachability question, a JSON response, and oracle evaluation. Zero-condition programs form the unguarded group; positive-condition programs form the condition-aware group.}
     \label{fig:pipeline}
 \end{figure*}

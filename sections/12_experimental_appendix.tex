@@ -1,8 +1,79 @@
 \section{Experimental Configuration Details}
 \label{app:experimental-config}
 
-Table~\ref{tab:dataset-spec} reports the complete generation grid used to construct the evaluation set. Table~\ref{tab:models} gives the corresponding model and serving configurations. These parameters are placed in the appendix so that the experimental setup in the main paper can focus on the evaluation procedure.
+Table~\ref{tab:dataset-spec} reports the generation grid and the partition into task families. The archived field \texttt{n\_if}, displayed as \texttt{if} in the diagnostic exports, corresponds to \texttt{nb\_if} in this paper. All archived configurations record generator mode \texttt{d}, including the zero-condition instances; this historical field does not change the analysis partition. Table~\ref{tab:models} reports the serving configuration recovered from the logs. The logs leave model and tokenizer revisions unset, so the named checkpoints do not establish an immutable weight revision.
 
-\input{tables/dataset\_specification}
-
+\input{tables/dataset_specification}
 \input{tables/models}
+
+\section{Diagnostic Definitions and Populations}
+\label{app:diagnostic-definitions}
+
+Let $R(s)$ be the set of methods executable from $s$, and $T$ the returned sequence. A guard is exposed when its containing method appears in $T$. A false-guard error is detected when a newly introduced method has no executable predecessor among earlier trace methods and exactly one earlier guard explains its introduction. Multiple candidate guards make attribution undefined. This diagnostic identifies unsupported inclusions through false guards; it does not observe all possible errors of condition evaluation, such as ignoring a true branch.
+
+\vspace{0.2cm}
+
+T01 is the number of attributed guard errors divided by the number of exposed call-controlling guards, summed over eligible responses. A is the fraction of attributed errors whose guarded callees can reach the target through executable edges. B is the fraction of eligible responses containing at least one such error. T04 is the mean fraction of $R(s)$ omitted on negative questions; T05 is the incidence of a negative trace containing an existing method outside $R(s)$. They measure different, potentially overlapping defects.
+
+\vspace{0.2cm}
+
+T06 measures target omission among structurally admissible positive traces; T07 measures continuation after the target among such traces containing it. Structural admissibility requires a source-first sequence with no duplicate or unsupported method introduction. T08 measures unknown method names. T09 reports the relative position of the first structural error among nonempty defective traces. T11 measures duplicate methods in eligible nonempty traces. T13 is mean source-anchored coverage: the fraction of $R(s)$ linked back to the source through executable introductions. It is not a positive-query success score, since a positive trace can correctly stop at the target before covering the whole region.
+
+\vspace{0.2cm}
+
+For a guard $g$ with resolved variable origin, let $h(g)$ count method boundaries back to the local declaration supplying its tested value. D1 is the mean $h(g)$ over exposed guards; D3 restricts to guards with an attributed false-guard error, and D5 to the remaining exposed guards in unambiguous traces. Literal conditions, unresolved origins, and ambiguous lineages are excluded. D1$^*$ additionally uses the attribution population shared by D3/D5, so its numerator and denominator partition into those of D3 and D5. D9 first averages $h(g)$ over guards in each reference depth-first exploration, then averages the resulting values across questions. The reference traversal is a diagnostic convention, not a mandatory model traversal.
+
+\vspace{0.2cm}
+
+Table~\ref{tab:difficulty-populations} makes these different weights and exclusions explicit. The unrestricted D1 differs from D1$^*$ because it also includes resolved exposures in traces with ambiguous error attribution. Table~\ref{tab:diagnostic-populations} retains the populations of the other reported diagnostics. Missing measurements are not interpreted as successful evaluations. The source export and its metric catalogue are identified by the hashes accompanying the reproducible aggregates.
+
+\input{tables/difficulty_populations}
+\input{tables/diagnostic_populations}
+
+\section{Detailed Result Curves}
+\label{app:result-details}
+
+Figure~\ref{fig:results-guards-parameters} shows the marginal guard and parameter profiles. Table~\ref{tab:guard-mechanisms} distinguishes the rate of detected guard errors from their target-directed consequences. T01 decreases as the guard count rises, even while path scores deteriorate and A increases. More guards increase the exposure denominator, and the returned traces change which guards are exposed. A smaller T01 ratio is therefore not evidence that the model has become better at condition evaluation. Counts and eligibility must be considered together.
+
+\vspace{0.2cm}
+
+Figure~\ref{fig:results-distance} separates signed distance levels rather than pooling polarities. Figure~\ref{fig:results-context} shows that higher negative answer correctness can coexist with lower path correctness. These curves complement the primary scores by locating where the decision and its evidence diverge.
+
+\input{figures/results_guards_parameters}
+\input{tables/guard_mechanisms}
+\input{figures/results_distance}
+\input{figures/results_context}
+
+\vspace{0.2cm}
+
+Table~\ref{tab:token-observability} reports persisted token counts. Condition-aware responses contain more reasoning tokens on average than unguarded responses, while their primary scores are lower. Mean reasoning usage is 45.72\% of the requested budget for Gemma and 38.43\% for Qwen on condition-aware questions. These means do not determine whether individual failures exhausted their budget, and tokenizer differences prevent interpreting a token ratio as equal compute. With one requested budget, the experiment does not establish whether increasing it would resolve the observed failures.
+
+\input{tables/token_observability}
+
+\section{Published Benchmark Comparisons}
+\label{app:external-comparison}
+
+Table~\ref{tab:external-comparison} records scores from official model cards for the named checkpoints, checked on October~6, 2026. Qwen's card is the source of both model columns except that Google's card independently confirms Gemma's LiveCodeBench score~\cite{qwen2026qwen36,google2026gemma4}. These are reported external results, not additional runs in our experiment.
+
+\begin{table*}[t]
+\centering
+\caption{Published external scores (\%) for the named checkpoints. Comparisons are within rows; protocols differ across rows and from \benchmark.}
+\label{tab:external-comparison}
+\scriptsize
+\begin{tabularx}{\textwidth}{lrrX}
+\toprule
+Benchmark & Gemma & Qwen & Provenance and protocol qualification \\
+\midrule
+LiveCodeBench v6 & 77.1 & 80.4 & Qwen card; Gemma value also confirmed by Google. \\
+SWE-bench Verified & 17.4 & 73.4 & Qwen card; internal agent scaffold with shell and file-edit tools. \\
+SWE-bench Multilingual & 17.3 & 67.2 & Same vendor-reported scaffold, not our reachability protocol. \\
+SWE-bench Pro & 13.8 & 49.5 & Qwen card; refined benchmark set applied to its baselines. \\
+Terminal-Bench 2.0 & 34.2 & 51.5 & Qwen card; Harbor/Terminus-2 harness, mean of five runs. \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+% Flush appendix floats and restore full-height columns before references.
+\clearpage
+\nolinenumbers
+\twocolumn

@@ -8,11 +8,12 @@ In this work, we propose \benchmark, a Java benchmark whose objective is not to 
 
 The Java code used in the benchmark is automatically generated from call graphs. This provides an executable-graph oracle and the expected answer for each question. The model returns a JSON object with a Boolean final answer and an ordered sequence of explored methods. The evaluator scores these outputs independently, accepting any path order justified by executable edges rather than requiring one canonical traversal.
 
-\benchmark provides two families of tasks. The first, \emph{unguarded reachability}, considers programs in which calls are executed whenever they are reached because they are outside control structures. The second, \emph{condition-aware reachability}, introduces calls inside conditions that can make some calls executable or non-executable. The model must then reason about the data flow to determine which conditions are satisfied and, as a consequence, which method calls are actually executed. This second task therefore distinguishes what is visible in the source code from what happens during program execution.
+\benchmark provides two families of tasks. The first, \emph{unguarded reachability}, contains no generated \texttt{if} statements (\texttt{nb\_if}$=0$), so the model can follow calls without evaluating guards. The second, \emph{condition-aware reachability}, contains generated conditions (\texttt{nb\_if}$>0$) that can make visible calls executable or non-executable. The model must then follow the values used in these conditions to determine which calls can actually execute. This second task therefore distinguishes what is visible in the source code from what happens during program execution.
 
 Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
 This paper makes three contributions:
 \begin{itemize}[leftmargin=*]
     \item a configurable benchmark that generates Java reachability problems together with executable call graphs and oracle labels;
-    \item an empirical study of \texttt{[N\_MODELS]}, supported by an artifact containing the complete generation and evaluation pipeline.
+    \item an empirical study of Gemma~4 and Qwen~3.6 on 46,656 shared questions, separating reachability decisions from executable evidence;
+    \item a trace-based analysis connecting errors to conditional calls, value propagation, and the position of the target in the generated graph.
 \end{itemize}

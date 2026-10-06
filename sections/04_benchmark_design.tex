@@ -105,15 +105,15 @@ The generator also introduces comments, local variables, parameters, loops, and 
 
 \subsection{Introducing Runtime Conditions}
 
-\benchmark contains two task families built from the same general pipeline. The generator stores this choice independently of every numerical factor: mode \texttt{c} is the \emph{unguarded} (control-flow) family, whereas mode \texttt{d} is the \emph{condition-aware} (data-flow) family. In particular, the number of generated \texttt{if} statements, denoted by \texttt{n\_if}, does not select the family.
+\benchmark contains two task families built from the same pipeline. The number of generated \texttt{if} statements, denoted by \texttt{nb\_if}, defines the family: \texttt{nb\_if}$=0$ gives \emph{unguarded reachability}, whereas \texttt{nb\_if}$>0$ gives \emph{condition-aware reachability}. Other code factors can vary within either family.
 
 \vspace{0.2cm}
 
-In \emph{unguarded reachability}, calls that define graph edges are inserted directly into method bodies and not inside \texttt{if} statements or loops. The generated method may still contain conditionals or loops as distractors, so an unguarded instance may have \texttt{n\_if}$>0$. Once execution reaches an edge-defining call statement, the corresponding method is called.
+In \emph{unguarded reachability}, calls that define graph edges are inserted directly into method bodies. There are no generated conditions to evaluate. Comments, variables, parameters, and loops may still appear, but loops do not guard the calls used to define reachability.
 
 \vspace{0.2cm}
 
-In \emph{condition-aware reachability}, edge-defining calls may be protected by generated \texttt{if} statements. The values involved in these conditions are fixed during generation, which means that their outcome is known in advance. False guards may also contain visible decoy calls that are absent from the executable graph. The LLM must reproduce this evaluation from the Java program to determine which calls are actually executed. A condition-aware instance with \texttt{n\_if}$=0$ remains condition-aware by configuration, although that particular instance contains no guard.
+In \emph{condition-aware reachability}, edge-defining calls may be protected by generated \texttt{if} statements. The values involved in these conditions are fixed during generation, which means that their outcome is known in advance. False guards may also contain visible decoy calls that are absent from the executable graph. The LLM must reproduce this evaluation from the Java program to determine which calls are actually executed. When a condition reads a parameter, this can require following its value across several method calls.
 
 This distinction is important because a method call can be visible in the source code without belonging to the runtime execution. Condition-aware questions therefore require the model to reason not only about the control structure of the program, but also about the values that determine which branches can be taken.
 
@@ -171,7 +171,7 @@ For a reachable question, the last method must be the target, which gives $x_n=t
 \label{fig:canonical-traversal}
 \end{figure}
 
-The generated data also associate each question with a signed distance $d$. A positive value represents a reachable target, while a negative value represents an unreachable target. The absolute value is used as a controlled generation factor, but it does not define the order expected in the model trace.
+The generated data also associate each question with a signed distance $d$. A positive value represents a reachable target, while a negative value represents an unreachable target. The magnitude is a generation factor, rather than the length of every accepted trace. Additional executable calls can provide shorter routes to a positive target; a negative trace must cover the source-reachable region. We therefore examine the executable graph as well as nominal distance when interpreting difficulty.
 
 \vspace{0.2cm}
 
@@ -180,7 +180,7 @@ Each instance stores the executable graph directly, allowing all valid explorati
 
 \subsection{Design Summary}
 
-Through this process, \benchmark turns a controlled call graph into a Java program, a reachability question, and an executable-graph oracle. The two task families follow the same construction. They differ only in whether every visible call can execute, which makes it possible to study the additional effect of runtime conditions.
+Through this process, \benchmark turns a controlled call graph into a Java program, a reachability question, and an executable-graph oracle. The two task families follow the same construction. Separating the zero-condition instances from instances with guards makes it possible to study the additional demands of runtime conditions.
 
 \vspace{0.2cm}
 

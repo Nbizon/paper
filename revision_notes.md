@@ -1,3 +1,23 @@
+# Current results revision — 2026-10-06
+
+- Branch: `paper/reachability-results-analysis`.
+- Author instruction: unguarded is `nb_if=0`; condition-aware is `nb_if>0`.
+  This supersedes the historical mode-based interpretation described below.
+- Recomputed the supplied dashboard and verified primary scores against the
+  corrected executable-graph CSVs for both models and every joint stratum.
+- Rewrote Results around the three active RQs, explaining guard/parameter
+  interactions, target-directed errors, origin difficulty, exhaustive negative
+  exploration, and opposing context/polarity effects.
+- Added generated tables, appendix curves, eligibility counts, and source hashes.
+- Verified scholarly references and official checkpoint comparisons; distinguish
+  venue publications from preprints and vendor scores from our experiments.
+- Existing local edits in `main.tex` and the untracked `t.txt` are preserved and
+  excluded from task commits. Existing section-inclusion switches are retained.
+- Commands and final evidence: `data/results/VALIDATION.md`.
+
+The remainder records earlier revisions and is historical, not the current
+source of family semantics or empirical claims.
+
 # Revision Notes
 
 ## Scope

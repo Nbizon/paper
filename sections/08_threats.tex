@@ -1,36 +1,22 @@
 \section{Discussion and Threats to Validity}
 \label{sec:discussion}
 
-\subsection{What the Benchmark Measures}
+\subsection{Construct Validity}
 
-\benchmark measures whether a model can produce a correct reachability answer and a trace that is consistent with the executable program. It does not observe the internal reasoning that produced these outputs. A correct trace may be generated for the wrong reason, and an incorrect trace may be produced after the model has already selected the correct answer. For this reason, we interpret the trace as additional evidence about model behavior and not as a direct explanation of its internal computation.
+\benchmark evaluates a Boolean reachability decision and an exploration trace against an executable graph. The trace is generated output, rather than a direct observation of internal reasoning. A correct answer with an incorrect trace can reflect several processes, including an incorrect explanation produced after a correct decision. The diagnostics cannot distinguish them.
 
-Path correctness depends on the generated executable graph. Although this avoids privileging one canonical traversal, any error in executable-edge generation would affect every path score. We mitigate this threat by auditing labels and executable metadata against the graph and by reporting final-answer correctness and path correctness independently.
+Guard attribution also has limits. A method-only trace does not identify which guard was taken when several callers could explain an unsupported introduction. We exclude ambiguous attributions, but this may preferentially retain simpler failures. Exposure counts guards in listed methods, not internally evaluated conditions. D5 means no attributed error among exposed guards; it is not a proof of correct evaluation. Origin-distance diagnostics exclude literals and unresolved lineages, and their guard-weighted means differ from D9's question-weighted mean.
 
-\subsection{What Can Affect the Experiment}
+\subsection{Internal Validity}
 
-The result of an instance depends on several stages: graph generation, Java generation, oracle construction, prompting, inference, parsing, and scoring. An error in any of these stages can be interpreted incorrectly as a model error. We validate the generated classes by compiling them and recomputing their calls, conditions, labels, and traces. We also use the same parser for all models and calibrate the prompt on a separate pilot set.
+The score depends on generation, the oracle, prompting, inference, parsing, and evaluation. We checked that both models received the same questions and that primary dashboard scores agree with the corrected executable-graph CSVs in every joint stratum. This verifies the aggregation but is not an independent proof of the complete generator and oracle. An error in executable metadata would affect both models' trace scores.
 
-Inference introduces additional variation. A different model revision, backend, chat template, context limit, or decoding parameter can change the output even when the checkpoint name remains the same. The experiment therefore records complete model configurations and uses deterministic decoding when possible. These controls reduce variation, but they do not make two different deployments equivalent.
+The factorial grid balances the remaining configured factors in marginal comparisons. However, conditions, parameters, and class size also change text length and graph properties. Their contrasts do not isolate a causal semantic effect. Similarly, target-directed guard errors are computed from the same response as the answer: their association with false positives is diagnostic, not evidence that the trace caused the decision. A controlled intervention on value-origin distance, disabled-call placement, and prompt length is needed to test these mechanisms.
 
-The final dataset, prompts, configurations, and evaluation scripts must be frozen before quantitative conclusions are reported. Until this run is completed, all numerical statements remain placeholders. \TODO{Rerun all final experiments after freezing datasets, prompts, model versions, inference settings, and evaluation scripts.}
+\subsection{External and Conclusion Validity}
 
-\subsection{What the Results Can Generalize To}
+The generated single-class Java programs omit many properties of real software, including dynamic dispatch, inheritance, recursion, exceptions, external libraries, and cross-class dependencies. Their generated conditions use limited value flow. The observations therefore apply to controlled executable reachability and do not directly establish performance on debugging, repair, or code review.
 
-The generated programs provide control because their complete call graphs are known. The same choice also removes many properties of real software. A generated single-class program does not reproduce the naming conventions, domain logic, dependencies, side effects, or architecture of a repository. The results therefore describe a controlled method-reachability task and should not be interpreted as direct performance on debugging, repair, or code review.
+The study covers two checkpoints and one requested reasoning budget, with one response per question. Multiple queries share a Java class and are not independent replications. We report descriptive scores rather than significance tests or confidence intervals for a larger model population. The family comparison concerns the zero-guard and guarded strata of this grid; it is not a paired intervention on identical programs.
 
-The current call graphs are acyclic trees. The generated programs do not cover inheritance, interfaces, dynamic dispatch, overloading, exceptions, recursion, external libraries, multiple classes, or cyclic calls. They also use limited data flow, and condition-aware reachability is currently introduced through generated \texttt{if} statements. Extending the benchmark with one of these elements would create a new factor that requires its own generator and oracle validation.
-
-The graph-level task is not specific to Java. Another language could reuse the call-graph generation, question selection, and trace convention. However, the source generator, compilation or execution checks, and prompt examples would need to be adapted. Results should not be compared across languages until these language-specific differences are controlled.
-
-\subsection{What Can Be Concluded from the Scores}
-
-Several questions can be generated from the same class, which creates dependencies between observations. We therefore compute uncertainty by sampling classes rather than individual questions. The reported experiment contains only condition-aware runs and cannot estimate a difference between families. Such a comparison requires matched or otherwise explicitly comparable runs from both generator modes.
-
-Strict scores keep \texttt{NO\_RESPONSE} in the denominator. This choice measures the complete evaluated system, but it combines task errors with formatting and serving failures. We therefore report \texttt{NO\_RESPONSE} separately and distinguish final-answer correctness from path correctness. Reasoning-budget results are also limited to configurations for which the control is verified. These choices prevent a single aggregate score from supporting a conclusion that the experiment does not isolate.
-
-\subsection{Reproducibility}
-
-Model availability, licenses, context limits, and backend controls can change. Before submission, we will verify this information from official sources and record the exact revisions used in the experiment. \TODO{Verify exact model identifiers, sizes, licenses, context lengths, and Jean Zay compatibility.}
-
-The anonymized artifact will contain the generated data, oracle metadata, prompts, model manifests, parser, evaluator, statistical scripts, and error-analysis dashboard. The review link will preserve double anonymity. After acceptance, we plan to publish a stable version of the same material. \TODO{Add anonymized artifact URL, artifact contents checklist, and public-release plan.}
+Published external comparisons use different prompts, budgets, scaffolds, and task variants. Their ranking concordance is descriptive and does not establish correlation or predictive validity. Named checkpoint identifiers also do not guarantee immutable weights: the serving logs leave model and tokenizer revisions unset. The archived request outputs and source hashes support reconstruction of the reported aggregates, but do not resolve every deployment-level reproducibility parameter.

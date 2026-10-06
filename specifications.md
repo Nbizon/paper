@@ -4,8 +4,10 @@
 - Project: ReachabilityBench ICSE 2027 paper draft
 - Repository: /home/nbizon/Thèse/Projects/paper
 - Main branch: icse2027-paper-revision
-- Last updated: 2026-09-02
+- Last updated: 2026-10-06
 - Status: active draft
+
+The current results requirement is canonical in `docs/product-specs/SPEC-20261006-results.md`. This file retains historical requirements; its old family interpretation is superseded by the author's 2026-10-06 correction.
 
 ## Scope
 - In scope: LaTeX paper structure, benchmark terminology, methodology, metrics, TODO visibility, and traceability for the ICSE 2027 draft.
@@ -278,7 +280,7 @@
   - Commits:
 
 ### REQ-0027
-- Status: implemented
+- Status: superseded in part by SPEC-20261006 (family definition); independent executable-graph scoring remains applicable
 - Source: User correction and audited benchmark generator/evaluator, 2026-09-02
 - Description: Use generator mode `c` as the unguarded/control-flow family and mode `d` as the condition-aware/data-flow family; treat `n_if` as an independent factor; report only final-answer correctness and path correctness as independent scoring metrics.
 - Acceptance criteria: The manuscript never derives family identity from `n_if`, labels the current `last_exp` results condition-aware from their recorded mode `d`, does not claim matching unguarded results, and defines path correctness against the executable graph without a canonical traversal.
@@ -410,6 +412,8 @@
 - REQ-0027 -> sections/04_benchmark_design.tex; sections/05_experimental_setup.tex; sections/06_results.tex; tables/metrics.tex -> manual::latexmk build; rg::canonical trace -> commit::pending
 
 ## Change Log
+
+- 2026-10-06 - Author-defined groups now use nb_if=0 (unguarded) and nb_if>0 (condition-aware). See SPEC-20261006 and CHG-20261006 for current intent and evidence.
 - 2026-09-02 - Corrected family identity to mode `c`/`d`, made `n_if` independent, and replaced canonical-trace metrics with independent final-answer and executable-path correctness.
 - 2026-09-01 - Harmonized the writing from Section IV.E onward and moved detailed dataset and serving configurations to appendix tables.
 - 2026-08-19 - Reconstructed the manuscript's argument, section organization, paragraph logic, and experimental narrative after the author clarified that a surface-level stylistic rewrite was insufficient.

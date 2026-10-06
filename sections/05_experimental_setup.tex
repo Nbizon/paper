@@ -1,54 +1,54 @@
 \section{Experimental Setup}
 \label{sec:experimental-setup}
 
-The generator exposes the two task families described in the previous section. In the unguarded family, edge-defining calls are emitted outside guards. In the condition-aware family, a visible call contributes only when the generated values make it executable. Both families can use the same values of \texttt{n\_if}; the recorded generator mode, not this factor, identifies the family. The quantitative results reported here use the condition-aware family.
+We evaluate both task families using one generated dataset. Questions from programs with \texttt{nb\_if}$=0$ form the unguarded group; questions with \texttt{nb\_if}$\in\{1,3,5\}$ form the condition-aware group. This partition describes the code presented to the model. The archived generator mode is retained as provenance and does not determine the groups used in this study.
 
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-The analyzed condition-aware evaluation set contains 46,656 questions generated from 1,232 Java classes. Half of the questions have a reachable target and half have an unreachable target. The generator exposes the same balanced factor grid for the unguarded family, but no score for that family is reported in this paper. The current results can therefore be studied according to distance, class size, and the generated elements added to the code, but cannot support a measured comparison between families.
+The evaluation set contains 46,656 questions generated from 1,232 Java classes. Each model receives exactly the same questions. There are 11,664 unguarded and 34,992 condition-aware questions, with equally many reachable and unreachable targets in each group. Class size, comments, variables, loops, conditions, and parameters form a balanced factorial grid. Every combination contains four questions of each polarity at each of the nine distance levels. Appendix~\ref{app:experimental-config} reports the full grid.
 
 \vspace{0.2cm}
 
-The complete generation grid is reported in Appendix~\ref{app:experimental-config}. Keeping these parameters together makes the construction of the evaluation set explicit without interrupting the description of the experimental procedure.
-
-Each instance is stored with the information needed to reproduce its evaluation. This includes the Java source, the question, the signed distance, the generated methods, the executable graph, the prompt, and the generation configuration. Historical chain files, when present in older datasets, are diagnostic artifacts; they neither define a canonical traversal nor enter either primary metric.
+Each instance stores the Java source, question, signed generation distance, method inventory, executable graph, and generation configuration. We checked the identities of the questions shared by the two models and the agreement of dashboard scores with the corrected executable-graph evaluation in every joint factor and polarity stratum. Historical chain files do not impose a traversal order or enter the primary metrics.
 
 \subsection{Models and Inference}
 \label{subsec:model-configurations}
 
-We evaluate two instruction-tuned mixture-of-experts models: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}. Each model receives one request for every question, with a requested reasoning budget of 16,384 tokens.
+We evaluate two instruction-tuned mixture-of-experts checkpoints: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}, subsequently called Gemma and Qwen~\cite{google2026gemma4,qwen2026qwen36}. Each model receives one request per question, with a requested reasoning budget of 16,384 tokens and a configured final-answer budget of 2,048 tokens.
 
 \vspace{0.2cm}
 
-Inference is performed on the Jean Zay supercomputer through an OpenAI-compatible endpoint provided by vLLM. Both models use the same hardware and general serving protocol. Only the model-specific reasoning parser changes between them. The exact checkpoints and serving parameters are reported in Appendix~\ref{app:experimental-config}.
+Inference runs on the Jean Zay supercomputer through a vLLM endpoint~\cite{kwon2023vllm}. Both models use the same general serving configuration, with their respective reasoning parsers. Appendix~\ref{app:experimental-config} reports the checkpoint names and parameters recovered from the serving logs. The experiment contains one configuration per model; it does not compare reasoning budgets or repeated inference runs.
 
 \subsection{Prompting and Response Parsing}
 \label{subsec:parsing}
 
-The system prompt contains the complete generated Java class and defines reachability according to the evaluated task family. The same response format is used in both cases. The model returns a JSON object containing a Boolean field named \texttt{final\_answer} and a \texttt{trace} field containing the ordered method names.
+The system prompt contains the complete generated Java class and asks the model to follow executable calls. The requested JSON object has a Boolean \texttt{final\_answer} and a \texttt{trace} listing methods in exploration order.
 
 \vspace{0.2cm}
 
-The parser scans the response and retains the last valid JSON object. It accepts Boolean values and their string representations, as well as a trace provided directly as a list or as a serialized list. If no valid object or no final answer can be recovered, the response is marked as \texttt{NO\_RESPONSE}. Method names are not corrected, reordered, or completed before evaluation.
+The parser retains the last valid JSON object. It accepts Boolean values and their string representations, and traces supplied as lists or serialized lists. If no final answer can be recovered, the response is marked \texttt{NO\_RESPONSE}. Method names are not corrected, reordered, or completed. All 93,312 requests have an executed record; parsing failures remain in the primary-score denominators.
 
 \subsection{Metrics and Analysis}
 \label{subsec:scoring}
 \label{subsec:statistical-analysis}
 
-We report two primary metrics, summarized in Table~\ref{tab:metrics}. Final-answer correctness compares the Boolean returned by the model with the expected label. Path correctness compares the returned sequence of methods with the executable graph. The two values are computed independently, and every question remains in the denominator.
+We score final-answer correctness and path correctness independently, as defined in Table~\ref{tab:metrics}. The path rules accept different exploration orders: each new method must have an executable predecessor already present in the trace. Positive traces end at the target; negative traces cover the entire source-reachable region and exclude the target.
 
 \input{tables/metrics}
 
-The path rules are those introduced in Section~\ref{sec:benchmark-design}. A positive trace starts from the source, follows executable edges, and ends at the target. A negative trace must cover all methods reachable from the source without including the target. This evaluation accepts different valid exploration orders while rejecting methods that cannot execute.
+We also compute diagnostics from the trace and the Java code. A call behind a false guard is attributed to a guard error only when that guard uniquely explains an introduction without executable support. Ambiguous cases remain undefined. Guard exposure counts the call-controlling guards in methods listed by the model; it is a proxy for opportunities to evaluate conditions, rather than a record of conditions actually evaluated internally.
 
 \vspace{0.2cm}
 
-The analysis is descriptive. We first compute the scores over the complete balanced set and then study how they change with the polarity of the question, the absolute distance, the class size, and the generated code factors. When two factor levels are compared, the other factors are averaged over the balanced grid. These differences are reported in percentage points and are not interpreted as causal effects.
+To study value propagation, we measure how many method boundaries separate a condition from the local declaration supplying its tested value. D1 averages this distance over exposed guards with a resolved origin. D3 and D5 separate guards with an attributed error from exposed guards without one. D5 therefore denotes the absence of a detected error, rather than proof of a correct internal evaluation. We also report D1 on the same attributable population as D3/D5. D9 averages the corresponding difficulty along a reference depth-first exploration, stopping at the target for positive queries and exhausting the reachable region for negative queries. Appendix~\ref{app:diagnostic-definitions} gives the definitions, units, and eligibility rules.
 
-The results in the next section use the 46,656 condition-aware records available for each model. An earlier Gemma scoring directory is excluded because it does not correspond to the final executable-graph evaluation.
+\vspace{0.2cm}
+
+The analysis is descriptive. Factor contrasts average the remaining factors over the balanced grid, and are expressed in percentage points. We separate polarities when an average could conceal opposing changes. Primary scores use all questions, while each diagnostic retains its own eligible population and denominator. Questions sharing a Java class are not independent replications. We report neither significance tests nor causal effects; changes in generated structure also change prompt length and the calls exposed by the returned trace.
 
 \subsection{Reproducibility Artifacts}
 \label{subsec:artifact-support}
 
-The condition-aware experiment directory contains the generated programs and executable-graph oracle metadata, together with the prompts, raw model responses, server logs, and scored files. Its configuration records mode \texttt{d}, including for instances where \texttt{n\_if}$=0$. It can therefore be used to reconstruct the aggregates reported in the next section and to verify the family and configuration used for each response.
+The supplied experiment archive contains programs, oracle metadata, prompts, raw responses, serving logs, and scored files. We use the corrected executable-graph scores and exclude the earlier Gemma output directory. The accompanying aggregation script reads the diagnostic dashboard, checks both primary metrics against the scored CSV files, and exports numerators, denominators, eligible counts, exclusions, and source hashes. These exports also generate the result tables and appendix figures.

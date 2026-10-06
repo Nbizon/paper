@@ -1,7 +1,7 @@
 \section{Understanding Trace Errors}
 \label{sec:error-analysis}
 
-The metrics used in \researchq{3} indicate whether a trace is correct, complete, or graph-valid. However, two incorrect traces can fail for different reasons. One may stop too early, while another may continue through a call that cannot execute. We therefore classify the errors before inspecting individual examples.
+The metrics used in \researchq{2} indicate whether a trace is correct, complete, or graph-valid. However, two incorrect traces can fail for different reasons. One may stop too early, while another may continue through a call that cannot execute. We therefore classify the errors before inspecting individual examples.
 
 \subsection{From a Failed Trace to an Error Type}
 
@@ -11,7 +11,7 @@ Each predicted trace is compared with the method list and executable graph. This
 
 The checks separate several levels of failure. We first verify parsing, the requested source, and uniqueness. We then check that each new method has an executable edge from the previously presented region, followed by the polarity-specific stopping or coverage rule. A response can satisfy an early check and still stop before the positive target or omit part of a negative reachable closure.
 
-\TODO{Insert final counts and percentages for each error family after inspecting the final dashboard.}
+The measured populations and incidences are reported in Appendix~\ref{app:diagnostic-definitions}. These checks overlap, so their percentages do not form a partition of all failures.
 
 \subsection{When Visible Code Does Not Execute}
 
@@ -52,4 +52,4 @@ Figure~\ref{fig:syntactic-call-bias} illustrates this difference. Both calls can
 
 An interactive dashboard groups the detected errors by model configuration, structural factors, reasoning budget when verified, and local graph motif. We use these groups to determine whether an error appears repeatedly under the same conditions. For example, a model may return correct Boolean answers while frequently omitting intermediate methods, or it may increasingly follow disabled calls as the number of conditions grows.
 
-The dashboard does not define the benchmark scores. All metrics and error labels are computed by the frozen evaluator before the examples are inspected. The examples are then used to explain a measured pattern, not to establish it. The main paper presents only the patterns needed to answer \researchq{3}; the complete dashboard and its usage instructions are provided in the artifact. \TODO{Add final deeper-analysis figure and dashboard appendix or artifact reference.}
+The dashboard does not define the benchmark scores. The reported metrics are aggregated from the archived evaluation records. The examples are then used to explain a measured pattern, not to establish it. The main paper presents only the patterns needed to answer \researchq{2}; the complete dashboard and its usage instructions are provided in the artifact. Appendix~\ref{app:result-details} provides the detailed factor curves and guard diagnostics.
