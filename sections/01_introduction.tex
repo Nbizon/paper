@@ -8,7 +8,7 @@ In this work, we propose \benchmark, a Java benchmark whose objective is not to 
 
 The Java code used in the benchmark is automatically generated from call graphs. This provides an executable-graph oracle and the expected answer for each question. The model returns a JSON object with a Boolean final answer and an ordered sequence of explored methods. The evaluator scores these outputs independently, accepting any path order justified by executable edges rather than requiring one canonical traversal.
 
-\benchmark provides two families of tasks. The first, \emph{unguarded reachability}, contains no generated \texttt{if} statements (\texttt{nb\_if}$=0$), so the model can follow calls without evaluating guards. The second, \emph{condition-aware reachability}, contains generated conditions (\texttt{nb\_if}$>0$) that can make visible calls executable or non-executable. The model must then follow the values used in these conditions to determine which calls can actually execute. This second task therefore distinguishes what is visible in the source code from what happens during program execution.
+The generated programs vary in structure and in the values that determine which calls can execute. This allows us to examine how these properties affect the model's reachability decisions and the evidence it provides.
 
 Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
 This paper makes three contributions:
