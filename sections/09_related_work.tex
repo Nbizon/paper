@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{sec:related-work}
 
-\benchmark is connected to work on code generation, program understanding, and program analysis. These areas provide different ways to evaluate whether a model can use semantic information. Table~\ref{tab:benchmark-positioning} summarizes the task and evidence of representative benchmarks.
+Table~\ref{tab:benchmark-positioning} positions \benchmark against evaluations of code generation, runtime behavior, and program analysis.
 
 \subsection{From Task Completion to Program Understanding}
 
@@ -35,4 +35,4 @@ Call-graph construction has a long history in program analysis. Grove and Chambe
 
 \vspace{0.2cm}
 
-The diagnostic contribution comes from combining this task with controlled generation and separate answer and trace scores. A positive query requires evidence reaching the target, whereas a negative query requires complete coverage of the executable region. False guarded calls make it possible to observe when a model includes code that exists but cannot execute. The results then distinguish an overall model ranking from difficulties with passed values, incomplete exploration, and the consequences of an erroneous branch reaching the target. These observations complement broader benchmarks without establishing that reachability alone predicts success on their tasks.
+\benchmark combines controlled generation with separate decision and trace scores. Unlike task-completion benchmarks, it exposes errors on calls that exist but cannot execute and omissions from the source-reachable region. Its flexible exploration order also differs from reproducing a reference runtime sequence. This narrower task complements broader evaluations; it does not establish that reachability predicts success on repository-level work.

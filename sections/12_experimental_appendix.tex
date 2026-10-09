@@ -27,6 +27,11 @@ For a guard $g$ with resolved variable origin, let $h(g)$ count method boundarie
 
 Table~\ref{tab:difficulty-populations} makes these different weights and exclusions explicit. The unrestricted D1 differs from D1$^*$ because it also includes resolved exposures in traces with ambiguous error attribution. Table~\ref{tab:diagnostic-populations} retains the populations of the other reported diagnostics. Missing measurements are not interpreted as successful evaluations. The source export and its metric catalogue are identified by the hashes accompanying the reproducible aggregates.
 
+The main text focuses on three diagnostics: omissions, inclusions outside the executable region, and value-origin distance. Table~\ref{tab:error-taxonomy} retains the broader response checks. Their incidences overlap and do not partition failures. Table~\ref{tab:trace-diagnostics} separates polarity-specific outcomes; Table~\ref{tab:value-origin} gives the origin-distance comparison. Reference difficulty increases from 4.25 to 5.29 boundaries between one and two parameters, but its question weighting differs from the guard-occurrence weighting of the error comparison.
+
+\input{tables/error_taxonomy}
+\input{tables/trace_diagnostics}
+\input{tables/value_origin_difficulty}
 \input{tables/difficulty_populations}
 \input{tables/diagnostic_populations}
 
@@ -41,6 +46,7 @@ Figure~\ref{fig:results-distance} separates signed distance levels rather than p
 
 \input{figures/results_guards_parameters}
 \input{tables/guard_mechanisms}
+\input{tables/context_mechanisms}
 \input{figures/results_distance}
 \input{figures/results_context}
 

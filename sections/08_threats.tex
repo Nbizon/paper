@@ -13,15 +13,19 @@ Path correctness also imposes different requirements on the two polarities. A po
 
 \vspace{0.2cm}
 
-The guard diagnostics cover only detectable errors. T01 attributes an unsupported method introduction to a false guard when the explanation is unique; it does not detect every mistake about conditions, such as skipping a true branch. Exposed guards are counted in methods listed by the model, rather than observed during internal evaluation. D5 consequently means that no error was attributed, not that a condition was evaluated correctly. Ambiguous attributions, literal conditions, and unresolved value origins are excluded where required. These exclusions can select different kinds of traces for each model. D1$^*$ aligns the attribution population of D3 and D5, but does not remove this selection, and D9 retains a different question-weighted population.
+The guard diagnostics cover only detectable errors. The false-guard diagnostic attributes an unsupported method introduction to a false guard when the explanation is unique; it does not detect every mistake about conditions, such as skipping a true branch. Exposed guards are counted in methods listed by the model, rather than observed during internal evaluation. The absence of an attributed error does not demonstrate that a condition was evaluated correctly. Ambiguous attributions, literal conditions, and unresolved value origins are excluded where required. These exclusions can select different kinds of traces for each model. Comparing guards on a common attribution population does not remove this selection; reference-exploration averages also use different weights (Appendix~\ref{app:diagnostic-definitions}).
 
 \subsection{Internal Validity}
 
-The results depend on the generated programs, executable metadata, prompts, serving configuration, parsing, and scoring. Both models receive the same questions, and the primary dashboard outcomes agree with the corrected executable-graph CSVs in every joint factor and polarity stratum. These checks reduce the risk of a comparison or aggregation error. They do not independently establish the correctness of the complete generator and oracle: an error shared by the program construction and executable metadata could affect both models' scores.
+The results depend on the generated programs, executable metadata, prompts, serving configuration, parsing, and scoring. Both models receive the same questions, and the primary dashboard outcomes agree with the corrected executable-graph CSVs in every joint factor and polarity stratum. These checks reduce the risk of a comparison or aggregation error. The available evidence does not include an independent per-class compilation report or an instrumented execution comparison with the oracle. A defect shared by program construction and executable metadata could therefore affect both models' scores; the validation procedure described in the benchmark design is not independently demonstrated by the aggregation checks.
 
 \vspace{0.2cm}
 
 The factorial grid balances the other configured factors in marginal comparisons. However, increasing conditions, parameters, or class size also changes text length and graph properties. Unguarded and condition-aware questions are different strata of this grid, rather than paired versions of identical programs. The observed contrasts therefore do not isolate a causal effect of a single semantic property. Similarly, guard-error locations and final answers are measured from the same response. Their association can suggest an explanation for false positives, but does not show that the returned trace caused the decision.
+
+\vspace{0.2cm}
+
+The historical prompt leaves the invocation context of a parameterized source method ambiguous. The intended task requires an entry environment specifying its argument values and relevant initial state, or a root invocation from which those values are derived. Different interpretations can change which guards execute. Without a paired comparison against an explicit invocation prompt, part of the parameter-associated degradation may reflect task interpretation. A clarified prompt cannot retrospectively establish what the models understood in the archived runs.
 
 \vspace{0.2cm}
 
@@ -41,4 +45,4 @@ The percentages describe the evaluated corpus, with one response per question an
 
 \vspace{0.2cm}
 
-Diagnostic comparisons must also retain their own denominators. Differences between D3 and D5 do not estimate a failure probability per additional method boundary, and output-conditioned associations do not establish a mechanism of internal computation. Finally, the external benchmark scores use different prompts, budgets, scaffolds, and task variants. Agreement in model ordering is descriptive for these two checkpoints and cannot establish correlation or predict repository-level performance from reachability scores.
+Diagnostic comparisons must also retain their own denominators. Origin-distance differences between guards with and without attributed errors do not estimate a failure probability per additional method boundary. Output-conditioned associations do not establish a mechanism of internal computation. Finally, the external benchmark scores use different prompts, budgets, scaffolds, and task variants. Agreement in model ordering is descriptive for these two checkpoints and cannot establish correlation or predict repository-level performance from reachability scores.

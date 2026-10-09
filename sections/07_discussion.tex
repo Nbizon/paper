@@ -1,55 +1,16 @@
-\section{Understanding Trace Errors}
+\section{Discussion}
 \label{sec:error-analysis}
 
-The metrics used in \researchq{2} indicate whether a trace is correct, complete, or graph-valid. However, two incorrect traces can fail for different reasons. One may stop too early, while another may continue through a call that cannot execute. We therefore classify the errors before inspecting individual examples.
+\subsection{Evaluate Decisions Together with Evidence}
 
-\subsection{From a Failed Trace to an Error Type}
+The answer--trace gap shows what a Boolean score leaves unresolved. A correct decision can accompany an exploration that omits executable methods or follows disabled calls. The two scores should therefore be reported together, with polarity-specific coverage requirements. In particular, higher negative answer accuracy in larger classes does not establish better exploration: missing calls can also prevent an incorrect branch from reaching the target.
 
-Each predicted trace is compared with the method list and executable graph. This comparison produces the taxonomy shown in Table~\ref{tab:error-taxonomy}. The categories are detected from observable differences between the predicted trace and the graph oracle.
+\subsection{Focus Diagnosis on Executability and Value Flow}
 
-\input{tables/error_taxonomy}
+The central diagnostics concern omitted executable methods, inclusions outside the executable region, and the origin distance of values used in guards. They distinguish failures to reconstruct executable behavior from simple name errors. Unknown methods occur in fewer than 1\% of condition-aware responses for both models; they account for much less of the observed difficulty than incorrect use of existing calls.
 
-The checks separate several levels of failure. We first verify parsing, the requested source, and uniqueness. We then check that each new method has an executable edge from the previously presented region, followed by the polarity-specific stopping or coverage rule. A response can satisfy an early check and still stop before the positive target or omit part of a negative reachable closure.
+Following a visible call behind a false guard is consistent with syntactic-call bias. However, a trace is an output, and guards without an attributed error are not evidence of correct internal evaluation. The observed patterns motivate controlled experiments that vary value-origin distance or disabled-branch placement while holding graph size and text length comparable. They do not identify an internal reasoning procedure.
 
-The measured populations and incidences are reported in Appendix~\ref{app:diagnostic-definitions}. These checks overlap, so their percentages do not form a partition of all failures.
+\subsection{Use the Artifact for Detailed Error Inspection}
 
-\subsection{When Visible Code Does Not Execute}
-
-Condition-aware programs introduce one error that can be identified more precisely. A call can appear explicitly in the source code while its condition is false. If the model follows this call, the transition exists in $G_{\mathit{syn}}$ but not in $G_{\mathit{exec}}$. We call this behavior syntactic-call bias because the trace follows the visible syntax without reproducing the runtime condition.
-
-\begin{figure}[t]
-\centering
-\resizebox{\columnwidth}{!}{%
-\begin{tikzpicture}[
-    >=Latex,
-    method/.style={rb method, minimum width=1.0cm},
-    code/.style={rb code, text width=4.7cm},
-    edge/.style={rb edge},
-    bad/.style={rb optional edge, line width=1pt}
-]
-\node[method] (a) at (0,0) {A};
-\node[method] (b) at (-1.2,-1.0) {B};
-\node[method] (c) at (1.2,-1.0) {C};
-\draw[edge] (a) -- node[left, font=\scriptsize] {true branch} (b);
-\draw[bad] (a) -- node[right, font=\scriptsize] {false branch} (c);
-\node[code, right=2.1cm of a] (snippet) {
-\texttt{void A() \{}\\
-\quad \texttt{if (x > 0) B();}\\
-\quad \texttt{if (x < 0) C();}\\
-\texttt{\}}\\
-\texttt{// generated x = 1}
-};
-\end{tikzpicture}
-}
-\caption{Example of syntactic-call bias. The call to \texttt{C} is present in the method, but the generated value makes its condition false.}
-\Description{A small call-graph and code schematic showing a true guarded call and a false guarded call.}
-\label{fig:syntactic-call-bias}
-\end{figure}
-
-Figure~\ref{fig:syntactic-call-bias} illustrates this difference. Both calls can be found by reading the method body, but only \texttt{B} is executed for the generated value. The executable graph therefore excludes the edge to \texttt{C}. This differs from hallucinating a method because the model follows code that exists but does not execute.
-
-\subsection{Using the Errors for Diagnosis}
-
-An interactive dashboard groups the detected errors by model configuration, structural factors, reasoning budget when verified, and local graph motif. We use these groups to determine whether an error appears repeatedly under the same conditions. For example, a model may return correct Boolean answers while frequently omitting intermediate methods, or it may increasingly follow disabled calls as the number of conditions grows.
-
-The dashboard does not define the benchmark scores. The reported metrics are aggregated from the archived evaluation records. The examples are then used to explain a measured pattern, not to establish it. The main paper presents only the patterns needed to answer \researchq{2}; the complete dashboard and its usage instructions are provided in the artifact. Appendix~\ref{app:result-details} provides the detailed factor curves and guard diagnostics.
+Appendix~\ref{app:diagnostic-definitions} retains the error taxonomy, diagnostic codes, populations, and exclusions. The dashboard groups archived errors by model configuration, structural factors, and local graph motif. It supports inspection of examples behind the measured patterns; benchmark scores come from the archived evaluation records. Additional diagnostic categories remain useful for auditing responses without requiring readers to track their codes throughout the main argument.
