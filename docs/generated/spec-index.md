@@ -5,4 +5,4 @@
 |---|---|---|---|---|
 | [SPEC-20261006](../product-specs/SPEC-20261006-results.md) | active | implemented | verified | [CHG-20261006](../changes/CHG-20261006-results.md) |
 | [SPEC-20261012](../product-specs/SPEC-20261012-prompt-comparison.md) | active | implemented | verified | [CHG-20261012](../changes/CHG-20261012-prompt-comparison.md) |
-| [SPEC-20261012-design](../product-specs/SPEC-20261012-design-construction.md) | active | in_progress | unverified | [CHG-20261012-design](../changes/CHG-20261012-design-construction.md) |
+| [SPEC-20261012-design](../product-specs/SPEC-20261012-design-construction.md) | active | implemented | verified | [CHG-20261012-design](../changes/CHG-20261012-design-construction.md) |

@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "id": "CHG-20261012-design",
   "title": "Audit and revise construction design and Figure 1",
-  "status": "verifying",
+  "status": "completed",
   "risk": "L2",
   "created_at": "2026-10-12",
   "updated_at": "2026-10-12",
@@ -17,7 +17,9 @@
   "related_adrs": [],
   "related_issues": [],
   "related_prs": [],
-  "commits": []
+  "commits": [
+    "1ecad1ab212fcc18ba68f54fde5eafca74277deb"
+  ]
 }
 ---
 
@@ -63,3 +65,9 @@ nine-page PDF has resolved references and no overfull boxes, and pages 2–4 wer
 visually inspected. Generator hashes and its clean worktree are unchanged.
 Revert task-owned commits to recover the prior draft. Rooted runtime agreement
 cannot establish behavior for arbitrary arguments or model understanding.
+
+## Completion
+
+Completed. The implementation/evidence commit is recorded above. All acceptance
+criteria are supported by data/design/VALIDATION.md; knowledge references and
+statuses are closed without changing the source generator or experiments.

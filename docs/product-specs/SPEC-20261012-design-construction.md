@@ -10,8 +10,8 @@
     "reference": "Author request to verify code_generation and revise Section IV and Figure 1"
   },
   "intent_status": "active",
-  "delivery_status": "in_progress",
-  "verification_status": "unverified",
+  "delivery_status": "implemented",
+  "verification_status": "verified",
   "priority": "high",
   "risk": "medium",
   "relations": {
@@ -40,9 +40,21 @@
       "data/design/VALIDATION.md"
     ],
     "adrs": [],
-    "commits": []
+    "commits": [
+      "1ecad1ab212fcc18ba68f54fde5eafca74277deb"
+    ]
   },
-  "introduced_by": "CHG-20261012-design"
+  "introduced_by": "CHG-20261012-design",
+  "verification_evidence": {
+    "method": "other",
+    "confidence": "high",
+    "verified_at": "2026-10-12",
+    "evidence": [
+      "data/design/VALIDATION.md",
+      "data/design/semantic_validation_summary.json",
+      "data/design/example_validation_summary.json"
+    ]
+  }
 }
 ---
 
