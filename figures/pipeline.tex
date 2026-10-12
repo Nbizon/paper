@@ -1,25 +1,49 @@
 \begin{figure*}[t]
 \centering
-\begin{tikzpicture}[rb diagram]
-\node[rb block] (graph) at (0,0) {\textbf{Method structure}\\Ordered tree};
-\node[rb block] (java) at (3.15,0) {\textbf{Java generation}\\Values, calls, guards};
-\node[rb block] (question) at (6.3,0) {\textbf{Query}\\Program, source, target};
-\node[rb block] (output) at (9.45,0) {\textbf{Model response}\\Boolean and trace};
-\node[rb block] (evaluation) at (12.6,0) {\textbf{Evaluation}\\Answer and path scores};
-\foreach \from/\to in {graph/java,java/question,question/output,output/evaluation}
+\begin{tikzpicture}[rb diagram,
+  pipeline block/.style={rb block, text width=2.6cm, minimum height=2.1cm},
+  pipeline prompt/.style={rb block, text width=4.1cm, minimum height=1cm},
+  pipeline oracle/.style={rb edge, dashed}]
+
+\node[rb heading, anchor=west] at (0,1.4) {(a) Dataset construction};
+\node[pipeline block] (settings) at (1.5,0)
+  {\textbf{Settings}\\Methods, guards, parameters\\Comments, variables, loops};
+\node[pipeline block] (java) at (4.9,0)
+  {\textbf{Program generation}\\Method tree\\Java class; fixed execution};
+\node[pipeline block] (questions) at (8.3,0)
+  {\textbf{Oracle and questions}\\Executable calls\\Source--target pairs};
+\node[pipeline block, text width=4.3cm, draw=rbInk, line width=0.95pt,
+  fill=modelblue!5] (dataset) at (12.9,0)
+  {\textbf{\benchmark: final dataset}\\Java classes and reachability questions\\Boolean labels and executable-graph oracles};
+\foreach \from/\to in {settings/java,java/questions,questions/dataset}
   \draw[rb edge] (\from.east) -- (\to.west);
-\node[rb query, text width=4.3cm, align=center] (families) at (3.15,-1.55)
-  {\textbf{Task family}\\
-   Unguarded: \texttt{nb\_if = 0}\\
-   Condition-aware: \texttt{nb\_if > 0}};
-\draw[rb edge] (families.north) -- (java.south);
-\node[rb block, text width=3.4cm, minimum height=0.8cm] (oracle) at (8,-2.55)
-  {\textbf{Executable-graph oracle}\\Recorded calls and labels};
-\draw[rb edge] (java.south east) -- (5.65,-1.0) -- (5.65,-2.55) -- (oracle.west);
-\draw[rb edge] (oracle.north west) -- (question.south);
-\draw[rb edge] (oracle.east) -- (12.6,-2.55) -- (evaluation.south);
+
+\node[rb heading, anchor=west] at (0,-1.85) {(b) Model evaluation};
+\node[pipeline prompt] (co) at (4.6,-2.7)
+  {\textbf{CO: Class-only}\\Class; entry context and determinism implicit};
+\node[pipeline prompt] (ee) at (4.6,-4.25)
+  {\textbf{EE: Explicit execution}\\Class + \texttt{Main}; determinism explicit};
+\node[pipeline block, text width=2.35cm] (model) at (9.15,-3.475)
+  {\textbf{LLM inference}\\For each variant:\\Boolean answer and trace};
+\node[pipeline block, text width=3cm] (scoring) at (13.1,-3.475)
+  {\textbf{Independent scoring}\\Final-answer correctness\\Trace correctness};
+
+% Only the class and question enter either model prompt.
+\draw[rb edge] (dataset.south west) -- (10.575,-1.25)
+  -- (-0.2,-1.25) -- (-0.2,-2.7) -- (co.west);
+\node[rb annotation] at (6.05,-1.25) {Same class and question};
+\draw[rb edge] (-0.2,-2.7) -- (-0.2,-4.25) -- (ee.west);
+\draw[rb edge] (co.east) -- (7.55,-2.7) -- (7.55,-3.475) -- (model.west);
+\draw[rb edge, -] (ee.east) -- (7.55,-4.25) -- (7.55,-3.475);
+\draw[rb edge] (model.east) -- (scoring.west);
+
+% Labels and executable graphs are reserved for evaluation.
+\draw[pipeline oracle] (dataset.south) -- (12.9,-1.55)
+  -- (13.1,-1.55) -- (scoring.north);
+\node[rb annotation, anchor=west, align=left] at (13.25,-1.75)
+  {Shared labels\\and oracles};
 \end{tikzpicture}
-\caption{Construction of the \benchmark dataset and evaluation of model responses. Both task families share the generation and evaluation steps. Executable calls are recorded during Java emission; the resulting oracle supplies question labels and supports independent answer and trace scores.}
-\Description{Five aligned stages from call graph to Java class, query, model response and evaluation. A task-family configuration feeds generation, and a separate oracle route connects recorded Java calls to question construction and evaluation.}
+\caption{Construction and evaluation of \benchmark. The construction algorithm produces the final dataset. CO and EE present the same classes and questions with different execution information. Labels and executable-graph oracles are used only for scoring the returned answer and trace.}
+\Description{The construction algorithm generates Java classes, records executable calls and selects reachability questions to form ReachabilityBench. The same class and question feed either a Class-only prompt or an Explicit execution prompt with Main and deterministic-execution instructions. Model answers and traces are scored separately against the shared labels and executable-graph oracles, which are not supplied to the model.}
 \label{fig:pipeline}
 \end{figure*}
