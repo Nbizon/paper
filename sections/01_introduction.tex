@@ -10,6 +10,8 @@ In this work, we propose \benchmark, a Java benchmark whose objective is not to 
 
 The generated programs vary in structure and in the values that determine which calls can execute. This allows us to examine how these properties affect the model's reachability decisions and the evidence it provides.
 
+We present two variants, \benchmark~(CO) and \benchmark~(EE), which share the same generated dataset and differ in their prompting. CO leaves the entry point and deterministic execution assumptions implicit, whereas EE makes them explicit. CO therefore adds the need to infer the intended execution context to the reachability analysis.
+
 Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
 This paper makes three contributions:
 \begin{itemize}[leftmargin=*]

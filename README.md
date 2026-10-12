@@ -85,9 +85,13 @@ python3 scripts/check_knowledge.py
 
 ## Prompt-context comparison (2026-10-12)
 
-RQ3 compares the Class-only prompt (CO: TheClass only, archived v1) with the
-Explicit execution prompt (EE: TheClass, Main, and explicit deterministic
-execution, archived v4). Prompt structure is described in Design. The main Qwen3.6 comparison
+RQ3 compares ReachabilityBench (CO: Class-only, archived v1) with
+ReachabilityBench (EE: Explicit execution, archived v4). These are two prompting
+variants of the same generated dataset: TheClass programs, questions, labels
+and executable-graph oracles are identical. CO leaves the entry point and the
+deterministic execution assumptions implicit, adding the need to infer the
+intended invocation context. EE supplies Main and explicitly states that all
+relevant values and execution outcomes are determined by the code. Prompt structure is described in Design. The main Qwen3.6 comparison
 covers 46,656 common questions; Gemma's provisional figures cover 11,824 common
 questions, rather than the full grid. These comparisons also change the requested
 reasoning budget from 16,384 to 32,768. The complementary Qwen3.8-Flash-Next

@@ -70,15 +70,15 @@ A positive trace must end at $t$. A negative trace must contain exactly $R_e(s)$
 
 \input{figures/path_scoring}
 
-\subsection{Prompt Structure and Execution Context}
+\subsection{Prompting Variants of \benchmark}
 \label{subsec:prompt-design}
 
 The system message defines executable reachability, specifies the JSON response, and presents the complete class containing its different methods. A separate user message names the source and target and asks whether the former calls the latter directly or indirectly. The response has two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, listing explored methods. The archived wording asks for execution order, while scoring accepts any exploration satisfying the rules above.
 
-We distinguish two prompt variants: \emph{Class-only} (CO) and \emph{Explicit execution} (EE), corresponding to v1 and v4 in the archives.
+We distinguish two variants of the final benchmark: \benchmark~(CO), for \emph{Class-only}, and \benchmark~(EE), for \emph{Explicit execution}. Both use the same \texttt{TheClass} programs, source--target questions, Boolean labels, executable-graph oracles, and scoring rules. Their difference concerns the execution information made explicit in the prompt. The archives identify these prompt variants as v1 and v4.
 
-With the CO prompt, the code block contains only \texttt{TheClass}. The prompt does not explicitly identify the rooted execution context. For a source with parameters, the model must infer the context supplying its values from the class.
+In \benchmark~(CO), the code block contains only \texttt{TheClass}. The prompt does not explicitly identify the program entry point or state that all values and execution outcomes relevant to the question are determined by the supplied code. For a parameterized source, the model must infer the intended rooted execution and recover the values supplied to that source from the class. Without this clarification, a parameter may be interpreted as an unspecified input even though the generated execution fixes its value. CO thus introduces an additional interpretation step, particularly when those arguments control guarded calls.
 
-With the EE prompt, the code block also contains the separate \texttt{Main} launcher, which instantiates \texttt{TheClass} and invokes its parameter-free root. The prompt additionally states that the code is a self-contained specification of a concrete execution, that every relevant value and outcome can be determined statically, and that no external inputs should be assumed. It asks the model to propagate values from the entry point and use them to evaluate conditions, branches, and loops.
+In \benchmark~(EE), the code block also contains the separate \texttt{Main} launcher, which instantiates \texttt{TheClass} and invokes its parameter-free root. The prompt additionally states that the code is a self-contained specification of a concrete execution, that every relevant value and outcome can be determined statically, and that no external inputs should be assumed. It asks the model to propagate values from the entry point and use them to evaluate conditions, branches, and loops.
 
-Both variants retain the same questions and response fields. The returned trace starts at the queried source, rather than at \texttt{main}. The distinction between these prompt variants supports the comparison in \researchq{3}; subsequent clarifications in the maintained prompt do not change what was supplied in those runs.
+The additional launcher and instructions in EE expose the execution context already used by the common oracle. The generated class and expected answers remain identical. EE still requires the model to follow calls, propagate values, and evaluate guards, while CO also requires it to infer the execution assumptions. This makes the CO formulation more demanding without increasing the structural complexity of the programs. In both variants, the returned trace starts at the queried source, and the response fields are the same. \researchq{3} examines the performance difference associated with these two presentations of the same benchmark.

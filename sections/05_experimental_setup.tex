@@ -13,9 +13,9 @@ Class size varies over $\{100,250,500\}$ methods, comments over $\{0,1\}$, and v
 
 We evaluate \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}, subsequently called Gemma and Qwen~\cite{google2026gemma4,qwen2026qwen36}. Inference runs on the Jean Zay supercomputer through a vLLM endpoint~\cite{kwon2023vllm}, with BF16 activations, FP8 quantization, a 262,144-token context limit, tensor parallelism of one, and the respective \texttt{gemma4} and \texttt{qwen3} reasoning parsers. Each question receives one response.
 
-The main evaluation uses prompt CO from Section~\ref{subsec:prompt-design}, with a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. The EE comparison uses the same Java classes and questions, with a reasoning budget of 32,768 tokens. Since the prompt and budget change together, this comparison measures the difference between two evaluation configurations.
+The main evaluation uses \benchmark~(CO), defined in Section~\ref{subsec:prompt-design}, with a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. The comparison with \benchmark~(EE) uses the same Java classes, questions, labels, and oracles, with a reasoning budget of 32,768 tokens. Since the prompt and budget change together, this comparison measures the difference between two evaluation configurations.
 
-A complementary experiment evaluates Qwen3.8-Flash-Next with CO and EE at the same requested reasoning budget of 16,384 tokens. It contains 216 shared questions from six classes: 72 questions at each class size, with comments enabled, two variables, two loops, five guards, and two parameters. This subset concentrates on guarded calls and value propagation; it does not represent the full factorial grid.
+A complementary experiment evaluates Qwen3.8-Flash-Next on \benchmark~(CO) and \benchmark~(EE) at the same requested reasoning budget of 16,384 tokens. It contains 216 shared questions from six classes: 72 questions at each class size, with comments enabled, two variables, two loops, five guards, and two parameters. This subset concentrates on guarded calls and value propagation; it does not represent the full factorial grid.
 
 \subsection{Response Parsing and Metrics}
 \label{subsec:parsing}
