@@ -7,11 +7,11 @@
 \addplot[rb gemma,rb answer] coordinates {(100,96.0391) (250,85.2023) (500,66.0322)};
 \addlegendentry{Gemma: answer}
 \addplot[rb gemma,rb path] coordinates {(100,79.1324) (250,71.6049) (500,57.0645)};
-\addlegendentry{Gemma: path}
+\addlegendentry{Gemma: trace}
 \addplot[rb qwen,rb answer] coordinates {(100,97.6680) (250,93.5700) (500,86.6770)};
 \addlegendentry{Qwen: answer}
 \addplot[rb qwen,rb path] coordinates {(100,83.8649) (250,82.5789) (500,78.2579)};
-\addlegendentry{Qwen: path}
+\addlegendentry{Qwen: trace}
 \nextgroupplot[title={(b) Unreachable targets},xmin=80,xmax=520,xtick={100,250,500},xlabel={Methods per class},ylabel={}]
 \addplot[rb gemma,rb answer] coordinates {(100,69.2387) (250,77.4177) (500,87.6372)};
 \addplot[rb gemma,rb path] coordinates {(100,32.2702) (250,25.3086) (500,17.3868)};
@@ -20,7 +20,7 @@
 \end{groupplot}
 \node[anchor=north,inner sep=0pt] at ($(group c1r1.south)!0.5!(group c2r1.south)+(0,-1.05cm)$) {\pgfplotslegendfromname{fig-results-context-legend}};
 \end{tikzpicture}
-\caption{Condition-aware scores by class size, separated by polarity. Each point has 5,832 questions per model. Negative answer correctness rises while negative path correctness falls.}
-\Description{Correctness by class size in two polarity-specific panels. Solid answer lines and dashed path lines use circles for Gemma and squares for Qwen, with a shared legend and percentage scale.}
+\caption{Condition-aware scores by class size, separated by polarity. Each point has 5,832 questions per model. Negative answer correctness rises while negative trace correctness falls.}
+\Description{Correctness by class size in two polarity-specific panels. Solid answer lines and dashed trace lines use circles for Gemma and squares for Qwen, with a shared legend and percentage scale.}
 \label{fig:results-context}
 \end{figure*}

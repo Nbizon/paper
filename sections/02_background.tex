@@ -5,8 +5,6 @@
 
 Reachability is a standard problem in program analysis. In a call graph, methods are represented as nodes and calls as directed edges. A target method is reachable from a source method when a path connects them through direct or indirect calls. Call-graph construction has been studied through different analyses of the relationships between program elements~\cite{grove2001framework,tip2000scalable}.
 
-\vspace{0.2cm}
-
 However, a call can be visible in the source code without being executable. A condition may prevent it from running, and the value tested by that condition may come from another method. A graph containing all visible calls therefore does not necessarily describe the calls executed in a particular execution. For the tasks considered here, reachability is defined over the executable calls under the given execution context.
 
 This context includes the argument values and initial state relevant to the question. In a deterministic program, these values determine which branches are taken and which methods are invoked. When a condition reads a parameter, understanding whether its guarded call executes can require following the value through several methods. The declaration of the queried source method alone may therefore be insufficient to determine reachability.
@@ -15,20 +13,14 @@ This context includes the argument values and initial state relevant to the ques
 
 Figure~\ref{fig:background-example} illustrates this distinction with a complete four-method program produced by the construction algorithm. \texttt{Main} invokes the parameter-free root \texttt{copySessionFromFile}, which initializes \texttt{message} to 4. This value is passed to \texttt{buildSessionToBuffer} and then to \texttt{clearNotificationFromUrl}. Both guards testing a value against $-5$ are false. From \texttt{buildSessionToBuffer}, only \texttt{clearNotificationFromUrl} is reached. The method \texttt{sortJobForRequest} executes through a separate call from the root, but is not reachable from the queried source. The answer therefore depends on the source and its argument context, rather than whether the target executes anywhere in the program.
 
-\vspace{0.2cm}
-
-In the deterministic programs considered in this study, the entry point and assignments fix the values needed to evaluate execution. The task is to determine which calls execute under this context, rather than whether a target could be called for some other input. Section~\ref{sec:benchmark-design} describes how this context is represented in the generated instances and supplied to the model.
+Section~\ref{sec:benchmark-design} describes how this fixed execution context is represented in the instances and supplied to the model.
 
 \subsection{Decisions and Executable Evidence}
 
 A reachability decision indicates whether the target can be reached from the source. The evidence needed to support this decision depends on its answer. For a reachable target, an executable route from the source establishes reachability. In our evaluation, an unreachable-target response must instead account for the complete region executable from the source and exclude the target. Positive and negative questions therefore place different demands on the returned evidence.
 
-\vspace{0.2cm}
-
 We use the term \emph{trace} for an ordered exploration of methods serving as this evidence. It records explored methods rather than every runtime invocation. Independent branches may be explored in different orders, provided that the method introductions are supported by executable calls. The trace is therefore checked for compatibility with the program, without requiring one chronological execution sequence.
 
 A correct decision does not necessarily come with a valid trace. In Figure~\ref{fig:background-example}, a response can correctly state that \texttt{sortJobForRequest} is unreachable from \texttt{buildSessionToBuffer} while incorrectly including it in the exploration or omitting \texttt{clearNotificationFromUrl}. Evaluating the decision and trace separately makes these differences visible.
-
-\vspace{0.2cm}
 
 The trace is itself generated output and may differ from the process used to produce the answer. It provides an observable signal for examining the model's evidence, without giving direct access to its internal reasoning. The construction of the executable-graph oracle and the precise scoring rules are described in the next sections.

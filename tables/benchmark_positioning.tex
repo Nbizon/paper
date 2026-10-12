@@ -1,21 +1,17 @@
 \begin{table}[t]
 \centering
-\caption{Evaluation scope and evidence in representative benchmarks. These are task distinctions, rather than ratings of benchmark quality.}
+\caption{Task scope of the closest benchmarks. The rows describe evaluation choices, not relative benchmark quality.}
 \label{tab:benchmark-positioning}
 \scriptsize
-\setlength{\tabcolsep}{2pt}
-\renewcommand{\arraystretch}{1.08}
-\begin{tabularx}{\columnwidth}{p{0.23\columnwidth}XX}
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\columnwidth}{@{}p{0.21\columnwidth}X@{}}
 \toprule
-Benchmark & Evaluated task & Evidence or control \\
+Benchmark & Task and evidence \\
 \midrule
-HumanEval / MBPP / APPS & Generate code from a specification & Test-based functional correctness. \\
-SWE-bench & Resolve repository issues & Repository tests; multiple skills combined. \\
-CRUXEval & Infer inputs or outputs & Short generated functions with execution-derived input/output pairs. \\
-REval & Reason about runtime behavior & Paths, coverage, states, outputs, and consistency. \\
-CoRE & Recover program dependencies & Human-verified static-analysis task instances. \\
-TraceEval & Recover runtime call structure & Edges witnessed by validation execution on real-world programs. \\
-\benchmark & Decide executable method reachability & Generated factors, Boolean labels, and graph-valid exploration evidence. \\
+REval~\cite{chen2025reval} & Runtime behavior and consistency of intermediate predictions on adapted code benchmarks. \\
+CoRE~\cite{xie2025core} & Data and control dependencies and information flow; human-verified static-analysis tasks. \\
+TraceEval~\cite{li2026traceeval} & Runtime call structure in repository-derived programs; execution-verified call edges. \\
+\benchmark & Generated method reachability with controlled factors; execution-validated labels and graphs; separate decision and exploration-trace scores. \\
 \bottomrule
 \end{tabularx}
 \end{table}

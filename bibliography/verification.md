@@ -34,3 +34,25 @@ acknowledges LiveCodeBench's tasks beyond generation.
 
 Official card URLs are mutable. The access date identifies this verification,
 not an immutable revision of model weights or benchmark implementations.
+
+## Contribution-positioning review — 2026-10-12
+
+Rechecked the closest primary sources before revising the introduction, Related
+Work and the compact comparison table:
+
+- [REval, author publication page](https://pan2013e.github.io/posts/icse25/):
+  intermediate runtime behavior and consistency between predictions; existing
+  code benchmarks adapted for evaluation.
+- [CoRE, NeurIPS proceedings](https://proceedings.neurips.cc/paper_files/paper/2025/hash/896cbab7d54e3fb158c4980db83290c7-Abstract-Datasets_and_Benchmarks_Track.html):
+  human-verified data/control dependency and information-flow tasks.
+- [TraceEval, primary preprint](https://arxiv.org/abs/2605.11006):
+  repository-derived runtime call structure with execution-witnessed edges.
+
+The revised manuscript explicitly recognizes these existing semantic diagnostic
+evaluations. ReachabilityBench is positioned through its combination of
+controlled generated factors, labels/graphs validated on the final dataset,
+and separate decision/exploration-trace scores. No first-of-its-kind claim or
+unsupported claim about absent functionality in another benchmark is introduced.
+The software-engineering implications are prospective evaluation criteria for
+program understanding, debugging and change-impact inspection, not measured
+developer benefits or a demonstration on repository-scale programs.

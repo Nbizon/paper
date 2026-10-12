@@ -82,7 +82,7 @@ def main():
         r'\caption{Comparisons of \benchmark variants on common questions (\%). Both use the same dataset and oracles. CO: Class-only; EE: Explicit execution. Reasoning budgets (CO/EE): 16,384/32,768 for Gemma and Qwen3.6; 16,384/16,384 for Qwen3.8. Gemma$^\dagger$ uses provisional common support.}',
         r'\label{tab:prompt-comparison}', r'\scriptsize',
         r'\setlength{\tabcolsep}{3pt}', r'\begin{tabular}{llrrrr}',
-        r'\toprule', r'Model & Variant & $N$ & Answer & Path & NR \\', r'\midrule',
+        r'\toprule', r'Model & Variant & $N$ & Answer & Trace & NR \\', r'\midrule',
     ]
     for label, relative in files.items():
         path = args.results_root / relative

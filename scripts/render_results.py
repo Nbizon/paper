@@ -44,7 +44,7 @@ def render(root):
         body.append(None)
     table('tables/overall_performance.tex',
           r'Primary scores (\%). U: \texttt{nb\_if}$=0$; C: \texttt{nb\_if}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
-          'tab:overall', 'llrrrr', r'Group & Model & $N$ & Answer & Path & NR', body[:-1])
+          'tab:overall', 'llrrrr', r'Group & Model & $N$ & Answer & Trace & NR', body[:-1])
 
     body = []
     for factor, label, low, high in [('if', 'Guards: 1 to 5', 1, 5), ('param','Parameters: 0 to 2',0,2),
@@ -57,15 +57,15 @@ def render(root):
                 delta = 100*(value(model,group,factor,high,metric)-value(model,group,factor,low,metric))
                 fields.append(f'{delta:+.2f}')
         body.append(fields)
-    table('tables/factor_effects.tex', r'Marginal contrasts within condition-aware questions (percentage points, high minus low). Other factors are averaged over the balanced grid.',
-          'tab:factors','lrrrr',r'Contrast & Gemma A & Gemma P & Qwen A & Qwen P',body)
+    table('tables/factor_effects.tex', r'Marginal contrasts within condition-aware questions (percentage points, high minus low). A: answer; T: trace. Other factors are averaged over the balanced grid.',
+          'tab:factors','lrrrr',r'Contrast & Gemma A & Gemma T & Qwen A & Qwen T',body)
 
     body=[]
     for model, short in MODELS:
         for truth, label in [('True','Positive'),('False','Negative')]:
             body.append([short,label,*[percent(model,'condition','expected_truth',truth,k) for k in ['answer','path','t04','t05']]])
     table('tables/trace_diagnostics.tex', r'Condition-aware scores by polarity (\%). Each polarity has 17,496 questions per model. T04 is the mean omitted fraction; T05 is the incidence of an existing method outside the executable region. Both are negative-only diagnostics.',
-          'tab:trace-diagnostics','llrrrr',r'Model & Polarity & Answer & Path & T04 & T05',body)
+          'tab:trace-diagnostics','llrrrr',r'Model & Polarity & Answer & Trace & T04 & T05',body)
 
     body=[]
     for model, short in MODELS:
@@ -124,7 +124,7 @@ def render(root):
             body.append([short,str(guards),*[percent(model,'all','if',guards,k) for k in ['answer','path','t01','target_bad_if_share','target_bad_if_case_incidence','t05']]])
     table('tables/guard_mechanisms.tex',
           r'Guard diagnostics (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per guard level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
-          'tab:guard-mechanisms','llrrrrrr',r'Model & Guards & Answer & Path & T01 & A & B & T05',body,wide=True)
+          'tab:guard-mechanisms','llrrrrrr',r'Model & Guards & Answer & Trace & T01 & A & B & T05',body,wide=True)
 
     body=[]
     for model,short in MODELS:
@@ -160,7 +160,8 @@ def render(root):
                     coords = ' '.join(f'({x},{y:.4f})' for x,y in segment)
                     lines.append(rf'\addplot[{style},rb {metric}{extra}] coordinates {{{coords}}};')
                     if index == 0 and segment_index == 0:
-                        lines.append(rf'\addlegendentry{{{model}}}' if len(curves) == 2 else rf'\addlegendentry{{{model}: {metric}}}')
+                        metric_label = 'trace' if metric == 'path' else metric
+                        lines.append(rf'\addlegendentry{{{model}}}' if len(curves) == 2 else rf'\addlegendentry{{{model}: {metric_label}}}')
             if curves[0][2][0][0] < 0:
                 lines.append(r'\addplot[rbRule,densely dotted,no marks,forget plot] coordinates {(0,0) (0,100)};')
         lines += [r'\end{groupplot}',
@@ -178,17 +179,17 @@ def render(root):
          [r'xmin=-0.2,xmax=5.2,xtick={0,1,3,5},xlabel={Generated guards ($\mathtt{nb\_if}$)}',
           r'xmin=-0.1,xmax=2.1,xtick={0,1,2},xlabel={Parameters per method}'],
          r'Scores by guard count over all questions (a), and by parameter count within condition-aware questions (b). Other factors are balanced. The zero-guard level is the unguarded group.',
-         'Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines path correctness.')
+         'Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines trace correctness.')
 
     distances = [-25,-22,-19,-16,-13,-10,-7,-4,-1,1,4,7,10,13,16,19,22,25]
     distance_axis = r'xmin=-27,xmax=27,xtick={-25,-13,0,13,25},xlabel={Signed generation distance}'
-    plot('figures/results_distance.tex', ['Final-answer correctness','Path correctness'],
+    plot('figures/results_distance.tex', ['Final-answer correctness','Trace correctness'],
          'fig:results-distance',
          [score_series('condition','distance',distances,['answer']),
           score_series('condition','distance',distances,['path'])],
          [distance_axis, distance_axis],
          r'Condition-aware scores by signed generation distance. Negative distances denote unreachable targets; positive distances denote reachable targets. Each point has 1,944 questions per model. The dotted divider at zero separates the two populations; no zero-distance query is plotted.',
-         'Answer and path correctness by signed distance. The two polarity-specific curves stop on either side of zero. Model identity uses the same colors and markers as the other result figures.')
+         'Answer and trace correctness by signed distance. The two polarity-specific curves stop on either side of zero. Model identity uses the same colors and markers as the other result figures.')
 
     contexts = [100,250,500]
     def context_series(truth):
@@ -199,8 +200,8 @@ def render(root):
     plot('figures/results_context.tex', ['Reachable targets','Unreachable targets'],
          'fig:results-context', [context_series('True'),context_series('False')],
          [context_axis,context_axis],
-         r'Condition-aware scores by class size, separated by polarity. Each point has 5,832 questions per model. Negative answer correctness rises while negative path correctness falls.',
-         'Correctness by class size in two polarity-specific panels. Solid answer lines and dashed path lines use circles for Gemma and squares for Qwen, with a shared legend and percentage scale.')
+         r'Condition-aware scores by class size, separated by polarity. Each point has 5,832 questions per model. Negative answer correctness rises while negative trace correctness falls.',
+         'Correctness by class size in two polarity-specific panels. Solid answer lines and dashed trace lines use circles for Gemma and squares for Qwen, with a shared legend and percentage scale.')
     return files
 
 

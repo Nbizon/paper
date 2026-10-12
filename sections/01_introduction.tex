@@ -1,21 +1,20 @@
 \section{Introduction}
 
-LLMs are now widely used in software engineering, particularly to assist developers with tasks such as program understanding, debugging, code review, and code generation. To evaluate their capabilities on these tasks, many benchmarks have been proposed with the objective of reproducing problems that are close to those encountered by developers.
+LLMs are now widely used in software engineering, particularly to assist developers with program understanding, debugging, code review, and code generation. Understanding which methods can execute from a given source is relevant when a developer investigates a behavior or inspects the code potentially affected by a change. Such a question requires following calls and, when they are guarded, the values that determine whether they execute.
 
-However, these benchmarks mainly provide a global measure of whether a model can solve a specific task. They can therefore indicate whether a model performs well in a given scenario, but they make it more difficult to diagnose the reasons behind its success or failure. A single task can involve several skills at the same time, which makes it difficult to identify precisely which elements cause difficulties for the model. For example, a model may understand a program by partially relying on semantic information present in method or variable names, while its performance may decrease when this information is removed. A correct or incorrect answer alone is not sufficient to highlight this type of behavior.
+Many benchmarks evaluate whether a model completes a development task, such as producing code that passes tests or resolving a repository issue~\cite{chen2021codex,jimenez2024swebench}. A single outcome can combine several capabilities, making it difficult to locate the source of a failure. More focused benchmarks already examine runtime behavior, program dependencies, and call structure~\cite{chen2025reval,xie2025core,li2026traceeval}. These studies motivate evaluating the program relationships recovered by a model and the evidence supporting its answer.
 
-In this work, we propose \benchmark, a Java benchmark whose objective is not to replace existing benchmarks, but to provide an evaluation framework that allows a more fine-grained analysis of model capabilities. \benchmark focuses on reachability problems between methods. Given a source method and a target method, the model must determine whether the target can be reached from the source through a sequence of calls.
-
-\benchmark is the final generated dataset used in this study. It contains Java classes, reachability questions, expected answers, and executable-graph oracles. The construction algorithm produces these elements together from call graphs. The model returns a JSON object with a Boolean final answer and an ordered sequence of explored methods. The evaluator scores these outputs independently, accepting any path order justified by executable edges rather than requiring one canonical traversal.
+In this work, we propose \benchmark, a generated Java benchmark for executable method reachability. Given a source method and a target method, the model determines whether the latter can execute from the former under the program's fixed execution context. \benchmark is the final dataset of classes, questions, Boolean labels, and executable-graph oracles. A separate configurable construction algorithm produces these elements together.
 
 The generated programs vary in structure and in the values that determine which calls can execute. This allows us to examine how these properties affect the model's reachability decisions and the evidence it provides.
 
-We present two variants, \benchmark~(CO) and \benchmark~(EE), which share the same generated dataset and differ in their prompting. CO leaves the entry point and deterministic execution assumptions implicit, whereas EE makes them explicit. CO therefore adds the need to infer the intended execution context to the reachability analysis.
+Our contribution combines this control with separate evaluation of the Boolean decision and the returned exploration trace. The oracle accepts different exploration orders supported by executable calls. It therefore reveals unsupported calls or omissions even when the final decision is correct. Both labels and executable graphs are independently checked by running the complete final dataset.
 
-Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
+We also compare \benchmark~(CO) and \benchmark~(EE), two prompting variants of the same dataset. CO leaves the entry point and determinism implicit, while EE makes them explicit. This comparison examines how the supplied execution information relates to performance and token consumption.
+
 This paper makes three contributions:
 \begin{itemize}[leftmargin=*]
-    \item a generated benchmark for Java method reachability, together with the configurable construction algorithm used to produce its classes, questions, and oracles;
-    \item an empirical study of Gemma~4 and Qwen~3.6 on 46,656 shared questions, separating reachability decisions from executable evidence;
-    \item a trace-based analysis of conditional calls and value propagation, complemented by a comparison of prompts with implicit and explicit execution contexts.
+    \item a benchmark of 1,232 Java classes and 46,656 questions, together with its configurable construction algorithm, controlling call structure, guarded execution, and presentation factors;
+    \item an evaluation of reachability decisions and exploration traces against execution-validated labels and graphs, accepting valid exploration orders without requiring one canonical sequence;
+    \item an empirical study of Gemma~4 and Qwen~3.6 that locates difficulties with guarded calls, passed values, and exhaustive exploration, complemented by the CO/EE comparison and a Qwen3.8-Flash-Next study on difficult instances.
 \end{itemize}

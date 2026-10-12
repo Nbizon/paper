@@ -7,11 +7,11 @@
 \addplot[rb gemma,rb answer] coordinates {(0,96.0477) (1,89.5319) (3,78.3779) (5,72.8738)};
 \addlegendentry{Gemma: answer}
 \addplot[rb gemma,rb path] coordinates {(0,82.2274) (1,59.3879) (3,44.5473) (5,37.4486)};
-\addlegendentry{Gemma: path}
+\addlegendentry{Gemma: trace}
 \addplot[rb qwen,rb answer] coordinates {(0,99.1941) (1,92.5840) (3,82.3045) (5,77.8464)};
 \addlegendentry{Qwen: answer}
 \addplot[rb qwen,rb path] coordinates {(0,96.3306) (1,67.7726) (3,57.0302) (5,48.6025)};
-\addlegendentry{Qwen: path}
+\addlegendentry{Qwen: trace}
 \nextgroupplot[title={(b) Parameter count},xmin=-0.1,xmax=2.1,xtick={0,1,2},xlabel={Parameters per method},ylabel={}]
 \addplot[rb gemma,rb answer] coordinates {(0,91.2380) (1,75.7888) (2,73.7569)};
 \addplot[rb gemma,rb path] coordinates {(0,66.6152) (1,39.1718) (2,35.5967)};
@@ -21,6 +21,6 @@
 \node[anchor=north,inner sep=0pt] at ($(group c1r1.south)!0.5!(group c2r1.south)+(0,-1.05cm)$) {\pgfplotslegendfromname{fig-results-guards-parameters-legend}};
 \end{tikzpicture}
 \caption{Scores by guard count over all questions (a), and by parameter count within condition-aware questions (b). Other factors are balanced. The zero-guard level is the unguarded group.}
-\Description{Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines path correctness.}
+\Description{Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines trace correctness.}
 \label{fig:results-guards-parameters}
 \end{figure*}

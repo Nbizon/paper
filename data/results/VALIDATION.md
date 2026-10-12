@@ -52,3 +52,25 @@ vendor reports under different protocols. Named checkpoints are not pinned
 to immutable revisions in the supplied logs. Existing `main.tex` changes and
 the untracked `t.txt` are preserved and excluded from task commits; manuscript
 section inclusion switches are unchanged.
+
+## Contribution-focused editorial revision — 2026-10-12
+
+The manuscript now consistently calls the archived path-correctness measure
+"trace correctness": the output is an ordered exploration, while "path" remains
+the graph-theoretic term. The internal metric keys and all scoring rules remain
+unchanged. Both renderers were updated before regenerating the tables and plots.
+
+- render_results.py --check: all 12 generated tables/figures match.
+- aggregate_prompt_comparison.py --results-root /home/nbizon/Thèse/Projects/results
+  --check: the summary and comparison table match.
+- Numeric tokens in all edited generated score tables and result plots, and
+  in Results prose, match their previous committed versions exactly.
+  aggregates.csv and data/prompt_comparison/summary.json are unchanged.
+- check_knowledge.py: six current records and their index validate.
+- latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex: successful
+  ten-page build, with no undefined references/citations or overfull boxes.
+- PDF text contains no unresolved reference markers. Pages 1 and 9 were
+  visually inspected for contribution wording, the comparison table and
+  the revised conclusion.
+
+The editorial change adds no new experiment or effectiveness claim.

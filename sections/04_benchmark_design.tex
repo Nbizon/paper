@@ -1,7 +1,7 @@
 \section{\benchmark Design}
 \label{sec:benchmark-design}
 
-\benchmark is the final generated benchmark used in our evaluation. It contains 1,232 Java classes and 46,656 reachability questions, together with their Boolean labels and executable-graph oracles. The construction algorithm described in this section produces this dataset by controlling the call structure, the values that determine execution, and the presentation of each class. We use the name \benchmark for the resulting dataset and refer separately to the algorithm that constructs it. Figure~\ref{fig:pipeline} summarizes construction and evaluation.
+The construction algorithm produces the final \benchmark dataset by controlling method structure, the values determining executable calls, and presentation factors. Figure~\ref{fig:pipeline} separates this construction from the evaluation of model responses. The labels and executable-graph oracles belong to the resulting dataset; they are independently validated on all its classes and questions in Section~\ref{subsec:oracle-validation}.
 
 \input{figures/pipeline}
 
@@ -66,4 +66,4 @@ In \benchmark~(CO), the code block contains only \texttt{TheClass}. The prompt d
 
 In \benchmark~(EE), the code block also contains the separate \texttt{Main} launcher, which instantiates \texttt{TheClass} and invokes its parameter-free root. The prompt additionally states that the code is a self-contained specification of a concrete execution, that every relevant value and outcome can be determined statically, and that no external inputs should be assumed. It asks the model to propagate values from the entry point and use them to evaluate conditions, branches, and loops.
 
-The additional launcher and instructions in EE expose the execution context already used by the common oracle. The generated class and expected answers remain identical. EE still requires the model to follow calls, propagate values, and evaluate guards, while CO also requires it to infer the execution assumptions. This makes the CO formulation more demanding without increasing the structural complexity of the programs. In both variants, the returned trace starts at the queried source, and the response fields are the same. \researchq{3} examines the performance difference associated with these two presentations of the same benchmark.
+EE exposes the execution context already used by the common oracle; CO additionally requires the model to infer it. The structural complexity of the classes is identical. In both variants, the returned trace starts at the queried source and uses the same response fields. \researchq{3} compares the observed performance and token use of these two presentations.
