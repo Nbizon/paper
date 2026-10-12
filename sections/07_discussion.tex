@@ -1,12 +1,6 @@
 \section{Discussion}
 \label{sec:error-analysis}
 
-\subsection{Implications for Program Understanding}
-
-A correct reachability decision can hide an exploration that follows a disabled call or omits an executable method. For debugging and change-impact inspection, these errors have different possible consequences: an omission can hide behavior relevant to the investigation, while an unsupported call can direct attention to behavior that does not execute in the specified context. A final Boolean score alone does not distinguish them.
-
-The benchmark therefore supports evaluating the method relationships in a model's explanation, including the conditions and passed values on which they depend. Positive questions test whether the evidence reaches the target; negative questions additionally test coverage of the executable region. These are useful criteria when comparing models or prompts for program-understanding assistance. Their practical effect on developer tasks remains to be evaluated on real programs, where dispatch, exceptions, and dependencies across classes introduce additional difficulties.
-
 \subsection{Execution Context and Model Performance}
 
 The modest average trace gains of Gemma and Qwen3.6 under EE suggest that supplying the execution context does not remove the difficulty of following guarded value propagation. The remaining answer--trace gap concerns the reconstruction of executable behavior even with this information available.

@@ -5,4 +5,4 @@ This paper presents \benchmark, the final generated dataset of Java classes and 
 
 The evaluation shows that correct decisions can accompany incomplete or non-executable evidence. The strongest difficulties involve guarded calls, passed values, and the exhaustive exploration required by negative questions. The CO/EE comparison shows how the same dataset can expose different behavior when its execution context is made explicit. The gains remain modest for Gemma and Qwen3.6; Qwen3.8-Flash-Next improves its traces more on the difficult subset, with more non-responses.
 
-For program-understanding assistance, these findings motivate checking the executable relationships supporting a model's answer, alongside its correctness and token consumption. Evaluation on real programs and additional models is needed to determine how broadly the observed difficulties transfer to debugging and change-impact inspection.
+Evaluating decisions and traces separately makes it possible to locate difficulties that final-answer correctness alone leaves unresolved. Further evaluation on more models and real programs would test how broadly these difficulties transfer.
