@@ -1,7 +1,11 @@
 # ReachabilityBench paper
 
 LaTeX sources for *ReachabilityBench: Diagnosing LLMs on Controlled Java
-Method-Reachability Tasks*. The main structural and trace analyses use the supplied
+Method-Reachability Tasks*. ReachabilityBench names the final generated dataset of classes, questions, labels
+and executable-graph oracles. The configurable construction algorithm produces
+that dataset. Validation covers the complete final benchmark used for evaluation.
+
+The main structural and trace analyses use the supplied
 Gemma-4-26B-A4B-it and Qwen3.6-35B-A3B `last_exp` experiment:
 
 - 46,656 shared questions per model, from 1,232 Java classes;
@@ -110,8 +114,8 @@ subset scores as full-grid estimates. See
 ## Verified construction and Figure 1
 
 The Design section is checked against the supplied versioned construction code.
-An independent rooted Java audit verifies all 1,232 archived classes and 46,656
-labels. Signed distances are reference DFS target positions for positive queries
+An independent rooted Java audit verifies all 1,232 classes and all 46,656
+labels of the final ReachabilityBench dataset used in the main evaluation. Signed distances are reference DFS target positions for positive queries
 and source-reachable region sizes minus one for negative queries. See
 [construction evidence](data/design/VALIDATION.md).
 

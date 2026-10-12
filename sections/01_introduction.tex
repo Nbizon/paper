@@ -6,14 +6,14 @@ However, these benchmarks mainly provide a global measure of whether a model can
 
 In this work, we propose \benchmark, a Java benchmark whose objective is not to replace existing benchmarks, but to provide an evaluation framework that allows a more fine-grained analysis of model capabilities. \benchmark focuses on reachability problems between methods. Given a source method and a target method, the model must determine whether the target can be reached from the source through a sequence of calls.
 
-The Java code used in the benchmark is automatically generated from call graphs. This provides an executable-graph oracle and the expected answer for each question. The model returns a JSON object with a Boolean final answer and an ordered sequence of explored methods. The evaluator scores these outputs independently, accepting any path order justified by executable edges rather than requiring one canonical traversal.
+\benchmark is the final generated dataset used in this study. It contains Java classes, reachability questions, expected answers, and executable-graph oracles. The construction algorithm produces these elements together from call graphs. The model returns a JSON object with a Boolean final answer and an ordered sequence of explored methods. The evaluator scores these outputs independently, accepting any path order justified by executable edges rather than requiring one canonical traversal.
 
 The generated programs vary in structure and in the values that determine which calls can execute. This allows us to examine how these properties affect the model's reachability decisions and the evidence it provides.
 
 Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
 This paper makes three contributions:
 \begin{itemize}[leftmargin=*]
-    \item a controlled benchmark for Java method reachability, together with a configurable construction algorithm that produces instances, executable call graphs, and oracle labels;
+    \item a generated benchmark for Java method reachability, together with the configurable construction algorithm used to produce its classes, questions, and oracles;
     \item an empirical study of Gemma~4 and Qwen~3.6 on 46,656 shared questions, separating reachability decisions from executable evidence;
     \item a trace-based analysis of conditional calls and value propagation, complemented by a comparison of prompts with implicit and explicit execution contexts.
 \end{itemize}

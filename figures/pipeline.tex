@@ -19,7 +19,7 @@
 \draw[rb edge] (oracle.north west) -- (question.south);
 \draw[rb edge] (oracle.east) -- (12.6,-2.55) -- (evaluation.south);
 \end{tikzpicture}
-\caption{Overview of the \benchmark pipeline. Both task families share the generation and evaluation steps. Executable calls are recorded during Java emission; the resulting oracle supplies question labels and supports independent answer and trace scores.}
+\caption{Construction of the \benchmark dataset and evaluation of model responses. Both task families share the generation and evaluation steps. Executable calls are recorded during Java emission; the resulting oracle supplies question labels and supports independent answer and trace scores.}
 \Description{Five aligned stages from call graph to Java class, query, model response and evaluation. A task-family configuration feeds generation, and a separate oracle route connects recorded Java calls to question construction and evaluation.}
 \label{fig:pipeline}
 \end{figure*}

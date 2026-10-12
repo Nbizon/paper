@@ -1,7 +1,7 @@
 \section{\benchmark Design}
 \label{sec:benchmark-design}
 
-\benchmark defines method-reachability questions, executable-graph oracles, and rules for evaluating model responses. Its construction algorithm provides controlled Java instances for these tasks. The construction separates the structure of the calls, the values that determine their execution, and the presentation of the resulting class. Figure~\ref{fig:pipeline} summarizes this process.
+\benchmark is the final generated benchmark used in our evaluation. It contains 1,232 Java classes and 46,656 reachability questions, together with their Boolean labels and executable-graph oracles. The construction algorithm described in this section produces this dataset by controlling the call structure, the values that determine execution, and the presentation of each class. We use the name \benchmark for the resulting dataset and refer separately to the algorithm that constructs it. Figure~\ref{fig:pipeline} summarizes construction and evaluation.
 
 \input{figures/pipeline}
 
@@ -55,10 +55,10 @@ The signed generation distance $d$ describes this reference exploration. For a p
 
 Questions are sampled to meet the configured quota for each polarity and distance. When one class does not provide enough candidates, further classes are generated to complete these quotas. The executable graph, method inventory, questions, and generation configuration are retained with the Java code. The maintained format stores the graph directly; the evaluated archives retain executable-tree files from which the same relationships are recovered. Historical chain files do not prescribe the model's exploration order.
 
-\subsection{Validation and Independent Scoring}
+\subsection{Validating \benchmark and Scoring Responses}
 \label{subsec:oracle-validation}
 
-Recording calls during generation provides internal consistency, but does not by itself establish that the emitted Java executes as expected. We therefore independently compiled and instrumented the 1,232 archived classes under their explicit root launchers. The instrumentation records method entries and exits, parent invocations, and argument values. Each invocation's direct callees and descendant region are compared with the archived oracle, and each question label is checked against observed runtime reachability.
+The validation covers the complete final dataset constituting \benchmark: all 1,232 Java classes and all 46,656 questions used in the main model evaluation. It includes both the unguarded and condition-aware groups described in Section~\ref{subsec:evaluation-set}. We independently compiled and instrumented each class, invoking its root through the corresponding \texttt{Main} launcher. The instrumentation records method entries and exits, parent invocations, and argument values. Each invocation's direct callees and descendant region are compared with the executable-graph oracle supplied with that class, and every question label is checked against observed runtime reachability.
 
 All 337,200 observed invocations agreed with the executable edges and regions, and all 46,656 question labels agreed with execution. Original and instrumented programs produced identical standard output and error streams, and source hashes remained unchanged. This validation concerns the specified rooted execution; it does not establish behavior under arbitrary alternative arguments. The maintained generator records a seed, schema version, and source revision, but the historical configurations do not recover their original seed or generator revision.
 
