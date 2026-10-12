@@ -10,8 +10,8 @@
     "reference": "Author request of 2026-10-12"
   },
   "intent_status": "active",
-  "delivery_status": "in_progress",
-  "verification_status": "unverified",
+  "delivery_status": "implemented",
+  "verification_status": "verified",
   "priority": "high",
   "risk": "medium",
   "relations": {
@@ -40,9 +40,19 @@
       "data/prompt_comparison/VALIDATION.md"
     ],
     "adrs": [],
-    "commits": []
+    "commits": [
+      "592749614bd6b9f95af73ca86e890b1c3092594e"
+    ]
   },
-  "introduced_by": "CHG-20261012"
+  "introduced_by": "CHG-20261012",
+  "verification_evidence": {
+    "method": "other",
+    "confidence": "high",
+    "verified_at": "2026-10-12",
+    "evidence": [
+      "data/prompt_comparison/VALIDATION.md"
+    ]
+  }
 }
 ---
 

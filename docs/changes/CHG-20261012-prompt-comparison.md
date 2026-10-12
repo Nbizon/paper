@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "id": "CHG-20261012",
   "title": "Revise prompt design, RQ3 and concise results",
-  "status": "verifying",
+  "status": "completed",
   "risk": "L2",
   "created_at": "2026-10-12",
   "updated_at": "2026-10-12",
@@ -17,7 +17,9 @@
   "related_adrs": [],
   "related_issues": [],
   "related_prs": [],
-  "commits": []
+  "commits": [
+    "592749614bd6b9f95af73ca86e890b1c3092594e"
+  ]
 }
 ---
 
@@ -57,4 +59,5 @@ were inspected visually. Current knowledge records and whitespace checks pass.
 ## Rollback and residual work
 Revert task-owned commits to restore the prior manuscript. Replace provisional
 Gemma figures once the full run is available; that future experiment is outside
-this editorial revision. Completion and commit evidence will be recorded below.
+this editorial revision. The manuscript revision is completed and verified. The implementation/evidence
+commit is recorded above; the full Gemma experiment remains future work.
