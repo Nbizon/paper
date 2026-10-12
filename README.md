@@ -81,8 +81,9 @@ python3 scripts/check_knowledge.py
 
 ## Prompt-context comparison (2026-10-12)
 
-RQ3 compares v1 (TheClass only) with v4 (TheClass, Main, and explicit deterministic
-execution). Prompt structure is described in Design. The main Qwen3.6 comparison
+RQ3 compares the Class-only prompt (CO: TheClass only, archived v1) with the
+Explicit execution prompt (EE: TheClass, Main, and explicit deterministic
+execution, archived v4). Prompt structure is described in Design. The main Qwen3.6 comparison
 covers 46,656 common questions; Gemma's provisional figures cover 11,824 common
 questions, rather than the full grid. These comparisons also change the requested
 reasoning budget from 16,384 to 32,768. The complementary Qwen3.8-Flash-Next

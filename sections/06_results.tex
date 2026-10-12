@@ -1,7 +1,7 @@
 \section{Results}
 \label{sec:results}
 
-We first examine reachability decisions and their supporting traces, then compare the two prompt configurations. The main structural and trace analyses use the 46,656 questions evaluated with v1. Prompt comparisons retain the questions shared by both versions within each model.
+We first examine reachability decisions and their supporting traces, then compare the two prompt configurations. The main structural and trace analyses use the 46,656 questions evaluated with CO. Prompt comparisons retain the questions shared by both variants within each model.
 
 \subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
 
@@ -54,17 +54,17 @@ The traces reveal unsupported calls, omissions from the executable region, and e
 
 \subsubsection{Comparison on the Main Evaluation Set}
 
-Table~\ref{tab:prompt-comparison} compares v1 with v4, which supplies the \texttt{main} entry point and explicitly asks the model to propagate deterministic values through the class. For Qwen, answer correctness increases from 87.98\% to 89.66\%, and path correctness from 67.43\% to 69.23\%. These gains of 1.68 and 1.79 points are modest compared with the remaining answer--path gap. On condition-aware questions, negative answer correctness rises from 75.85\% to 80.16\%, while positive correctness remains approximately 92.6\%.
+Table~\ref{tab:prompt-comparison} compares CO with EE, which supplies the \texttt{main} entry point and explicitly asks the model to propagate deterministic values through the class. For Qwen, answer correctness increases from 87.98\% to 89.66\%, and path correctness from 67.43\% to 69.23\%. These gains of 1.68 and 1.79 points are modest compared with the remaining answer--path gap. On condition-aware questions, negative answer correctness rises from 75.85\% to 80.16\%, while positive correctness remains approximately 92.6\%.
 
 \input{tables/prompt_comparison}
 
-Gemma shows the same direction on the common questions: answer correctness increases from 74.85\% to 76.87\%, and path correctness from 43.12\% to 44.72\%. Non-responses decrease for both models. Gemma's values in Table~\ref{tab:prompt-comparison} are provisional and use the same 11,824 questions in both versions; they are not comparable to its full-grid averages in Table~\ref{tab:overall}.
+Gemma shows the same direction on the common questions: answer correctness increases from 74.85\% to 76.87\%, and path correctness from 43.12\% to 44.72\%. Non-responses decrease for both models. Gemma's values in Table~\ref{tab:prompt-comparison} are provisional and use the same 11,824 questions in both variants; they are not comparable to its full-grid averages in Table~\ref{tab:overall}.
 
-The difficulty with passed values remains in Qwen's complete comparison. Under v4, condition-aware path correctness is 92.06\% without parameters, 46.43\% with one, and 41.66\% with two. Clarifying the entry context is therefore compatible with an improvement, but does not remove the large parameter-associated loss. Since the requested reasoning budget also doubles from 16,384 to 32,768 tokens, these results cannot isolate the contribution of the prompt.
+The difficulty with passed values remains in Qwen's complete comparison. Under EE, condition-aware path correctness is 92.06\% without parameters, 46.43\% with one, and 41.66\% with two. Clarifying the entry context is therefore compatible with an improvement, but does not remove the large parameter-associated loss. Since the requested reasoning budget also doubles from 16,384 to 32,768 tokens, these results cannot isolate the contribution of the prompt.
 
 \subsubsection{Qwen3.8-Flash-Next at a Fixed Budget}
 
-On the 216-question difficult subset, Qwen3.8-Flash-Next improves from 57.41\% to 63.89\% answer correctness and from 35.65\% to 46.76\% path correctness between v1 and v4. Both use a reasoning budget of 16,384 tokens. The improvement is mainly associated with negative questions: answer correctness rises from 24.07\% to 46.30\%, and path correctness from 0\% to 17.59\%. Positive path correctness increases from 71.30\% to 75.93\%, while positive answer correctness decreases from 90.74\% to 81.48\%.
+On the 216-question difficult subset, Qwen3.8-Flash-Next improves from 57.41\% to 63.89\% answer correctness and from 35.65\% to 46.76\% path correctness between CO and EE. Both use a reasoning budget of 16,384 tokens. The improvement is mainly associated with negative questions: answer correctness rises from 24.07\% to 46.30\%, and path correctness from 0\% to 17.59\%. Positive path correctness increases from 71.30\% to 75.93\%, while positive answer correctness decreases from 90.74\% to 81.48\%.
 
 The clarification also increases non-responses from 23 to 42 out of 216 questions, or from 10.65\% to 19.44\%. The higher accuracy is thus accompanied by less frequent parsable answers. These results retain non-responses in the denominator and concern a specific guarded, parameterized subset; they do not establish Qwen3.8's ranking on the full benchmark.
 
