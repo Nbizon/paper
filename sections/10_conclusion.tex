@@ -1,8 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This paper presents \benchmark, the final generated dataset of Java classes and executable method-reachability questions, together with its configurable construction algorithm. Controlled factors and execution-validated labels and graphs allow us to examine reachability decisions and supporting exploration traces separately.
+In this paper, we present \benchmark, the final generated dataset of Java classes and executable method-reachability questions, together with the configurable algorithm used to construct it. The generation controls different factors, while the labels and graphs are verified by execution. This allows us to evaluate the final answer and the model's exploration trace separately.
 
-The evaluation shows that correct decisions can accompany incomplete or non-executable evidence. The strongest difficulties involve guarded calls, passed values, and the exhaustive exploration required by negative questions. The CO/EE comparison shows how the same dataset can expose different behavior when its execution context is made explicit. The gains remain modest for Gemma and Qwen3.6; Qwen3.8-Flash-Next improves its traces more on the difficult subset, with more non-responses.
+The results show that a correct answer can be accompanied by an incomplete exploration or by calls that cannot execute. The main difficulties involve guarded calls, passed values, and the complete exploration required by negative questions. Comparing CO and EE also shows that models can behave differently on the same dataset when the execution context is made explicit. The gains remain modest for Gemma and Qwen3.6. Qwen3.8-Flash-Next improves its traces more on the difficult subset, but also produces more non-responses.
 
-Evaluating decisions and traces separately makes it possible to locate difficulties that final-answer correctness alone leaves unresolved. Further evaluation on more models and real programs would test how broadly these difficulties transfer.
+By evaluating decisions and traces separately, we can identify difficulties that final-answer correctness alone does not reveal. Further evaluation on more models and real programs would make it possible to examine how broadly these difficulties transfer.
