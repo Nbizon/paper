@@ -60,7 +60,7 @@ Table~\ref{tab:prompt-comparison} compares \benchmark~(CO) with \benchmark~(EE) 
 
 Gemma shows the same direction on the common questions: answer correctness increases from 74.85\% to 76.87\%, and path correctness from 43.12\% to 44.72\%. Non-responses decrease for both models. Gemma's values in Table~\ref{tab:prompt-comparison} are provisional and use the same 11,824 questions in both variants; they are not comparable to its full-grid averages in Table~\ref{tab:overall}.
 
-The difficulty with passed values remains in Qwen's complete comparison. Under \benchmark~(EE), condition-aware path correctness is 92.06\% without parameters, 46.43\% with one, and 41.66\% with two. Clarifying the entry context is therefore compatible with an improvement, but does not remove the large parameter-associated loss. Since the requested reasoning budget also doubles from 16,384 to 32,768 tokens, these results cannot isolate the contribution of the prompt.
+The difficulty with passed values remains in Qwen's complete comparison. Under \benchmark~(EE), condition-aware path correctness is 92.06\% without parameters, 46.43\% with one, and 41.66\% with two. Clarifying the entry context is therefore compatible with an improvement, but does not remove the large parameter-associated loss. The EE configuration provides a larger reasoning budget to accommodate its execution analysis. These scores therefore describe the comparison under the chosen budgets; token consumption is discussed in Section~\ref{sec:error-analysis}.
 
 \subsubsection{Qwen3.8-Flash-Next at a Fixed Budget}
 

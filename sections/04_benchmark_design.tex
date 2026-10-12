@@ -55,25 +55,10 @@ The signed generation distance $d$ describes this reference exploration. For a p
 
 Questions are sampled to meet the configured quota for each polarity and distance. When one class does not provide enough candidates, further classes are generated to complete these quotas. The executable graph, method inventory, questions, and generation configuration are retained with the Java code. The maintained format stores the graph directly; the evaluated archives retain executable-tree files from which the same relationships are recovered. Historical chain files do not prescribe the model's exploration order.
 
-\subsection{Validating \benchmark and Scoring Responses}
-\label{subsec:oracle-validation}
-
-The validation covers the complete final dataset constituting \benchmark: all 1,232 Java classes and all 46,656 questions used in the main model evaluation. It includes both the unguarded and condition-aware groups described in Section~\ref{subsec:evaluation-set}. We independently compiled and instrumented each class, invoking its root through the corresponding \texttt{Main} launcher. The instrumentation records method entries and exits, parent invocations, and argument values. Each invocation's direct callees and descendant region are compared with the executable-graph oracle supplied with that class, and every question label is checked against observed runtime reachability.
-
-All 337,200 observed invocations agreed with the executable edges and regions, and all 46,656 question labels agreed with execution. Original and instrumented programs produced identical standard output and error streams, and source hashes remained unchanged. This validation concerns the specified rooted execution; it does not establish behavior under arbitrary alternative arguments. The maintained generator records a seed, schema version, and source revision, but the historical configurations do not recover their original seed or generator revision.
-
-For scoring, let $X=\langle x_0,\ldots,x_n\rangle$ be the returned trace. It must start at $s$, contain no duplicate method, and introduce each later method through an executable edge from an earlier method:
-\[
-    \forall i>0,\quad \exists j<i:\ (x_j,x_i)\in E_{\mathit{exec}}.
-\]
-A positive trace must end at $t$. A negative trace must contain exactly $R_e(s)$ and exclude $t$. These rules accept different orders of exploration across independent branches, as illustrated in Figure~\ref{fig:canonical-traversal}. The Boolean answer is compared with $y$ independently of trace correctness.
-
-\input{figures/path_scoring}
-
 \subsection{Prompting Variants of \benchmark}
 \label{subsec:prompt-design}
 
-The system message defines executable reachability, specifies the JSON response, and presents the complete class containing its different methods. A separate user message names the source and target and asks whether the former calls the latter directly or indirectly. The response has two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, listing explored methods. The archived wording asks for execution order, while scoring accepts any exploration satisfying the rules above.
+The system message defines executable reachability, specifies the JSON response, and presents the complete class containing its different methods. A separate user message names the source and target and asks whether the former calls the latter directly or indirectly. The response has two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, listing explored methods. The archived wording asks for execution order, while scoring accepts any exploration satisfying the rules in Section~\ref{subsec:scoring}.
 
 We distinguish two variants of the final benchmark: \benchmark~(CO), for \emph{Class-only}, and \benchmark~(EE), for \emph{Explicit execution}. Both use the same \texttt{TheClass} programs, source--target questions, Boolean labels, executable-graph oracles, and scoring rules. Their difference concerns the execution information made explicit in the prompt. The archives identify these prompt variants as v1 and v4.
 

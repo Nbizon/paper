@@ -4,16 +4,23 @@
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-The main evaluation uses the final \benchmark dataset validated in Section~\ref{subsec:oracle-validation}: 46,656 questions generated from 1,232 Java classes. Gemma and Qwen receive exactly the same questions. Programs with \texttt{nb\_if}$=0$ provide 11,664 unguarded questions; those with \texttt{nb\_if}$\in\{1,3,5\}$ provide 34,992 condition-aware questions. Both groups contain equally many reachable and unreachable targets.
+The main evaluation uses the final \benchmark dataset: 46,656 questions generated from 1,232 Java classes. Gemma and Qwen receive exactly the same questions. Programs with \texttt{nb\_if}$=0$ provide 11,664 unguarded questions; those with \texttt{nb\_if}$\in\{1,3,5\}$ provide 34,992 condition-aware questions. Both groups contain equally many reachable and unreachable targets.
 
 Class size varies over $\{100,250,500\}$ methods, comments over $\{0,1\}$, and variables, loops, and parameters over $\{0,1,2\}$. Together with the four guard levels, these factors form a balanced grid of 648 configurations. Each configuration contains four questions of each polarity at each distance magnitude in $\{1,4,7,10,13,16,19,22,25\}$. The stored Java code, question, executable graph, and generation metadata define each instance.
+
+\subsubsection{Independent Validation}
+\label{subsec:oracle-validation}
+
+The independent validation covers the complete final \benchmark dataset, including both unguarded and condition-aware classes and all their questions. We independently compiled and instrumented each class, invoking its root through the corresponding \texttt{Main} launcher. The instrumentation records method entries and exits, parent invocations, and argument values. Each invocation's direct callees and descendant region are compared with the executable-graph oracle supplied with that class, and every question label is checked against observed runtime reachability.
+
+All 337,200 observed invocations agreed with the executable edges and regions, and all 46,656 question labels agreed with execution. Original and instrumented programs produced identical standard output and error streams, and source hashes remained unchanged. This validation concerns the specified rooted execution; it does not establish behavior under arbitrary alternative arguments. The maintained generator records a seed, schema version, and source revision, but the historical configurations do not recover their original seed or generator revision.
 
 \subsection{Models and Inference}
 \label{subsec:model-configurations}
 
 We evaluate \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}, subsequently called Gemma and Qwen~\cite{google2026gemma4,qwen2026qwen36}. Inference runs on the Jean Zay supercomputer through a vLLM endpoint~\cite{kwon2023vllm}, with BF16 activations, FP8 quantization, a 262,144-token context limit, tensor parallelism of one, and the respective \texttt{gemma4} and \texttt{qwen3} reasoning parsers. Each question receives one response.
 
-The main evaluation uses \benchmark~(CO), defined in Section~\ref{subsec:prompt-design}, with a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. The comparison with \benchmark~(EE) uses the same Java classes, questions, labels, and oracles, with a reasoning budget of 32,768 tokens. Since the prompt and budget change together, this comparison measures the difference between two evaluation configurations.
+The main evaluation uses \benchmark~(CO), defined in Section~\ref{subsec:prompt-design}, with a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. The comparison with \benchmark~(EE) uses the same Java classes, questions, labels, and oracles, with a reasoning budget of 32,768 tokens. The larger EE budget was chosen to give the models room to propagate values from the entry point and evaluate the resulting execution, since the two prompting variants need not require the same amount of reasoning. The archived counts confirm that some EE responses exceed the CO ceiling. This allocation allows us to evaluate each variant with a budget suited to its reasoning demands; the comparison still concerns the complete inference configurations, since prompt and budget change together.
 
 A complementary experiment evaluates Qwen3.8-Flash-Next on \benchmark~(CO) and \benchmark~(EE) at the same requested reasoning budget of 16,384 tokens. It contains 216 shared questions from six classes: 72 questions at each class size, with comments enabled, two variables, two loops, five guards, and two parameters. This subset concentrates on guarded calls and value propagation; it does not represent the full factorial grid.
 
@@ -22,8 +29,18 @@ A complementary experiment evaluates Qwen3.8-Flash-Next on \benchmark~(CO) and \
 \label{subsec:scoring}
 \label{subsec:statistical-analysis}
 
-The parser retains the last valid JSON object, accepting Boolean values or their string representations and traces supplied as lists or serialized lists. A response without a recoverable answer is marked \texttt{NO\_RESPONSE}. Method names are not repaired, reordered, or completed. Final-answer and path correctness are scored independently, using the rules in Section~\ref{sec:benchmark-design}. Non-responses remain in the primary-score denominators.
+The parser retains the last valid JSON object, accepting Boolean values or their string representations and traces supplied as lists or serialized lists. A response without a recoverable answer is marked \texttt{NO\_RESPONSE}. Method names are not repaired, reordered, or completed. Final-answer and path correctness are scored independently, using the executable-graph oracle. Non-responses remain in the primary-score denominators.
+
+For scoring, let $X=\langle x_0,\ldots,x_n\rangle$ be the returned trace. It must start at $s$, contain no duplicate method, and introduce each later method through an executable edge from an earlier method:
+\[
+    \forall i>0,\quad \exists j<i:\ (x_j,x_i)\in E_{\mathit{exec}}.
+\]
+A positive trace must end at $t$. A negative trace must contain exactly $R_e(s)$ and exclude $t$. These rules accept different orders of exploration across independent branches, as illustrated in Figure~\ref{fig:canonical-traversal}. The Boolean answer is compared with $y$ independently of trace correctness.
+
+\input{figures/path_scoring}
 
 We also examine omissions from the executable region and inclusions of existing methods outside it. A false-guard error is attributed only when a guard uniquely explains a method introduction without executable support. For value propagation, we count the method boundaries between an exposed guard and the declaration supplying its tested value. A guard is exposed when its containing method appears in the returned trace. Literal conditions, unresolved origins, and ambiguous attributions are excluded from the corresponding origin-distance comparisons. Absence of an attributed error does not establish correct internal evaluation.
+
+Token counts are reconstructed from the archived prompts and outputs using the model tokenizers. We distinguish initial prompt tokens, reasoning tokens, and final-answer tokens; these counts are not server-reported usage. Their summaries retain all responses with available counts on the same common-question support.
 
 The analysis is descriptive. Factor contrasts average the other factors over the balanced grid and are expressed in percentage points. Prompt comparisons use common questions within each model, with polarity-specific scores where relevant. Questions sharing a Java class are dependent observations; we do not report significance tests or causal effects. The archives retain prompts, responses, logs, scored files, and diagnostic populations. Aggregation scripts check the primary scores and export their counts, denominators, and source hashes.

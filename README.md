@@ -97,7 +97,14 @@ questions, rather than the full grid. These comparisons also change the requeste
 reasoning budget from 16,384 to 32,768. The complementary Qwen3.8-Flash-Next
 comparison uses 216 difficult questions at a fixed requested budget of 16,384.
 
-Reproduce the comparison counts, source hashes, and manuscript table:
+Validation of the final dataset is presented with the evaluation set; scoring
+rules are presented with response parsing and metrics. The Discussion compares
+all three models on the same 216 difficult questions and reports reconstructed
+input and reasoning token counts. EE has a larger budget to accommodate longer
+execution analysis; observed mean consumption is not twice that of CO. Token
+counts and difficult-subset scores are retained in the same summary.
+
+Reproduce the comparison counts, token summaries, source hashes, and manuscript table:
 
 ```bash
 python3 scripts/aggregate_prompt_comparison.py \

@@ -13,6 +13,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 46656,
+              "mean": 36491.701496056245,
+              "max": 130620
+            },
+            "reasoning_token_count": {
+              "available": 46656,
+              "mean": 5568.838220164609,
+              "max": 16390,
+              "above_16384": 45
+            },
+            "answer_token_count": {
+              "available": 46638,
+              "mean": 93.07264462455508,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 41049,
             "denominator": 46656,
@@ -29,12 +47,70 @@
             "percent": 0.8294753086419753
           }
         },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 74690.81481481482,
+              "max": 130620
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 7713.685185185185,
+              "max": 16385,
+              "above_16384": 2
+            },
+            "answer_token_count": {
+              "available": 216,
+              "mean": 79.06481481481481,
+              "max": 905
+            }
+          },
+          "answer": {
+            "numerator": 134,
+            "denominator": 216,
+            "percent": 62.03703703703704
+          },
+          "path": {
+            "numerator": 63,
+            "denominator": 216,
+            "percent": 29.166666666666668
+          },
+          "no_response": {
+            "numerator": 4,
+            "denominator": 216,
+            "percent": 1.8518518518518519
+          }
+        },
         "unguarded": {
           "questions": 11664,
           "classes": 308,
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11664,
+              "mean": 22976.85219478738,
+              "max": 70264
+            },
+            "reasoning_token_count": {
+              "available": 11664,
+              "mean": 3387.999914266118,
+              "max": 16384,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 11664,
+              "mean": 83.22625171467764,
+              "max": 1114
+            }
+          },
           "answer": {
             "numerator": 11570,
             "denominator": 11664,
@@ -57,6 +133,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 34992,
+              "mean": 40996.65126314586,
+              "max": 130620
+            },
+            "reasoning_token_count": {
+              "available": 34992,
+              "mean": 6295.784322130773,
+              "max": 16390,
+              "above_16384": 45
+            },
+            "answer_token_count": {
+              "available": 34974,
+              "mean": 96.35646480242465,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 29479,
             "denominator": 34992,
@@ -79,6 +173,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 23328,
+              "mean": 36491.69388717421,
+              "max": 130618
+            },
+            "reasoning_token_count": {
+              "available": 23328,
+              "mean": 3962.427983539095,
+              "max": 16386,
+              "above_16384": 12
+            },
+            "answer_token_count": {
+              "available": 23325,
+              "mean": 62.223451232583066,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 21948,
             "denominator": 23328,
@@ -101,6 +213,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 23328,
+              "mean": 36491.70910493827,
+              "max": 130620
+            },
+            "reasoning_token_count": {
+              "available": 23328,
+              "mean": 7175.248456790124,
+              "max": 16390,
+              "above_16384": 33
+            },
+            "answer_token_count": {
+              "available": 23313,
+              "mean": 123.9377171535195,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 19101,
             "denominator": 23328,
@@ -125,6 +255,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 46656,
+              "mean": 36599.520083161864,
+              "max": 130728
+            },
+            "reasoning_token_count": {
+              "available": 46656,
+              "mean": 5831.799254115226,
+              "max": 32770,
+              "above_16384": 1502
+            },
+            "answer_token_count": {
+              "available": 46656,
+              "mean": 85.94635202331962,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 41831,
             "denominator": 46656,
@@ -141,12 +289,70 @@
             "percent": 0.20361796982167352
           }
         },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            32768
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 74798.51851851853,
+              "max": 130728
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 8130.731481481482,
+              "max": 32767,
+              "above_16384": 13
+            },
+            "answer_token_count": {
+              "available": 216,
+              "mean": 66.57870370370371,
+              "max": 461
+            }
+          },
+          "answer": {
+            "numerator": 156,
+            "denominator": 216,
+            "percent": 72.22222222222223
+          },
+          "path": {
+            "numerator": 63,
+            "denominator": 216,
+            "percent": 29.166666666666668
+          },
+          "no_response": {
+            "numerator": 1,
+            "denominator": 216,
+            "percent": 0.46296296296296297
+          }
+        },
         "unguarded": {
           "questions": 11664,
           "classes": 308,
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11664,
+              "mean": 23084.726680384087,
+              "max": 70372
+            },
+            "reasoning_token_count": {
+              "available": 11664,
+              "mean": 3477.2753772290807,
+              "max": 22115,
+              "above_16384": 11
+            },
+            "answer_token_count": {
+              "available": 11664,
+              "mean": 84.81147119341564,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 11602,
             "denominator": 11664,
@@ -169,6 +375,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 34992,
+              "mean": 41104.45121742113,
+              "max": 130728
+            },
+            "reasoning_token_count": {
+              "available": 34992,
+              "mean": 6616.640546410608,
+              "max": 32770,
+              "above_16384": 1491
+            },
+            "answer_token_count": {
+              "available": 34992,
+              "mean": 86.3246456332876,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 30229,
             "denominator": 34992,
@@ -191,6 +415,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 23328,
+              "mean": 36599.512474279836,
+              "max": 130726
+            },
+            "reasoning_token_count": {
+              "available": 23328,
+              "mean": 4273.840877914952,
+              "max": 32768,
+              "above_16384": 371
+            },
+            "answer_token_count": {
+              "available": 23328,
+              "mean": 60.12508573388203,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 21975,
             "denominator": 23328,
@@ -213,6 +455,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 23328,
+              "mean": 36599.5276920439,
+              "max": 130728
+            },
+            "reasoning_token_count": {
+              "available": 23328,
+              "mean": 7389.757630315501,
+              "max": 32770,
+              "above_16384": 1131
+            },
+            "answer_token_count": {
+              "available": 23328,
+              "mean": 111.76761831275721,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 19856,
             "denominator": 23328,
@@ -239,6 +499,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11824,
+              "mean": 38145.024441813264,
+              "max": 133622
+            },
+            "reasoning_token_count": {
+              "available": 11824,
+              "mean": 7787.934624492557,
+              "max": 16383,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 11824,
+              "mean": 550.5520974289581,
+              "max": 2049
+            }
+          },
           "answer": {
             "numerator": 8850,
             "denominator": 11824,
@@ -255,12 +533,70 @@
             "percent": 3.222259810554804
           }
         },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 76367.42129629629,
+              "max": 133622
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 9066.694444444445,
+              "max": 16383,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 216,
+              "mean": 617.074074074074,
+              "max": 2048
+            }
+          },
+          "answer": {
+            "numerator": 131,
+            "denominator": 216,
+            "percent": 60.648148148148145
+          },
+          "path": {
+            "numerator": 57,
+            "denominator": 216,
+            "percent": 26.38888888888889
+          },
+          "no_response": {
+            "numerator": 11,
+            "denominator": 216,
+            "percent": 5.092592592592593
+          }
+        },
         "unguarded": {
           "questions": 304,
           "classes": 9,
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 304,
+              "mean": 13795.480263157895,
+              "max": 14476
+            },
+            "reasoning_token_count": {
+              "available": 304,
+              "mean": 4295.003289473684,
+              "max": 16333,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 304,
+              "mean": 407.3125,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 301,
             "denominator": 304,
@@ -283,6 +619,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11520,
+              "mean": 38787.58185763889,
+              "max": 133622
+            },
+            "reasoning_token_count": {
+              "available": 11520,
+              "mean": 7880.109201388889,
+              "max": 16383,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 11520,
+              "mean": 554.33203125,
+              "max": 2049
+            }
+          },
           "answer": {
             "numerator": 8549,
             "denominator": 11520,
@@ -305,6 +659,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 5912,
+              "mean": 38145.007611637346,
+              "max": 133620
+            },
+            "reasoning_token_count": {
+              "available": 5912,
+              "mean": 5768.454161028417,
+              "max": 16383,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 5912,
+              "mean": 308.4832543978349,
+              "max": 2049
+            }
+          },
           "answer": {
             "numerator": 5092,
             "denominator": 5912,
@@ -327,6 +699,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 5912,
+              "mean": 38145.041271989176,
+              "max": 133622
+            },
+            "reasoning_token_count": {
+              "available": 5912,
+              "mean": 9807.415087956699,
+              "max": 16382,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 5912,
+              "mean": 792.6209404600812,
+              "max": 2049
+            }
+          },
           "answer": {
             "numerator": 3758,
             "denominator": 5912,
@@ -351,6 +741,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11824,
+              "mean": 38253.7774864682,
+              "max": 133731
+            },
+            "reasoning_token_count": {
+              "available": 11824,
+              "mean": 9241.019282814614,
+              "max": 32765,
+              "above_16384": 1783
+            },
+            "answer_token_count": {
+              "available": 11823,
+              "mean": 530.357100566692,
+              "max": 2048
+            }
+          },
           "answer": {
             "numerator": 9089,
             "denominator": 11824,
@@ -367,12 +775,70 @@
             "percent": 2.0974289580514207
           }
         },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            32768
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 76476.125,
+              "max": 133731
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 12708.800925925925,
+              "max": 32765,
+              "above_16384": 58
+            },
+            "answer_token_count": {
+              "available": 216,
+              "mean": 632.0138888888889,
+              "max": 2048
+            }
+          },
+          "answer": {
+            "numerator": 135,
+            "denominator": 216,
+            "percent": 62.5
+          },
+          "path": {
+            "numerator": 59,
+            "denominator": 216,
+            "percent": 27.314814814814813
+          },
+          "no_response": {
+            "numerator": 11,
+            "denominator": 216,
+            "percent": 5.092592592592593
+          }
+        },
         "unguarded": {
           "questions": 304,
           "classes": 9,
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 304,
+              "mean": 13904.532894736842,
+              "max": 14585
+            },
+            "reasoning_token_count": {
+              "available": 304,
+              "mean": 4065.0131578947367,
+              "max": 32765,
+              "above_16384": 1
+            },
+            "answer_token_count": {
+              "available": 304,
+              "mean": 393.93092105263156,
+              "max": 2047
+            }
+          },
           "answer": {
             "numerator": 303,
             "denominator": 304,
@@ -395,6 +861,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 11520,
+              "mean": 38896.32699652778,
+              "max": 133731
+            },
+            "reasoning_token_count": {
+              "available": 11520,
+              "mean": 9377.608333333334,
+              "max": 32765,
+              "above_16384": 1782
+            },
+            "answer_token_count": {
+              "available": 11519,
+              "mean": 533.9575483982985,
+              "max": 2048
+            }
+          },
           "answer": {
             "numerator": 8786,
             "denominator": 11520,
@@ -417,6 +901,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 5912,
+              "mean": 38253.76065629229,
+              "max": 133729
+            },
+            "reasoning_token_count": {
+              "available": 5912,
+              "mean": 6659.574255751015,
+              "max": 32765,
+              "above_16384": 432
+            },
+            "answer_token_count": {
+              "available": 5911,
+              "mean": 307.9697174758924,
+              "max": 2048
+            }
+          },
           "answer": {
             "numerator": 5188,
             "denominator": 5912,
@@ -439,6 +941,24 @@
           "budgets": [
             32768
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 5912,
+              "mean": 38253.79431664411,
+              "max": 133731
+            },
+            "reasoning_token_count": {
+              "available": 5912,
+              "mean": 11822.464309878214,
+              "max": 32765,
+              "above_16384": 1351
+            },
+            "answer_token_count": {
+              "available": 5912,
+              "mean": 752.7068673883626,
+              "max": 2048
+            }
+          },
           "answer": {
             "numerator": 3901,
             "denominator": 5912,
@@ -465,6 +985,64 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 74728.81481481482,
+              "max": 130658
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 9401.111111111111,
+              "max": 16392,
+              "above_16384": 6
+            },
+            "answer_token_count": {
+              "available": 212,
+              "mean": 63.264150943396224,
+              "max": 335
+            }
+          },
+          "answer": {
+            "numerator": 124,
+            "denominator": 216,
+            "percent": 57.407407407407405
+          },
+          "path": {
+            "numerator": 77,
+            "denominator": 216,
+            "percent": 35.648148148148145
+          },
+          "no_response": {
+            "numerator": 23,
+            "denominator": 216,
+            "percent": 10.648148148148149
+          }
+        },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 74728.81481481482,
+              "max": 130658
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 9401.111111111111,
+              "max": 16392,
+              "above_16384": 6
+            },
+            "answer_token_count": {
+              "available": 212,
+              "mean": 63.264150943396224,
+              "max": 335
+            }
+          },
           "answer": {
             "numerator": 124,
             "denominator": 216,
@@ -487,6 +1065,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 216,
+              "mean": 74728.81481481482,
+              "max": 130658
+            },
+            "reasoning_token_count": {
+              "available": 216,
+              "mean": 9401.111111111111,
+              "max": 16392,
+              "above_16384": 6
+            },
+            "answer_token_count": {
+              "available": 212,
+              "mean": 63.264150943396224,
+              "max": 335
+            }
+          },
           "answer": {
             "numerator": 124,
             "denominator": 216,
@@ -509,6 +1105,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 108,
+              "mean": 74728.97222222222,
+              "max": 130656
+            },
+            "reasoning_token_count": {
+              "available": 108,
+              "mean": 7071.194444444444,
+              "max": 16388,
+              "above_16384": 1
+            },
+            "answer_token_count": {
+              "available": 107,
+              "mean": 55.80373831775701,
+              "max": 123
+            }
+          },
           "answer": {
             "numerator": 98,
             "denominator": 108,
@@ -531,6 +1145,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 108,
+              "mean": 74728.6574074074,
+              "max": 130658
+            },
+            "reasoning_token_count": {
+              "available": 108,
+              "mean": 11731.027777777777,
+              "max": 16392,
+              "above_16384": 5
+            },
+            "answer_token_count": {
+              "available": 105,
+              "mean": 70.86666666666666,
+              "max": 335
+            }
+          },
           "answer": {
             "numerator": 26,
             "denominator": 108,
@@ -555,6 +1187,64 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            },
+            "reasoning_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            }
+          },
+          "answer": {
+            "numerator": 138,
+            "denominator": 216,
+            "percent": 63.888888888888886
+          },
+          "path": {
+            "numerator": 101,
+            "denominator": 216,
+            "percent": 46.75925925925926
+          },
+          "no_response": {
+            "numerator": 42,
+            "denominator": 216,
+            "percent": 19.444444444444443
+          }
+        },
+        "difficult_subset": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            },
+            "reasoning_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            }
+          },
           "answer": {
             "numerator": 138,
             "denominator": 216,
@@ -577,6 +1267,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            },
+            "reasoning_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            }
+          },
           "answer": {
             "numerator": 138,
             "denominator": 216,
@@ -599,6 +1307,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            },
+            "reasoning_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            }
+          },
           "answer": {
             "numerator": 88,
             "denominator": 108,
@@ -621,6 +1347,24 @@
           "budgets": [
             16384
           ],
+          "tokens": {
+            "initial_prompt_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            },
+            "reasoning_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null,
+              "above_16384": 0
+            },
+            "answer_token_count": {
+              "available": 0,
+              "mean": null,
+              "max": null
+            }
+          },
           "answer": {
             "numerator": 50,
             "denominator": 108,

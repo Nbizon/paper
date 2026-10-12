@@ -54,3 +54,34 @@ parameters, at requested budget 16,384 for both prompts. Scores are descriptive
 and specific to this difficult subset. The comparison changes entry context
 and determinism together; it does not separate their effects. Repeated inference
 variability and independent instrumented oracle validation were not evaluated.
+
+## Budget and difficult-subset discussion update
+
+The current extraction additionally retains available counts, means and maxima
+for initial prompt, reasoning and final-answer tokens, plus the number of
+reasoning outputs exceeding 16,384 tokens. Outputs with unavailable counts are
+excluded only from the corresponding token summary, not from correctness scores.
+Qwen3.8 EE has no available token counts in its dashboard; no token-cost
+comparison is inferred for this pair. Counts are tokenizer reconstructions,
+not server usage or billing records.
+
+- The six difficult-subset populations (three models, two prompt variants)
+  have identical case/factor/distance/polarity multisets: 216 questions from
+  six classes with comments, two variables, two loops, five guards and two
+  parameters. Gemma path counts are 57/216 and 59/216; Qwen3.6 counts are
+  63/216 for both; Qwen3.8 counts are 77/216 and 101/216.
+- All pre-existing correctness counts, budgets and population sizes remain
+  identical to the previous committed summary. Dashboard hashes were refreshed
+  after the source dashboards gained token columns.
+- All token means and available-count denominators for Gemma and Qwen3.6
+  match last_exp_7/dashboard/token_budget_summary.json to tolerance 1e-10.
+  EE outputs exceeding 16,384 reasoning tokens number 1,502/46,656 for
+  Qwen3.6 and 1,783/11,824 for Gemma. These observations support allocating
+  more room; they do not prove a minimum necessary budget.
+- The aggregate extractor --check, original render_results --check and
+  check_knowledge.py checks pass. The paper now places final-dataset validation
+  in Experimental Setup and trace-scoring rules with response metrics.
+- Root-directory latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+  succeeds. The updated manuscript includes the focused Discussion and has
+  ten pages, references included. Earlier eight-page build entries above refer
+  to the initial revision.
