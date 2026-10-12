@@ -1,0 +1,18 @@
+{
+  "seed": 192,
+  "root": "copySessionFromFile",
+  "source": "buildSessionToBuffer",
+  "positive_target": "clearNotificationFromUrl",
+  "negative_target": "sortJobForRequest",
+  "value": 4,
+  "config": {
+    "context_size": 4,
+    "depths": [
+      1
+    ],
+    "n_if": 1,
+    "n_params": 1,
+    "n_vars": 0,
+    "mode": "d"
+  }
+}

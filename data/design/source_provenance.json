@@ -1,0 +1,38 @@
+{
+  "source_root": "/home/nbizon/Th\u00e8se/Projects/versionning/LLM_benchmark/src/code_generation",
+  "revision": "b412bd78bd4a31530e087580ac4f39b9b3794a3e",
+  "files": {
+    "README.md": "21c77e3c78093122778e482d0b7e4d0e76703b6c1aec9951fd288a58d6bc3082",
+    "add_main_launcher_to_dataset.py": "e90340f8cb1c369d289f8e62e69e39f08ee8f58690d0802e1e038d724a67046d",
+    "add_static_execution_detail_to_dataset.py": "5faa6412b1626d7afaad323290e49054ad89954413da5e761bda147588d36f2b",
+    "comment_generator.py": "1686873317d539853ce27a4af2ee7018eaebbf7473d9eb9ff959a889c3dcf7e4",
+    "control_flow_generator.py": "40cb5c5a09768d66df440e498703ed9e8cd700a9001d3320ed0faef1bc094a31",
+    "experiment_config.py": "4d330f144c2b868c39698c670a71471b0cc7d1c369b6fc7badb5dd9f806bdb34",
+    "generate_last_exp_dataset.py": "caa5e66d7d3c90ef90a6d3a32a6872d4ce8f6935cbca4244eb8ef352dc5a46af",
+    "java_entrypoint.py": "7493c467d16cc60efcc9c5afebe9001d4977559b5b1f485ef82088c738376224",
+    "method_name_generator.py": "9fa2b2c25cc4da35ac99b9bf40e69e285821a1c070bc8b8409607c47b25771f8",
+    "method_tree.py": "ac52e36f46f4e4187bd4252f16bba84fe27441c6b164848324f1aa781c2aad25",
+    "reachability_prompts.py": "1737b67cee55c5fe15ef836628b5318c4a59d35e7db5569c44a2fbac36a65ef8",
+    "tqdm_compat.py": "1aba4a86511bf43c37a8eeefd015fee86065cfbb2438ec203f12d7d653d74497",
+    "tree_chain_generator.py": "9a8cf1a42f1e2a7bc36ca66a0062be98562025a68285af3c48a09e2966c6af5b"
+  },
+  "archive_seed_and_generator_revision": "unknown; not supplied by historical configuration metadata",
+  "example": {
+    "seed": 192,
+    "root": "copySessionFromFile",
+    "source": "buildSessionToBuffer",
+    "positive_target": "clearNotificationFromUrl",
+    "negative_target": "sortJobForRequest",
+    "value": 4,
+    "config": {
+      "context_size": 4,
+      "depths": [
+        1
+      ],
+      "n_if": 1,
+      "n_params": 1,
+      "n_vars": 0,
+      "mode": "d"
+    }
+  }
+}

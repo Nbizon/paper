@@ -1,0 +1,11 @@
+{
+  "copySessionFromFile": [
+    "buildSessionToBuffer",
+    "sortJobForRequest"
+  ],
+  "buildSessionToBuffer": [
+    "clearNotificationFromUrl"
+  ],
+  "clearNotificationFromUrl": [],
+  "sortJobForRequest": []
+}

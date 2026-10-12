@@ -7,12 +7,12 @@ Method reachability measures a specific part of program understanding. A returne
 
 \subsection{Internal Validity}
 
-Primary scores are checked against executable-graph evaluations, and prompt comparisons retain common questions. These checks do not independently establish agreement between the oracle and instrumented Java execution. Program construction and oracle metadata may share defects. Structural factors also change text length and graph properties, so marginal contrasts do not isolate semantic causes.
+Primary scores are checked against executable-graph evaluations, and prompt comparisons retain common questions. The independent execution audit in Section~\ref{subsec:oracle-validation} also confirms oracle edges, reachable regions, and labels for the archived corpus under its root launchers. This evidence is limited to those concrete contexts and does not validate model-output parsing or every diagnostic. Structural factors also change text length and graph properties, so marginal contrasts do not isolate semantic causes.
 
 Version v4 supplies the entry point and clarifies determinism together; their individual contributions cannot be separated. The Gemma and Qwen3.6 comparison additionally changes the reasoning budget. Qwen3.8 holds the requested budget fixed, but evaluates only six difficult classes. Gemma's provisional comparison covers an unbalanced subset and must be updated before drawing full-corpus conclusions. Decoding, quantization, and parsing can affect all scores; the serving logs do not pin checkpoint or tokenizer revisions.
 
 \subsection{External and Conclusion Validity}
 
-The generated programs contain one class with controlled method calls and value flow. They do not cover dynamic dispatch, recursion, exceptions, external libraries, or dependencies across classes. Generation also cannot establish absence of training overlap without access to training data. The findings therefore characterize these tasks and configurations, rather than general repository-level capability.
+The generated programs contain one class with controlled method calls and value flow. They do not cover dynamic dispatch, executed recursion, exceptions, external libraries, or dependencies across classes. Generation also cannot establish absence of training overlap without access to training data. The findings therefore characterize these tasks and configurations, rather than general repository-level capability.
 
 Each question receives one response, and questions sharing a class are dependent observations. We report descriptive contrasts without significance tests or confidence intervals for a broader population. Output-conditioned guard associations do not establish causal mechanisms, and the fixed-budget prompt subset does not represent the full factorial grid.

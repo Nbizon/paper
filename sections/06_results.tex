@@ -23,7 +23,7 @@ The joint configuration helps locate this difficulty. Without guards, changing t
 
 \subsubsection{Distance and Class Size}
 
-For positive condition-aware questions, increasing nominal distance from 1 to 25 reduces path correctness from 95.68\% to 56.58\% for Gemma and from 99.90\% to 70.52\% for Qwen. For negative questions, it falls from 54.01\% to 11.63\% and from 55.56\% to 22.94\%. At magnitude 25, the average shortest executable route for a positive query contains 5.90 methods, whereas a negative trace must cover a region of 26 methods. Equal nominal distances thus impose different evidence requirements.
+For positive condition-aware questions, increasing nominal distance from 1 to 25 reduces path correctness from 95.68\% to 56.58\% for Gemma and from 99.90\% to 70.52\% for Qwen. For negative questions, it falls from 54.01\% to 11.63\% and from 55.56\% to 22.94\%. At magnitude 25, the average shortest executable route for a positive query contains 5.90 methods, whereas a negative trace must cover a region of 26 methods. The positive distance records a target position in the reference exploration, so a valid trace can omit earlier side branches. Equal nominal distances thus impose different evidence requirements.
 
 Between 100 and 500 methods, condition-aware path correctness decreases from 55.70\% to 37.23\% for Gemma and from 60.11\% to 54.99\% for Qwen. Qwen's answer score nevertheless increases from 82.46\% to 85.67\%. Its positive answer correctness falls from 97.67\% to 86.68\%, while negative correctness rises from 67.25\% to 84.67\%. Larger classes can therefore improve the average decision score while the evidence becomes less reliable.
 

@@ -11,47 +11,9 @@ However, a call can be visible in the source code without being executable. A co
 
 This context includes the argument values and initial state relevant to the question. In a deterministic program, these values determine which branches are taken and which methods are invoked. When a condition reads a parameter, understanding whether its guarded call executes can require following the value through several methods. The declaration of the queried source method alone may therefore be insufficient to determine reachability.
 
-% Adapted from last_exp_7/dataset/context-100_comment-0_var-1_loop-0_if-1_param-1/
-% ctx-100_depths-1--25_com-0_var-1_loop-0_if-1_params-1_qs-2_java_tree.
-% Names, values, the value-flow chain and tested guard come from TheClass.java;
-% Main.java supplies the same root. Additional calls/true guards and leaf bodies
-% are reduced for this illustrative program, not reproduced as a full instance.
-\begin{figure}[t]
-\centering
-\begin{minipage}{\columnwidth}
-\footnotesize
-\begin{verbatim}
-public class TheClass {
-  public void buildTaskIfEnabled(double x) {
-    double path = 5.0;
-    if (x <= 0.11) {
-      executeSessionOnClick(x);
-    }
-    syncServiceAtIndex(x);
-  }
-  public void deleteDataForMapping() {
-    double text = 2.94;
-    filterUserForMapping(text);
-  }
-  public void filterUserForMapping(double input) {
-    buildTaskIfEnabled(input);
-  }
-  public void syncServiceAtIndex(double token) {}
-  public void executeSessionOnClick(double x) {}
-}
+\input{figures/generated_java_example}
 
-public class Main {
-  public static void main(String[] args) {
-    new TheClass().deleteDataForMapping();
-  }
-}
-\end{verbatim}
-\end{minipage}
-\caption{Reduced example adapted from a generated dataset class. Additional calls, unrelated variables, and leaf-method bodies are omitted. \texttt{Main} invokes a parameter-free root; the value passed across methods disables the visible call to \texttt{executeSessionOnClick}.}
-\label{fig:background-example}
-\end{figure}
-
-Figure~\ref{fig:background-example} illustrates this distinction using a reduced example adapted from the dataset. The \texttt{Main} class instantiates \texttt{TheClass} and invokes \texttt{deleteDataForMapping}, which initializes \texttt{text} to 2.94. This value passes through \texttt{filterUserForMapping} to the parameter \texttt{x} of \texttt{buildTaskIfEnabled}. The condition \texttt{x <= 0.11} is therefore false: \texttt{executeSessionOnClick} is not reachable from \texttt{buildTaskIfEnabled}, whereas \texttt{syncServiceAtIndex} executes. The method declarations do not follow this call order. Determining reachability requires connecting the calls and tracing the value supplied by the entry context.
+Figure~\ref{fig:background-example} illustrates this distinction with a complete four-method program produced by the construction algorithm. \texttt{Main} invokes the parameter-free root \texttt{copySessionFromFile}, which initializes \texttt{message} to 4. This value is passed to \texttt{buildSessionToBuffer} and then to \texttt{clearNotificationFromUrl}. Both guards testing a value against $-5$ are false. From \texttt{buildSessionToBuffer}, only \texttt{clearNotificationFromUrl} is reached. The method \texttt{sortJobForRequest} executes through a separate call from the root, but is not reachable from the queried source. The answer therefore depends on the source and its argument context, rather than whether the target executes anywhere in the program.
 
 \vspace{0.2cm}
 
@@ -65,7 +27,7 @@ A reachability decision indicates whether the target can be reached from the sou
 
 We use the term \emph{trace} for an ordered exploration of methods serving as this evidence. It records explored methods rather than every runtime invocation. Independent branches may be explored in different orders, provided that the method introductions are supported by executable calls. The trace is therefore checked for compatibility with the program, without requiring one chronological execution sequence.
 
-A correct decision does not necessarily come with a valid trace. In Figure~\ref{fig:background-example}, a response can correctly state that \texttt{executeSessionOnClick} is unreachable from \texttt{buildTaskIfEnabled} while incorrectly including it in the exploration or omitting \texttt{syncServiceAtIndex}. Evaluating the decision and trace separately makes these differences visible.
+A correct decision does not necessarily come with a valid trace. In Figure~\ref{fig:background-example}, a response can correctly state that \texttt{sortJobForRequest} is unreachable from \texttt{buildSessionToBuffer} while incorrectly including it in the exploration or omitting \texttt{clearNotificationFromUrl}. Evaluating the decision and trace separately makes these differences visible.
 
 \vspace{0.2cm}
 

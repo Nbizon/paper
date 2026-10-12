@@ -1,8 +1,8 @@
 \begin{figure*}[t]
 \centering
 \begin{tikzpicture}[rb diagram]
-\node[rb block] (graph) at (0,0) {\textbf{Call graph}\\Ordered tree};
-\node[rb block] (java) at (3.15,0) {\textbf{Java generation}\\Class and conditions};
+\node[rb block] (graph) at (0,0) {\textbf{Method structure}\\Ordered tree};
+\node[rb block] (java) at (3.15,0) {\textbf{Java generation}\\Values, calls, guards};
 \node[rb block] (question) at (6.3,0) {\textbf{Query}\\Program, source, target};
 \node[rb block] (output) at (9.45,0) {\textbf{Model response}\\Boolean and trace};
 \node[rb block] (evaluation) at (12.6,0) {\textbf{Evaluation}\\Answer and path scores};
@@ -14,11 +14,12 @@
    Condition-aware: \texttt{nb\_if > 0}};
 \draw[rb edge] (families.north) -- (java.south);
 \node[rb block, text width=3.4cm, minimum height=0.8cm] (oracle) at (8,-2.55)
-  {\textbf{Executable-graph oracle}\\Labels and executable edges};
-\draw[rb edge] (graph.south) -- (0,-2.55) -- (oracle.west);
+  {\textbf{Executable-graph oracle}\\Recorded calls and labels};
+\draw[rb edge] (java.south east) -- (5.65,-1.0) -- (5.65,-2.55) -- (oracle.west);
+\draw[rb edge] (oracle.north west) -- (question.south);
 \draw[rb edge] (oracle.east) -- (12.6,-2.55) -- (evaluation.south);
 \end{tikzpicture}
-\caption{Overview of the \benchmark pipeline. Both task families share the generation and evaluation steps. The generated structure supplies the executable-graph oracle used to score the answer and trace independently.}
-\Description{Five aligned stages from call graph to Java class, query, model response and evaluation. A task-family configuration feeds generation, and a separate oracle route connects the generated structure to evaluation.}
+\caption{Overview of the \benchmark pipeline. Both task families share the generation and evaluation steps. Executable calls are recorded during Java emission; the resulting oracle supplies question labels and supports independent answer and trace scores.}
+\Description{Five aligned stages from call graph to Java class, query, model response and evaluation. A task-family configuration feeds generation, and a separate oracle route connects recorded Java calls to question construction and evaluation.}
 \label{fig:pipeline}
 \end{figure*}

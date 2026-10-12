@@ -105,3 +105,16 @@ subset scores as full-grid estimates. See
 [validation](data/prompt_comparison/VALIDATION.md),
 [revision specification](docs/product-specs/SPEC-20261012-prompt-comparison.md), and
 [change record](docs/changes/CHG-20261012-prompt-comparison.md).
+
+## Verified construction and Figure 1
+
+The Design section is checked against the supplied versioned construction code.
+An independent rooted Java audit verifies all 1,232 archived classes and 46,656
+labels. Signed distances are reference DFS target positions for positive queries
+and source-reachable region sizes minus one for negative queries. See
+[construction evidence](data/design/VALIDATION.md).
+
+Figure 1 now contains a complete four-method program produced by that generator;
+no call or guard is removed. Its sources and reproduction command are in
+[examples/design](examples/design/README.md). The diagram distinguishes methods
+executed elsewhere from methods reachable from the selected source.

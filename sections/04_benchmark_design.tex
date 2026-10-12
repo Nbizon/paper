@@ -1,133 +1,82 @@
-
 \section{\benchmark Design}
 \label{sec:benchmark-design}
 
-\benchmark defines a set of method-reachability questions, their executable-graph oracles, and the rules used to evaluate model responses. Its construction algorithm generates the Java classes and metadata used to instantiate these tasks. The benchmark and the algorithm therefore have different roles: the former defines what is evaluated, while the latter provides controlled instances for this evaluation.
+\benchmark defines method-reachability questions, executable-graph oracles, and rules for evaluating model responses. Its construction algorithm provides controlled Java instances for these tasks. The construction separates the structure of the calls, the values that determine their execution, and the presentation of the resulting class. Figure~\ref{fig:pipeline} summarizes this process.
 
 \input{figures/pipeline}
 
-\subsection{From a Call Graph to a Reachability Question}
+\subsection{Task Instances and Execution Context}
 
-The construction algorithm builds each instance from an ordered call graph. Each node is converted into a Java method and each edge into a method call. A source method $s$ and a target method $t$ define the corresponding question: whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
+Each instance contains a Java class \texttt{TheClass}, a source method $s$, and a target method $t$. The class contains all generated methods, including methods outside the region reachable from $s$. One parameter-free root defines the program entry point. Its local declarations initialize the values subsequently passed between methods.
 
-\vspace{0.2cm}
-
-We represent one instance as
-
+We represent an instance as
 \[
-    (P, s, t, f, y, G_{\mathit{exec}}, m),
+    (P, e, s, t, f, y, G_{\mathit{exec}}, m),
 \]
+where $P$ is the class, $e$ is its rooted execution context, and $f$ identifies the task family. The label $y$ is \true{} when $t$ is executable from $s$ under the argument values supplied by $e$, and \false{} otherwise. The graph $G_{\mathit{exec}}$ records the executable calls; $m$ contains generation settings and question metadata. The queried source need not be the root. A separate \texttt{Main} class can make $e$ explicit by invoking this root, but its launcher method is not a node of the oracle.
 
-where $P$ is a Java class containing several methods and $f$ identifies the task family. The label $y$ is \true{} when $t$ is executable from $s$, and \false{} otherwise. The oracle is the executable call graph $G_{\mathit{exec}}$; $m$ stores the generation configuration and graph properties.
+\subsection{Constructing the Method Structure}
 
-\vspace{0.2cm}
+The algorithm first generates unique method names by combining a verb, a noun, and a suffix. These names provide Java-like identifiers without specifying the behavior of the generated method bodies. Each name becomes a node in a single acyclic tree whose size is the configured number of methods.
 
-Figure~\ref{fig:pipeline} summarizes the complete pipeline. The program, the question, and the oracle all come from the same initial structure. After inference, the returned JSON is parsed and compared with this oracle. This ensures that the information used for evaluation remains consistent with the Java code presented to the model.
-
-
-\subsection{Generating the Call Graph}
-
-The construction algorithm uses ordered acyclic trees that support controlled reachability, direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
-
-The order of the children is also preserved, since it determines the order in which method calls are inserted into the Java program.
-
-\vspace{0.2cm}
-
-The tree is constructed breadth-first under a fixed method budget. Let $u$ be the node currently expanded, with $L(u)$ and $R(u)$ its left and right children. When enough methods remain available, both children are first added:
-
+A queue controls the expansion. For an expanded node $u$, the algorithm creates left and right children, $L(u)$ and $R(u)$, while names remain available. It then independently attempts to add the two children of $L(u)$, each with probability $p=0.65$:
 \[
-    u \rightarrow L(u), \qquad u \rightarrow R(u).
+    X_{LL}(u),X_{LR}(u)\sim\mathrm{Bernoulli}(p).
 \]
-
-Additional branches can then be created below $L(u)$. The two possible edges are sampled independently:
-
-\[
-    X_{LL}(u) \sim \mathrm{Bernoulli}(p),
-    \qquad
-    X_{LR}(u) \sim \mathrm{Bernoulli}(p).
-\]
-
-If $X_{LL}(u)=1$, the edge $L(u) \rightarrow L(L(u))$ is added. Similarly, $X_{LR}(u)=1$ adds $L(u) \rightarrow R(L(u))$. Figure~\ref{fig:local-tree-rule} illustrates this local rule.
+The right child and any sampled grandchildren enter the queue for subsequent expansion. Figure~\ref{fig:local-tree-rule} shows this local rule. Expansion consumes the method budget, so the final additions are truncated when no names remain. The resulting branches provide source regions of different sizes and methods outside those regions for negative queries.
 
 \input{figures/local_tree_rule}
 
-With this rule, $L(u)$ receives zero, one, or two optional children with probabilities $(1-p)^2$, $2p(1-p)$, and $p^2$, respectively. Increasing $p$ creates more branches and consequently more opportunities to construct negative reachability questions. The final level is truncated when the method budget is reached.
+\subsection{Generating Methods and Propagating Values}
 
-The generation probability is $p=0.65$, producing both positive and negative questions.
+Each node is translated into a public instance method returning \texttt{void}. The root has no parameters; other methods receive the configured number of parameters. Their types are drawn from \texttt{int}, \texttt{long}, \texttt{boolean}, \texttt{float}, and \texttt{double}. Below a parameterized parent, parameter types are sampled from those already present in the parent, allowing values to propagate through successive calls.
 
+For each structural edge, the caller supplies arguments of the required types. The algorithm reuses compatible parameters or previously introduced argument variables, or creates a local variable when needed. It records the concrete value assigned to each callee parameter before generating that method's body. The root necessarily introduces local values for its parameterized children; later methods may introduce fresh values as well. A condition can therefore depend on a local origin several method boundaries away, rather than only on a declaration in its own method.
 
-\subsection{Generating the Java Program}
+The configured local-variable count controls additional synthetic declarations. Variables introduced to supply call arguments are separate from this count. Consequently, a configuration with no additional local variables can still contain the declarations needed to initialize execution, as in Figure~\ref{fig:background-example}.
 
-Once the tree is available, each node is translated into one method of a single Java class, named \texttt{TheClass}. The class contains the complete set of generated methods, including methods outside the region reachable from a queried source. For every edge $u \rightarrow v$, a call to $v$ is inserted into the body of $u$. The order of these calls follows the order defined by the tree.
+\subsection{Conditions and Presentation Factors}
 
-\vspace{0.2cm}
+The number of generated condition blocks per method, denoted by \texttt{nb\_if}, defines the study's two task families. When \texttt{nb\_if}$=0$, edge-defining calls are unguarded. When \texttt{nb\_if}$>0$, these calls can be placed either directly in the body or inside generated \texttt{if} blocks. Calls assigned to a guarded block receive a condition constructed to evaluate to true under their recorded argument values.
 
-Method declarations, however, are shuffled in the final class. As a consequence, their position in the source file does not provide information about the execution order.
+An otherwise unused condition block can instead contain calls to existing methods behind a false guard. Candidates exclude the caller and its direct executable callees, and must accept arguments available in the caller. These visible calls do not enter the executable graph. They can connect separate branches or point back to an ancestor, while remaining disabled under the rooted execution. Conditions use Boolean equality or inequality, or numeric comparisons against thresholds chosen to produce the intended outcome. Without a suitable tested value, literal \texttt{true} or \texttt{false} conditions are used. Generation is randomized, but the resulting program defines a fixed execution.
 
-The generator also introduces comments, local variables, parameters, loops, and different declaration orders. These elements modify the code visible to the LLM without necessarily changing reachability. Generated conditions can directly determine whether a call is executed, while loops do not contain calls used to define reachability.
+Comments, additional local variables, and loops vary the presentation. Comments contain generated Lorem Ipsum text. Loop blocks use \texttt{for} or \texttt{while}, with one to five iterations, and contain printing rather than calls to benchmark methods. They therefore add code without guarding the calls that determine reachability. Condition and loop blocks are shuffled within methods, and method declarations are shuffled within the class. Declaration order consequently does not reveal call order.
 
+The maintained generator also supports keeping edge-defining calls outside guards when condition blocks are present. The evaluated archive uses the condition-aware construction with \texttt{nb\_if}$\in\{0,1,3,5\}$; its study groups are defined by this count rather than the archived mode name.
 
-\subsection{Introducing Runtime Conditions}
+\subsection{Constructing the Oracle and Selecting Questions}
 
-\benchmark contains two task families built from the same pipeline. The number of generated \texttt{if} statements, denoted by \texttt{nb\_if}, defines the family: \texttt{nb\_if}$=0$ gives \emph{unguarded reachability}, whereas \texttt{nb\_if}$>0$ gives \emph{condition-aware reachability}. Other code factors can vary within either family.
+While emitting each Java body, the algorithm records its executable callees in their emitted order. Unguarded calls and calls protected by true guards are recorded; calls under false guards are excluded. These lists define $G_{\mathit{exec}}=(V,E_{\mathit{exec}})$. This step is needed because shuffling blocks can change exploration order even when the tree's reachability relationships remain the same.
 
-\vspace{0.2cm}
+The algorithm then explores this graph from candidate source methods. Positive questions select a target encountered in a source-first depth-first exploration. Negative questions select an existing method outside the complete source-reachable region $R_e(s)$. Both polarities therefore refer to methods declared in the class; a negative target is not an invented method name.
 
-In \emph{unguarded reachability}, calls that define graph edges are inserted directly into method bodies. There are no generated conditions to evaluate. Comments, variables, parameters, and loops may still appear, but loops do not guard the calls used to define reachability.
+The signed generation distance $d$ describes this reference exploration. For a positive query, $d$ is the target's position after the source, whose position is zero. For a negative query, $d=-(|R_e(s)|-1)$. Its magnitude is therefore not generally a shortest-path length. A positive trace may reach the target without visiting branches encountered earlier in the reference exploration, whereas a negative trace must cover the entire region.
 
-\vspace{0.2cm}
+Questions are sampled to meet the configured quota for each polarity and distance. When one class does not provide enough candidates, further classes are generated to complete these quotas. The executable graph, method inventory, questions, and generation configuration are retained with the Java code. The maintained format stores the graph directly; the evaluated archives retain executable-tree files from which the same relationships are recovered. Historical chain files do not prescribe the model's exploration order.
 
-In \emph{condition-aware reachability}, edge-defining calls may be protected by generated \texttt{if} statements. The values involved in these conditions are fixed during generation, which means that their outcome is known in advance. False guards may also contain visible decoy calls that are absent from the executable graph. The LLM must reproduce this evaluation from the Java program to determine which calls are actually executed. When a condition reads a parameter, this can require following its value across several method calls.
+\subsection{Validation and Independent Scoring}
+\label{subsec:oracle-validation}
 
-This distinction is important because a method call can be visible in the source code without belonging to the runtime execution. Condition-aware questions therefore require the model to reason not only about the control structure of the program, but also about the values that determine which branches can be taken.
+Recording calls during generation provides internal consistency, but does not by itself establish that the emitted Java executes as expected. We therefore independently compiled and instrumented the 1,232 archived classes under their explicit root launchers. The instrumentation records method entries and exits, parent invocations, and argument values. Each invocation's direct callees and descendant region are compared with the archived oracle, and each question label is checked against observed runtime reachability.
 
+All 337,200 observed invocations agreed with the executable edges and regions, and all 46,656 question labels agreed with execution. Original and instrumented programs produced identical standard output and error streams, and source hashes remained unchanged. This validation concerns the specified rooted execution; it does not establish behavior under arbitrary alternative arguments. The maintained generator records a seed, schema version, and source revision, but the historical configurations do not recover their original seed or generator revision.
 
-\subsection{Building the Executable-Graph Oracle}
-
-The oracle must describe the calls that can execute, rather than all the calls that are visible in the source code. For this reason, the generator records an executable graph $G_{\mathit{exec}}=(V,E_{\mathit{exec}})$. Its nodes are the generated methods, and its edges are the direct calls that belong to the generated execution.
-
-\vspace{0.2cm}
-
-A call protected by a false condition is therefore excluded from the graph. For example, a visible call to \texttt{B()} inside \texttt{A()} creates the edge $(A,B)$ only when the generated values allow this call to execute.
-
-The model trace is evaluated directly against this graph. Let
-
+For scoring, let $X=\langle x_0,\ldots,x_n\rangle$ be the returned trace. It must start at $s$, contain no duplicate method, and introduce each later method through an executable edge from an earlier method:
 \[
-    X=\langle x_0,\ldots,x_n\rangle
+    \forall i>0,\quad \exists j<i:\ (x_j,x_i)\in E_{\mathit{exec}}.
 \]
-
-be the sequence returned by the model. The first method must be the source, so $x_0=s$, and a method cannot appear more than once. Every later method $x_i$ must also be connected to a method that has already appeared in the trace. In other words, there must be an earlier $x_j$ such that $(x_j,x_i)\in E_{\mathit{exec}}$.
-
-\vspace{0.2cm}
-
-This definition does not impose one traversal order. Two traces can visit independent branches in a different order and still be valid, provided that each method is introduced through an executable edge. The evaluator therefore checks whether the trace is compatible with the program instead of asking the model to reproduce one sequence chosen by the generator.
-
-For a reachable question, the last method must be the target, which gives $x_n=t$. For an unreachable question, the trace must instead cover all methods reachable from the source and must not contain the target. These rules define path correctness. The Boolean answer is evaluated separately.
+A positive trace must end at $t$. A negative trace must contain exactly $R_e(s)$ and exclude $t$. These rules accept different orders of exploration across independent branches, as illustrated in Figure~\ref{fig:canonical-traversal}. The Boolean answer is compared with $y$ independently of trace correctness.
 
 \input{figures/path_scoring}
-
-The generated data also associate each question with a signed distance $d$. A positive value represents a reachable target, while a negative value represents an unreachable target. The magnitude is a generation factor, rather than the length of every accepted trace. Additional executable calls can provide shorter routes to a positive target; a negative trace must cover the source-reachable region. We therefore examine the executable graph as well as nominal distance when interpreting difficulty.
-
-\vspace{0.2cm}
-
-Each instance stores the executable graph directly, allowing all valid exploration orders to be evaluated in the same way. Primary scores are computed from this graph.
-
 
 \subsection{Prompt Structure and Execution Context}
 \label{subsec:prompt-design}
 
-The model receives the complete Java class, rather than one isolated method. The system message first defines executable reachability and asks the model to respect assignments, conditions, branches, and loops. It then specifies the response format and includes the Java code. A separate user message identifies the source and target, asking whether the former calls the latter directly or indirectly.
+The system message defines executable reachability, specifies the JSON response, and presents the complete class containing its different methods. A separate user message names the source and target and asks whether the former calls the latter directly or indirectly. The response has two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, listing explored methods. The archived wording asks for execution order, while scoring accepts any exploration satisfying the rules above.
 
-The requested JSON object contains two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, with the ordered list of methods explored from the source. For scoring, a positive trace must stop at the target, while a negative trace must contain the complete executable region. The answer and trace are evaluated separately according to the rules above; the evaluator accepts different exploration orders even though the prompt asks for execution order.
+In the archived \emph{v1} prompt, the code block contains only \texttt{TheClass}. The prompt does not explicitly identify the rooted execution context. For a source with parameters, the model must infer the context supplying its values from the class.
 
-\vspace{0.2cm}
+In \emph{v4}, the code block also contains the separate \texttt{Main} launcher, which instantiates \texttt{TheClass} and invokes its parameter-free root. The prompt additionally states that the code is a self-contained specification of a concrete execution, that every relevant value and outcome can be determined statically, and that no external inputs should be assumed. It asks the model to propagate values from the entry point and use them to evaluate conditions, branches, and loops.
 
-We consider two versions of this prompt. In \emph{v1}, the code block contains only \texttt{TheClass}, with its different methods. The question names a source method but the prompt does not provide the program entry point. For a source with parameters, the model must therefore infer the context supplying its argument values from the class.
-
-In \emph{v4}, the code block also contains a separate \texttt{Main} class. Its \texttt{main} method instantiates \texttt{TheClass} and invokes the generated root method. This root is the program entry point; it is not necessarily the source named in the reachability question. Following calls from this entry point provides the context in which the source receives its arguments. The returned trace still starts at the queried source, rather than at \texttt{main}.
-
-\vspace{0.2cm}
-
-Version v4 also makes the intended determinism explicit. It states that the supplied code is a self-contained specification of a concrete execution, that every relevant value and execution outcome can be determined statically, and that no external input or runtime behavior should be assumed. The model is asked to propagate variable and argument values from the entry point and use them to evaluate conditions, branches, and loop iterations. This clarification concerns the generated programs, rather than Java programs in general.
-
-The two versions retain the same reachability question and response format. Their difference concerns the information available for interpreting execution. Comparing them allows us to examine whether the difficulties observed with guarded calls persist when the entry context and the deterministic nature of the task are made explicit.
+Both versions retain the same questions and response fields. The returned trace starts at the queried source, rather than at \texttt{main}. The distinction between these archived prompts supports the comparison in \researchq{3}; subsequent clarifications in the maintained prompt do not change what was supplied in those runs.

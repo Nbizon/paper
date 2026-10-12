@@ -1,0 +1,35 @@
+{
+  "dataset": "/home/nbizon/Th\u00e8se/Projects/results/last_exp_7/dataset",
+  "case_count": 1232,
+  "case_statuses": {
+    "verified": 1232
+  },
+  "question_count": 46656,
+  "question_statuses": {
+    "verified": 46656
+  },
+  "source_files": 10504,
+  "source_unchanged": true,
+  "reference_dataset": "/home/nbizon/Th\u00e8se/Projects/results/last_exp/dataset",
+  "historical_nonprompt_files_identical": 8040,
+  "reference_source_unchanged": true,
+  "input_manifest_sha256": "ab9985942d8c7c85d5b0b39ce7d36b57ef2bd390ebb0aefa92d541d38f5e548c",
+  "elapsed_seconds": 146.99,
+  "jdk": "openjdk version \"25.0.4.1\" 2026-08-18\nOpenJDK Runtime Environment (build 25.0.4.1+1-1-26.04.4-Ubuntu)\nOpenJDK 64-Bit Server VM (build 25.0.4.1+1-1-26.04.4-Ubuntu, mixed mode, sharing)",
+  "helper_bootstrap_javac": "javac 17.0.20.1",
+  "validator_sha256": {
+    "run.py": "9d3a6112cf61896630ece3ca806de037fd31f6ce4b9d208a728eb560a3c9d43b",
+    "java/AuditCompiler.java": "77dfb2d039e695490c4b26a53638307c475c78ace4672c962de095bdb944210b",
+    "java/Trace.java": "9cfef34fc5d42c2409cce098ce39ee95374bf98feb061272b09fa4cabf3ed6e8"
+  },
+  "scope": "One rooted concrete execution per case; invocation-specific closure and edge checks",
+  "all_cases_verified": true,
+  "invocation_count": 337200,
+  "evidence_sha256": {
+    "cases.csv": "607c4079c85f5db5f22c459cf35666c12329e1c0cc173471408b5b1dd4da6540",
+    "questions.csv": "beb9e29df2e0439b796016a35029312359b05c672e1933d4bcf8ef50f0f86c8a",
+    "mismatches.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "input_hashes.json": "86afd213151ff5f53b93854f86e7a564d32f9cb4a88021eed3fca7a02dcfcb03",
+    "reference_input_hashes.json": "222de2606e7f9c9017f5a0a0c9e8e822f7ad55951a66cf1818776ad5991c7550"
+  }
+}
