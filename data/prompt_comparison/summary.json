@@ -1,0 +1,644 @@
+{
+  "sources": {
+    "last_exp_7/dashboard/comparaison_qwen36_35b_last_exp_vs_last_exp_7.html": "7c6d63de6f2861a3024454e49b7380cfc82065078ad9889675355ae966b23f7e",
+    "last_exp_7/dashboard/comparaison_gemma4_last_exp_vs_last_exp_7.html": "75ce919db93400e4d8ba4f3e467254b8ca4b6dbea5d5b7675108f3e05653a0ff",
+    "last_exp_6/dashboards/nouvelles_metriques_qwen38_4.html": "4fe9f86e1d9c5cb479aa18a8470ea73b73a2e4b3296165359ea9ddbfce8f0a8c"
+  },
+  "comparisons": {
+    "Qwen3.6": {
+      "v1": {
+        "all": {
+          "questions": 46656,
+          "classes": 1232,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 41049,
+            "denominator": 46656,
+            "percent": 87.98225308641975
+          },
+          "path": {
+            "numerator": 31462,
+            "denominator": 46656,
+            "percent": 67.43398491083676
+          },
+          "no_response": {
+            "numerator": 387,
+            "denominator": 46656,
+            "percent": 0.8294753086419753
+          }
+        },
+        "unguarded": {
+          "questions": 11664,
+          "classes": 308,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 11570,
+            "denominator": 11664,
+            "percent": 99.19410150891632
+          },
+          "path": {
+            "numerator": 11236,
+            "denominator": 11664,
+            "percent": 96.33058984910836
+          },
+          "no_response": {
+            "numerator": 1,
+            "denominator": 11664,
+            "percent": 0.008573388203017833
+          }
+        },
+        "condition": {
+          "questions": 34992,
+          "classes": 924,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 29479,
+            "denominator": 34992,
+            "percent": 84.2449702789209
+          },
+          "path": {
+            "numerator": 20226,
+            "denominator": 34992,
+            "percent": 57.80178326474623
+          },
+          "no_response": {
+            "numerator": 386,
+            "denominator": 34992,
+            "percent": 1.1031092821216277
+          }
+        },
+        "positive": {
+          "questions": 23328,
+          "classes": 1232,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 21948,
+            "denominator": 23328,
+            "percent": 94.0843621399177
+          },
+          "path": {
+            "numerator": 19997,
+            "denominator": 23328,
+            "percent": 85.7210219478738
+          },
+          "no_response": {
+            "numerator": 85,
+            "denominator": 23328,
+            "percent": 0.3643689986282579
+          }
+        },
+        "negative": {
+          "questions": 23328,
+          "classes": 1232,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 19101,
+            "denominator": 23328,
+            "percent": 81.8801440329218
+          },
+          "path": {
+            "numerator": 11465,
+            "denominator": 23328,
+            "percent": 49.146947873799725
+          },
+          "no_response": {
+            "numerator": 302,
+            "denominator": 23328,
+            "percent": 1.2945816186556927
+          }
+        }
+      },
+      "v4": {
+        "all": {
+          "questions": 46656,
+          "classes": 1232,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 41831,
+            "denominator": 46656,
+            "percent": 89.65835048010975
+          },
+          "path": {
+            "numerator": 32298,
+            "denominator": 46656,
+            "percent": 69.22582304526749
+          },
+          "no_response": {
+            "numerator": 95,
+            "denominator": 46656,
+            "percent": 0.20361796982167352
+          }
+        },
+        "unguarded": {
+          "questions": 11664,
+          "classes": 308,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 11602,
+            "denominator": 11664,
+            "percent": 99.46844993141289
+          },
+          "path": {
+            "numerator": 11285,
+            "denominator": 11664,
+            "percent": 96.75068587105625
+          },
+          "no_response": {
+            "numerator": 0,
+            "denominator": 11664,
+            "percent": 0.0
+          }
+        },
+        "condition": {
+          "questions": 34992,
+          "classes": 924,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 30229,
+            "denominator": 34992,
+            "percent": 86.38831732967536
+          },
+          "path": {
+            "numerator": 21013,
+            "denominator": 34992,
+            "percent": 60.05086877000457
+          },
+          "no_response": {
+            "numerator": 95,
+            "denominator": 34992,
+            "percent": 0.27149062642889804
+          }
+        },
+        "positive": {
+          "questions": 23328,
+          "classes": 1232,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 21975,
+            "denominator": 23328,
+            "percent": 94.20010288065843
+          },
+          "path": {
+            "numerator": 20355,
+            "denominator": 23328,
+            "percent": 87.25565843621399
+          },
+          "no_response": {
+            "numerator": 17,
+            "denominator": 23328,
+            "percent": 0.07287379972565158
+          }
+        },
+        "negative": {
+          "questions": 23328,
+          "classes": 1232,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 19856,
+            "denominator": 23328,
+            "percent": 85.11659807956104
+          },
+          "path": {
+            "numerator": 11943,
+            "denominator": 23328,
+            "percent": 51.19598765432099
+          },
+          "no_response": {
+            "numerator": 78,
+            "denominator": 23328,
+            "percent": 0.3343621399176955
+          }
+        }
+      }
+    },
+    "Gemma": {
+      "v1": {
+        "all": {
+          "questions": 11824,
+          "classes": 328,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 8850,
+            "denominator": 11824,
+            "percent": 74.84776725304465
+          },
+          "path": {
+            "numerator": 5098,
+            "denominator": 11824,
+            "percent": 43.11569688768606
+          },
+          "no_response": {
+            "numerator": 381,
+            "denominator": 11824,
+            "percent": 3.222259810554804
+          }
+        },
+        "unguarded": {
+          "questions": 304,
+          "classes": 9,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 301,
+            "denominator": 304,
+            "percent": 99.01315789473684
+          },
+          "path": {
+            "numerator": 270,
+            "denominator": 304,
+            "percent": 88.8157894736842
+          },
+          "no_response": {
+            "numerator": 0,
+            "denominator": 304,
+            "percent": 0.0
+          }
+        },
+        "condition": {
+          "questions": 11520,
+          "classes": 319,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 8549,
+            "denominator": 11520,
+            "percent": 74.21006944444444
+          },
+          "path": {
+            "numerator": 4828,
+            "denominator": 11520,
+            "percent": 41.90972222222222
+          },
+          "no_response": {
+            "numerator": 381,
+            "denominator": 11520,
+            "percent": 3.3072916666666665
+          }
+        },
+        "positive": {
+          "questions": 5912,
+          "classes": 328,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 5092,
+            "denominator": 5912,
+            "percent": 86.12990527740189
+          },
+          "path": {
+            "numerator": 3912,
+            "denominator": 5912,
+            "percent": 66.17050067658998
+          },
+          "no_response": {
+            "numerator": 80,
+            "denominator": 5912,
+            "percent": 1.3531799729364005
+          }
+        },
+        "negative": {
+          "questions": 5912,
+          "classes": 328,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 3758,
+            "denominator": 5912,
+            "percent": 63.56562922868741
+          },
+          "path": {
+            "numerator": 1186,
+            "denominator": 5912,
+            "percent": 20.060893098782138
+          },
+          "no_response": {
+            "numerator": 301,
+            "denominator": 5912,
+            "percent": 5.091339648173207
+          }
+        }
+      },
+      "v4": {
+        "all": {
+          "questions": 11824,
+          "classes": 328,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 9089,
+            "denominator": 11824,
+            "percent": 76.8690798376184
+          },
+          "path": {
+            "numerator": 5288,
+            "denominator": 11824,
+            "percent": 44.72259810554804
+          },
+          "no_response": {
+            "numerator": 248,
+            "denominator": 11824,
+            "percent": 2.0974289580514207
+          }
+        },
+        "unguarded": {
+          "questions": 304,
+          "classes": 9,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 303,
+            "denominator": 304,
+            "percent": 99.67105263157895
+          },
+          "path": {
+            "numerator": 278,
+            "denominator": 304,
+            "percent": 91.44736842105263
+          },
+          "no_response": {
+            "numerator": 0,
+            "denominator": 304,
+            "percent": 0.0
+          }
+        },
+        "condition": {
+          "questions": 11520,
+          "classes": 319,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 8786,
+            "denominator": 11520,
+            "percent": 76.26736111111111
+          },
+          "path": {
+            "numerator": 5010,
+            "denominator": 11520,
+            "percent": 43.489583333333336
+          },
+          "no_response": {
+            "numerator": 248,
+            "denominator": 11520,
+            "percent": 2.1527777777777777
+          }
+        },
+        "positive": {
+          "questions": 5912,
+          "classes": 328,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 5188,
+            "denominator": 5912,
+            "percent": 87.75372124492557
+          },
+          "path": {
+            "numerator": 4004,
+            "denominator": 5912,
+            "percent": 67.72665764546684
+          },
+          "no_response": {
+            "numerator": 68,
+            "denominator": 5912,
+            "percent": 1.1502029769959405
+          }
+        },
+        "negative": {
+          "questions": 5912,
+          "classes": 328,
+          "budgets": [
+            32768
+          ],
+          "answer": {
+            "numerator": 3901,
+            "denominator": 5912,
+            "percent": 65.98443843031123
+          },
+          "path": {
+            "numerator": 1284,
+            "denominator": 5912,
+            "percent": 21.718538565629228
+          },
+          "no_response": {
+            "numerator": 180,
+            "denominator": 5912,
+            "percent": 3.044654939106901
+          }
+        }
+      }
+    },
+    "Qwen3.8": {
+      "v1": {
+        "all": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 124,
+            "denominator": 216,
+            "percent": 57.407407407407405
+          },
+          "path": {
+            "numerator": 77,
+            "denominator": 216,
+            "percent": 35.648148148148145
+          },
+          "no_response": {
+            "numerator": 23,
+            "denominator": 216,
+            "percent": 10.648148148148149
+          }
+        },
+        "condition": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 124,
+            "denominator": 216,
+            "percent": 57.407407407407405
+          },
+          "path": {
+            "numerator": 77,
+            "denominator": 216,
+            "percent": 35.648148148148145
+          },
+          "no_response": {
+            "numerator": 23,
+            "denominator": 216,
+            "percent": 10.648148148148149
+          }
+        },
+        "positive": {
+          "questions": 108,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 98,
+            "denominator": 108,
+            "percent": 90.74074074074075
+          },
+          "path": {
+            "numerator": 77,
+            "denominator": 108,
+            "percent": 71.29629629629629
+          },
+          "no_response": {
+            "numerator": 3,
+            "denominator": 108,
+            "percent": 2.7777777777777777
+          }
+        },
+        "negative": {
+          "questions": 108,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 26,
+            "denominator": 108,
+            "percent": 24.074074074074073
+          },
+          "path": {
+            "numerator": 0,
+            "denominator": 108,
+            "percent": 0.0
+          },
+          "no_response": {
+            "numerator": 20,
+            "denominator": 108,
+            "percent": 18.51851851851852
+          }
+        }
+      },
+      "v4": {
+        "all": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 138,
+            "denominator": 216,
+            "percent": 63.888888888888886
+          },
+          "path": {
+            "numerator": 101,
+            "denominator": 216,
+            "percent": 46.75925925925926
+          },
+          "no_response": {
+            "numerator": 42,
+            "denominator": 216,
+            "percent": 19.444444444444443
+          }
+        },
+        "condition": {
+          "questions": 216,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 138,
+            "denominator": 216,
+            "percent": 63.888888888888886
+          },
+          "path": {
+            "numerator": 101,
+            "denominator": 216,
+            "percent": 46.75925925925926
+          },
+          "no_response": {
+            "numerator": 42,
+            "denominator": 216,
+            "percent": 19.444444444444443
+          }
+        },
+        "positive": {
+          "questions": 108,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 88,
+            "denominator": 108,
+            "percent": 81.48148148148148
+          },
+          "path": {
+            "numerator": 82,
+            "denominator": 108,
+            "percent": 75.92592592592592
+          },
+          "no_response": {
+            "numerator": 14,
+            "denominator": 108,
+            "percent": 12.962962962962964
+          }
+        },
+        "negative": {
+          "questions": 108,
+          "classes": 6,
+          "budgets": [
+            16384
+          ],
+          "answer": {
+            "numerator": 50,
+            "denominator": 108,
+            "percent": 46.2962962962963
+          },
+          "path": {
+            "numerator": 19,
+            "denominator": 108,
+            "percent": 17.59259259259259
+          },
+          "no_response": {
+            "numerator": 28,
+            "denominator": 108,
+            "percent": 25.925925925925927
+          }
+        }
+      }
+    }
+  },
+  "interpretation": "Gemma common support is provisional; Qwen3.6/Gemma budgets differ."
+}

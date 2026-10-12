@@ -1,54 +1,29 @@
 \section{Experimental Setup}
 \label{sec:experimental-setup}
 
-We evaluate both task families using one generated dataset. Questions from programs with \texttt{nb\_if}$=0$ form the unguarded group; questions with \texttt{nb\_if}$\in\{1,3,5\}$ form the condition-aware group. This partition describes the code presented to the model. The archived generator mode is retained as provenance and does not determine the groups used in this study.
-
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-The evaluation set contains 46,656 questions generated from 1,232 Java classes. Each model receives exactly the same questions. There are 11,664 unguarded and 34,992 condition-aware questions, with equally many reachable and unreachable targets in each group. Class size, comments, variables, loops, conditions, and parameters form a balanced factorial grid. Every combination contains four questions of each polarity at each of the nine distance levels. Appendix~\ref{app:experimental-config} reports the full grid.
+The main evaluation contains 46,656 questions generated from 1,232 Java classes. Gemma and Qwen receive exactly the same questions. Programs with \texttt{nb\_if}$=0$ provide 11,664 unguarded questions; those with \texttt{nb\_if}$\in\{1,3,5\}$ provide 34,992 condition-aware questions. Both groups contain equally many reachable and unreachable targets.
 
-\vspace{0.2cm}
-
-Each instance stores the Java source, question, signed generation distance, method inventory, executable graph, and generation configuration. We checked the identities of the questions shared by the two models and the agreement of dashboard scores with the corrected executable-graph evaluation in every joint factor and polarity stratum. Historical chain files do not impose a traversal order or enter the primary metrics.
+Class size varies over $\{100,250,500\}$ methods, comments over $\{0,1\}$, and variables, loops, and parameters over $\{0,1,2\}$. Together with the four guard levels, these factors form a balanced grid of 648 configurations. Each configuration contains four questions of each polarity at each distance magnitude in $\{1,4,7,10,13,16,19,22,25\}$. The stored Java code, question, executable graph, and generation metadata define each instance.
 
 \subsection{Models and Inference}
 \label{subsec:model-configurations}
 
-We evaluate two instruction-tuned mixture-of-experts checkpoints: \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}, subsequently called Gemma and Qwen~\cite{google2026gemma4,qwen2026qwen36}. Each model receives one request per question, with a requested reasoning budget of 16,384 tokens and a configured final-answer budget of 2,048 tokens.
+We evaluate \texttt{google/gemma-4-26B-A4B-it} and \texttt{Qwen/Qwen3.6-35B-A3B}, subsequently called Gemma and Qwen~\cite{google2026gemma4,qwen2026qwen36}. Inference runs on the Jean Zay supercomputer through a vLLM endpoint~\cite{kwon2023vllm}, with BF16 activations, FP8 quantization, a 262,144-token context limit, tensor parallelism of one, and the respective \texttt{gemma4} and \texttt{qwen3} reasoning parsers. Each question receives one response.
 
-\vspace{0.2cm}
+The main evaluation uses prompt v1 from Section~\ref{subsec:prompt-design}, with a requested reasoning budget of 16,384 tokens and a final-answer budget of 2,048 tokens. The v4 comparison uses the same Java classes and questions, with a reasoning budget of 32,768 tokens. Since the prompt and budget change together, this comparison measures the difference between two evaluation configurations.
 
-Inference runs on the Jean Zay supercomputer through a vLLM endpoint~\cite{kwon2023vllm}. Both models use the same general serving configuration, with their respective reasoning parsers. Appendix~\ref{app:experimental-config} reports the checkpoint names and parameters recovered from the serving logs. The experiment contains one configuration per model; it does not compare reasoning budgets or repeated inference runs.
+A complementary experiment evaluates Qwen3.8-Flash-Next with v1 and v4 at the same requested reasoning budget of 16,384 tokens. It contains 216 shared questions from six classes: 72 questions at each class size, with comments enabled, two variables, two loops, five guards, and two parameters. This subset concentrates on guarded calls and value propagation; it does not represent the full factorial grid.
 
-\subsection{Prompting and Response Parsing}
+\subsection{Response Parsing and Metrics}
 \label{subsec:parsing}
-
-The system prompt contains the complete generated Java class and asks the model to follow executable calls. The requested JSON object has a Boolean \texttt{final\_answer} and a \texttt{trace} listing methods in exploration order.
-
-\vspace{0.2cm}
-
-The parser retains the last valid JSON object. It accepts Boolean values and their string representations, and traces supplied as lists or serialized lists. If no final answer can be recovered, the response is marked \texttt{NO\_RESPONSE}. Method names are not corrected, reordered, or completed. All 93,312 requests have an executed record; parsing failures remain in the primary-score denominators.
-
-\subsection{Metrics and Analysis}
 \label{subsec:scoring}
 \label{subsec:statistical-analysis}
 
-We score final-answer correctness and path correctness independently, as defined in Table~\ref{tab:metrics}. The path rules accept different exploration orders: each new method must have an executable predecessor already present in the trace. Positive traces end at the target; negative traces cover the entire source-reachable region and exclude the target.
+The parser retains the last valid JSON object, accepting Boolean values or their string representations and traces supplied as lists or serialized lists. A response without a recoverable answer is marked \texttt{NO\_RESPONSE}. Method names are not repaired, reordered, or completed. Final-answer and path correctness are scored independently, using the rules in Section~\ref{sec:benchmark-design}. Non-responses remain in the primary-score denominators.
 
-\input{tables/metrics}
+We also examine omissions from the executable region and inclusions of existing methods outside it. A false-guard error is attributed only when a guard uniquely explains a method introduction without executable support. For value propagation, we count the method boundaries between an exposed guard and the declaration supplying its tested value. A guard is exposed when its containing method appears in the returned trace. Literal conditions, unresolved origins, and ambiguous attributions are excluded from the corresponding origin-distance comparisons. Absence of an attributed error does not establish correct internal evaluation.
 
-We also compute diagnostics from the trace and the Java code. A call behind a false guard is attributed to a guard error only when that guard uniquely explains an introduction without executable support. Ambiguous cases remain undefined. Guard exposure counts the call-controlling guards in methods listed by the model; it is a proxy for opportunities to evaluate conditions, rather than a record of conditions actually evaluated internally.
-
-\vspace{0.2cm}
-
-To study value propagation, we measure how many method boundaries separate a condition from the local declaration supplying its tested value. D1 averages this distance over exposed guards with a resolved origin. D3 and D5 separate guards with an attributed error from exposed guards without one. D5 therefore denotes the absence of a detected error, rather than proof of a correct internal evaluation. We also report D1 on the same attributable population as D3/D5. D9 averages the corresponding difficulty along a reference depth-first exploration, stopping at the target for positive queries and exhausting the reachable region for negative queries. Appendix~\ref{app:diagnostic-definitions} gives the definitions, units, and eligibility rules.
-
-\vspace{0.2cm}
-
-The analysis is descriptive. Factor contrasts average the remaining factors over the balanced grid, and are expressed in percentage points. We separate polarities when an average could conceal opposing changes. Primary scores use all questions, while each diagnostic retains its own eligible population and denominator. Questions sharing a Java class are not independent replications. We report neither significance tests nor causal effects; changes in generated structure also change prompt length and the calls exposed by the returned trace.
-
-\subsection{Reproducibility Artifacts}
-\label{subsec:artifact-support}
-
-The supplied experiment archive contains programs, oracle metadata, prompts, raw responses, serving logs, and scored files. We use the corrected executable-graph scores and exclude the earlier Gemma output directory. The accompanying aggregation script reads the diagnostic dashboard, checks both primary metrics against the scored CSV files, and exports numerators, denominators, eligible counts, exclusions, and source hashes. These exports also generate the result tables and appendix figures.
+The analysis is descriptive. Factor contrasts average the other factors over the balanced grid and are expressed in percentage points. Prompt comparisons use common questions within each model, with polarity-specific scores where relevant. Questions sharing a Java class are dependent observations; we do not report significance tests or causal effects. The archives retain prompts, responses, logs, scored files, and diagnostic populations. Aggregation scripts check the primary scores and export their counts, denominators, and source hashes.

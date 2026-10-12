@@ -1,8 +1,8 @@
 # ReachabilityBench paper
 
 LaTeX sources for *ReachabilityBench: Diagnosing LLMs on Controlled Java
-Method-Reachability Tasks*. The current Results section analyzes the supplied
-Gemma-4-26B-A4B-it and Qwen3.6-35B-A3B experiment:
+Method-Reachability Tasks*. The main structural and trace analyses use the supplied
+Gemma-4-26B-A4B-it and Qwen3.6-35B-A3B `last_exp` experiment:
 
 - 46,656 shared questions per model, from 1,232 Java classes;
 - unguarded: `nb_if = 0`, 11,664 questions per model;
@@ -23,6 +23,8 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 The wrapper uses `IEEEtran`, BibTeX, TikZ and PGFPlots. Figures are native vectors;
 no Python plotting dependency or external image is needed to build.
 The inclusion switches in `main.tex` control which manuscript sections appear.
+The ten-page version excludes the extensive experimental appendix, whose
+sources and diagnostic exports remain available in this repository.
 
 The shared figure style is defined in `figures/styles.tex`. Diagrams use aligned
 neutral boxes and uniform arrow weights; query examples are separate from call
@@ -76,3 +78,30 @@ The derived index is regenerated and checked with:
 python3 scripts/check_knowledge.py --write-index
 python3 scripts/check_knowledge.py
 ```
+
+## Prompt-context comparison (2026-10-12)
+
+RQ3 compares v1 (TheClass only) with v4 (TheClass, Main, and explicit deterministic
+execution). Prompt structure is described in Design. The main Qwen3.6 comparison
+covers 46,656 common questions; Gemma's provisional figures cover 11,824 common
+questions, rather than the full grid. These comparisons also change the requested
+reasoning budget from 16,384 to 32,768. The complementary Qwen3.8-Flash-Next
+comparison uses 216 difficult questions at a fixed requested budget of 16,384.
+
+Reproduce the comparison counts, source hashes, and manuscript table:
+
+```bash
+python3 scripts/aggregate_prompt_comparison.py \
+  --results-root /home/nbizon/Thèse/Projects/results
+python3 scripts/aggregate_prompt_comparison.py \
+  --results-root /home/nbizon/Thèse/Projects/results --check
+```
+
+Gemma prose and the table are ready for final figures; replace the provisional
+comparison support when the complete results arrive. The aggregate script accepts
+up to 46,656 Gemma questions and regenerates its denominator and scores. Then
+update the corresponding prose and remove the provisional annotation. Do not use
+subset scores as full-grid estimates. See
+[validation](data/prompt_comparison/VALIDATION.md),
+[revision specification](docs/product-specs/SPEC-20261012-prompt-comparison.md), and
+[change record](docs/changes/CHG-20261012-prompt-comparison.md).

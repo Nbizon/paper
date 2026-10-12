@@ -1,12 +1,8 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-This paper presents \benchmark, a controlled benchmark for studying method reachability in generated Java programs. Each question comes with a Boolean label and an executable-graph oracle, allowing the final decision and its supporting trace to be evaluated independently. Unguarded questions contain no generated conditions; condition-aware questions require the model to determine which visible calls can execute from the values used in their guards.
+This paper presents \benchmark, a benchmark for method reachability in Java classes containing multiple methods, together with its controlled construction algorithm. Each question has a Boolean label and an executable-graph oracle, allowing decisions and supporting traces to be evaluated independently.
 
-\vspace{0.2cm}
+The evaluation shows that correct decisions often lack valid executable evidence. Conditions, passed values, and the exhaustive exploration required by negative questions produce the strongest difficulties. Trace diagnostics locate errors around disabled calls, omitted methods, and longer value dependencies.
 
-The evaluation of Gemma~4 and Qwen~3.6 on 46,656 shared questions shows that correct decisions often lack valid executable evidence. Qwen obtains the strongest overall scores, but its advantage narrows when conditions depend on passed values. Both models' attributed guard errors are concentrated on longer value-origin dependencies. Negative traces also frequently omit executable methods or include methods outside the executable region. These difficulties are obscured by answer accuracy alone: larger classes can improve negative decisions while the corresponding traces become less complete and less accurate.
-
-\vspace{0.2cm}
-
-The main contribution is to evaluate decisions together with checkable evidence and locate failures around executability, exhaustive coverage, and value flow. These output-based patterns motivate further tests rather than establish causal explanations. Independent compilation and instrumented execution checks of the oracle, followed by a paired sensitivity study with explicit source invocations, are needed to strengthen their interpretation. Extending the evaluation to more models and real programs would then test how broadly the observed difficulties transfer.
+Providing the \texttt{main} entry point and explicitly describing the deterministic execution improves the observed scores, but the difficulties with guarded value propagation remain. The main comparison also increases the reasoning budget. At a fixed budget, Qwen3.8-Flash-Next improves its trace scores on the difficult subset while producing more non-responses. These findings show why reachability should be evaluated through both decisions and executable evidence, with the prompt context made explicit. Further evaluation on more models and real programs would test how broadly these difficulties transfer.

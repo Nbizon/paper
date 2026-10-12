@@ -1,38 +1,18 @@
 \section{Related Work}
 \label{sec:related-work}
 
-Table~\ref{tab:benchmark-positioning} positions \benchmark against evaluations of code generation, runtime behavior, and program analysis.
+\subsection{Task Completion and Program Understanding}
 
-\subsection{From Task Completion to Program Understanding}
+HumanEval, MBPP, and APPS evaluate generated code through tests~\cite{chen2021codex,austin2021program,hendrycks2021apps}. Their scores indicate whether an implementation satisfies the required behavior, but do not directly identify which program relationships the model understood. CodeXGLUE broadens evaluation to understanding and generation~\cite{lu2021codexglue}, while LiveCodeBench includes execution and test-output prediction alongside generation~\cite{jain2025livecodebench}. BigCodeBench emphasizes the composition of library calls under complex instructions~\cite{zhuo2025bigcodebench}.
 
-HumanEval, MBPP, and APPS evaluate generated code through tests~\cite{chen2021codex,austin2021program,hendrycks2021apps}. Their central observation is whether the proposed implementation satisfies the required behavior. This provides a measure of functional correctness, but a test outcome does not directly reveal which relationships in the program the model understood. \benchmark studies one such relationship explicitly: whether executable calls connect a selected source to a selected target.
+Repository-level evaluations cover more complete development tasks. SWE-bench asks a system to modify a repository to resolve an issue~\cite{jimenez2024swebench}, and Defects4J provides real Java defects and tests for studies of repair~\cite{just2014defects4j}. \benchmark complements these settings by isolating method reachability and checking the evidence returned for each decision. It does not establish the ability to complete repository-level tasks.
 
-\vspace{0.2cm}
+\subsection{Runtime Behavior and Dependencies}
 
-Later benchmarks broaden the evaluated tasks. CodeXGLUE combines code-understanding and code-generation problems~\cite{lu2021codexglue}. LiveCodeBench uses time-segmented programming problems and includes execution, self-repair, and test-output prediction alongside generation~\cite{jain2025livecodebench}. BigCodeBench emphasizes the composition of diverse library calls under complex instructions~\cite{zhuo2025bigcodebench}. These benchmarks show that code capability has several dimensions. Our study adds a controlled view of method reachability, where the structural factors and the executable evidence can be examined together.
+CRUXEval evaluates input and output prediction for short Python functions~\cite{gu2024cruxeval}. REval studies execution paths, coverage, states, and outputs, including consistency between predictions~\cite{chen2025reval}. These benchmarks motivate the evaluation of checkable runtime properties. \benchmark focuses on executable relationships between methods and accepts different exploration orders supported by its graph oracle.
 
-\vspace{0.2cm}
-
-Repository-level evaluations extend this scope further. SWE-bench asks a system to modify a repository to resolve an issue~\cite{jimenez2024swebench}, while Defects4J provides real Java defects and associated tests for studies of testing and repair~\cite{just2014defects4j}. These settings connect evaluation to development tasks that involve understanding, localization, editing, and feedback. A reachability experiment cannot establish the ability to complete such tasks. It can, however, locate a narrower difficulty that an aggregate task-completion score may leave unresolved, as illustrated by the guard and parameter contrasts in our results.
-
-\input{tables/benchmark_positioning}
-
-\subsection{Reasoning About Runtime Behavior and Dependencies}
-
-CRUXEval evaluates input and output prediction for short Python functions with execution-derived input/output pairs~\cite{gu2024cruxeval}. It provides an important precedent for evaluating a precise property of program behavior on generated examples. REval broadens runtime reasoning to execution paths, coverage, program states, and outputs, and examines consistency between those predictions~\cite{chen2025reval}. \benchmark follows this interest in checkable behavior, focusing on relationships between methods. Its trace score accepts different executable exploration orders, rather than requiring the reproduction of a reference traversal.
-
-\vspace{0.2cm}
-
-CoRE evaluates data dependencies, control dependencies, and information flow through human-verified static-analysis tasks~\cite{xie2025core}. This is closely related to the value propagation needed to resolve guarded calls. Our origin-distance diagnostics examine how far a condition's tested value must be traced across method boundaries, while retaining the distinction between attributed errors and other exposed guards. They describe a difficulty within reachability rather than a general score for dependency analysis.
-
-\vspace{0.2cm}
-
-TraceEval studies the recovery of runtime call structure in repository-derived programs, with positive edges witnessed by validation execution~\cite{li2026traceeval}. RE2-Bench relates reasoning difficulty to the complexity of programs drawn from existing benchmarks and Python repositories~\cite{liu2025re2bench}. These approaches help connect semantic evaluation to real code. Our complementary choice is to generate the structure and values before constructing the program, allowing the number of conditions, parameters, methods, and nominal distance to be varied in a balanced grid. This control facilitates diagnosis, while the resulting programs cover a narrower range of software behavior.
+CoRE evaluates data dependencies, control dependencies, and information flow through human-verified static-analysis tasks~\cite{xie2025core}. This relates to the value propagation required by guarded calls in our programs. TraceEval studies runtime call structure in repository-derived programs~\cite{li2026traceeval}, while RE2-Bench relates reasoning difficulty to program complexity~\cite{liu2025re2bench}. Our complementary choice is to generate structure and values before constructing the class, so that guards, parameters, class size, and distance can be varied in a balanced grid. This control facilitates diagnosis while covering a narrower range of behavior.
 
 \subsection{Reachability and Call-Graph Analysis}
 
-Call-graph construction has a long history in program analysis. Grove and Chambers organize algorithms through the information they use to determine possible calls~\cite{grove2001framework}, and Tip and Palsberg study propagation-based construction algorithms~\cite{tip2000scalable}. These works concern the analysis of program relationships, rather than the evaluation of LLM responses. \benchmark uses the resulting graph perspective to define a task with automatically checkable evidence.
-
-\vspace{0.2cm}
-
-\benchmark combines controlled generation with separate decision and trace scores. Unlike task-completion benchmarks, it exposes errors on calls that exist but cannot execute and omissions from the source-reachable region. Its flexible exploration order also differs from reproducing a reference runtime sequence. This narrower task complements broader evaluations; it does not establish that reachability predicts success on repository-level work.
+Call-graph analysis studies the information needed to determine possible calls~\cite{grove2001framework,tip2000scalable}. \benchmark uses this graph perspective to evaluate LLM responses, with separate decision and trace scores. Its construction algorithm provides controlled instances, while the evaluation exposes unsupported calls and omissions from the executable region. The prompt comparison additionally examines how these observations change when the entry point and deterministic execution are made explicit.

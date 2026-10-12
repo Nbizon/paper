@@ -13,7 +13,7 @@ The generated programs vary in structure and in the values that determine which 
 Through this approach, \benchmark aims to provide a more controlled and diagnostic evaluation of LLMs on program-understanding tasks. It makes it possible to study model behavior according to specific factors rather than limiting the evaluation to whether the final answer is correct.
 This paper makes three contributions:
 \begin{itemize}[leftmargin=*]
-    \item a configurable benchmark that generates Java reachability problems together with executable call graphs and oracle labels;
+    \item a controlled benchmark for Java method reachability, together with a configurable construction algorithm that produces instances, executable call graphs, and oracle labels;
     \item an empirical study of Gemma~4 and Qwen~3.6 on 46,656 shared questions, separating reachability decisions from executable evidence;
-    \item a trace-based analysis connecting errors to conditional calls, value propagation, and the position of the target in the generated graph.
+    \item a trace-based analysis of conditional calls and value propagation, complemented by a comparison of prompts with implicit and explicit execution contexts.
 \end{itemize}

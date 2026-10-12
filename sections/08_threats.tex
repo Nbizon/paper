@@ -1,48 +1,18 @@
 \section{Threats to Validity}
 \label{sec:threats}
 
-The study provides measurements of executable reachability on a controlled set of programs. The following limitations affect what these measurements can establish about program understanding and the explanations suggested by the traces.
-
 \subsection{Construct Validity}
 
-Reachability requires the model to connect method calls and, in guarded programs, the values that determine whether those calls can execute. This captures a specific part of program understanding. It does not measure whether a model can explain the purpose of a program, identify a defect, or make a correct modification. Likewise, the generated trace is an observable response rather than a record of internal reasoning. A correct decision with an incorrect trace can arise from several processes, including a correct decision followed by an inaccurate explanation. Our evaluation cannot distinguish these processes.
-
-\vspace{0.2cm}
-
-Path correctness also imposes different requirements on the two polarities. A positive trace can stop at the target, whereas a negative trace must cover the complete executable region. A lower negative path score may therefore reflect the greater coverage requirement as well as difficulty with conditions. We separate polarities and report omissions and unsupported inclusions to make these requirements visible, but the scores should not be interpreted as equally demanding tests of one underlying capability.
-
-\vspace{0.2cm}
-
-The guard diagnostics cover only detectable errors. The false-guard diagnostic attributes an unsupported method introduction to a false guard when the explanation is unique; it does not detect every mistake about conditions, such as skipping a true branch. Exposed guards are counted in methods listed by the model, rather than observed during internal evaluation. The absence of an attributed error does not demonstrate that a condition was evaluated correctly. Ambiguous attributions, literal conditions, and unresolved value origins are excluded where required. These exclusions can select different kinds of traces for each model. Comparing guards on a common attribution population does not remove this selection; reference-exploration averages also use different weights (Appendix~\ref{app:diagnostic-definitions}).
+Method reachability measures a specific part of program understanding. A returned trace is generated evidence rather than a record of internal reasoning. Positive traces can stop at the target, whereas negative traces must cover the complete executable region; their path scores therefore impose different demands. Guard diagnostics detect only uniquely attributable unsupported inclusions. Their absence does not prove correct condition evaluation, and origin-distance comparisons exclude literal conditions, unresolved origins, and ambiguous attributions.
 
 \subsection{Internal Validity}
 
-The results depend on the generated programs, executable metadata, prompts, serving configuration, parsing, and scoring. Both models receive the same questions, and the primary dashboard outcomes agree with the corrected executable-graph CSVs in every joint factor and polarity stratum. These checks reduce the risk of a comparison or aggregation error. The available evidence does not include an independent per-class compilation report or an instrumented execution comparison with the oracle. A defect shared by program construction and executable metadata could therefore affect both models' scores; the validation procedure described in the benchmark design is not independently demonstrated by the aggregation checks.
+Primary scores are checked against executable-graph evaluations, and prompt comparisons retain common questions. These checks do not independently establish agreement between the oracle and instrumented Java execution. Program construction and oracle metadata may share defects. Structural factors also change text length and graph properties, so marginal contrasts do not isolate semantic causes.
 
-\vspace{0.2cm}
+Version v4 supplies the entry point and clarifies determinism together; their individual contributions cannot be separated. The Gemma and Qwen3.6 comparison additionally changes the reasoning budget. Qwen3.8 holds the requested budget fixed, but evaluates only six difficult classes. Gemma's provisional comparison covers an unbalanced subset and must be updated before drawing full-corpus conclusions. Decoding, quantization, and parsing can affect all scores; the serving logs do not pin checkpoint or tokenizer revisions.
 
-The factorial grid balances the other configured factors in marginal comparisons. However, increasing conditions, parameters, or class size also changes text length and graph properties. Unguarded and condition-aware questions are different strata of this grid, rather than paired versions of identical programs. The observed contrasts therefore do not isolate a causal effect of a single semantic property. Similarly, guard-error locations and final answers are measured from the same response. Their association can suggest an explanation for false positives, but does not show that the returned trace caused the decision.
+\subsection{External and Conclusion Validity}
 
-\vspace{0.2cm}
+The generated programs contain one class with controlled method calls and value flow. They do not cover dynamic dispatch, recursion, exceptions, external libraries, or dependencies across classes. Generation also cannot establish absence of training overlap without access to training data. The findings therefore characterize these tasks and configurations, rather than general repository-level capability.
 
-The historical prompt leaves the invocation context of a parameterized source method ambiguous. The intended task requires an entry environment specifying its argument values and relevant initial state, or a root invocation from which those values are derived. Different interpretations can change which guards execute. Without a paired comparison against an explicit invocation prompt, part of the parameter-associated degradation may reflect task interpretation. A clarified prompt cannot retrospectively establish what the models understood in the archived runs.
-
-\vspace{0.2cm}
-
-Each checkpoint is evaluated under one inference configuration. Prompt formulation, quantization, decoding, and response formatting may influence the outcomes. Parsing failures remain in the primary-score denominators, and method names are not repaired, so reported correctness includes the ability to supply the requested evidence. The serving logs leave checkpoint and tokenizer revisions unset. Source hashes and archived outputs support reconstruction of the reported aggregates, while an exact rerun may still depend on deployment details that are not pinned.
-
-\subsection{External Validity}
-
-The generated programs are single Java classes with controlled call structures and value flow. They do not cover many properties of real software, including dynamic dispatch, recursion, exceptions, external libraries, and dependencies across classes. Shuffling declarations varies their presentation, but does not reproduce the architectural and naming diversity of repositories. The findings therefore characterize the generated reachability tasks; transfer to debugging, repair, or code review remains to be evaluated.
-
-\vspace{0.2cm}
-
-Generating programs also changes the relationship to training data. The evaluation does not rely on a fixed collection of published programming exercises, but its Java idioms and generation patterns may still be familiar to the models. Without access to their training corpora, generation alone cannot establish the absence of training overlap. The experiment covers two instruction-tuned checkpoints, so it also cannot establish how broadly the observed weaknesses apply to other model families or training methods.
-
-\subsection{Conclusion Validity}
-
-The percentages describe the evaluated corpus, with one response per question and one requested reasoning budget. Questions sharing a Java class are dependent observations, and there are no repeated inference runs from which to estimate response variability. We therefore report descriptive contrasts without significance tests or confidence intervals for a broader population. The large question count should not be treated as an equally large number of independent program replications.
-
-\vspace{0.2cm}
-
-Diagnostic comparisons must also retain their own denominators. Origin-distance differences between guards with and without attributed errors do not estimate a failure probability per additional method boundary. Output-conditioned associations do not establish a mechanism of internal computation. Finally, the external benchmark scores use different prompts, budgets, scaffolds, and task variants. Agreement in model ordering is descriptive for these two checkpoints and cannot establish correlation or predict repository-level performance from reachability scores.
+Each question receives one response, and questions sharing a class are dependent observations. We report descriptive contrasts without significance tests or confidence intervals for a broader population. Output-conditioned guard associations do not establish causal mechanisms, and the fixed-budget prompt subset does not represent the full factorial grid.

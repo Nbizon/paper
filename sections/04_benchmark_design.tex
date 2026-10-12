@@ -2,11 +2,13 @@
 \section{\benchmark Design}
 \label{sec:benchmark-design}
 
+\benchmark defines a set of method-reachability questions, their executable-graph oracles, and the rules used to evaluate model responses. Its construction algorithm generates the Java classes and metadata used to instantiate these tasks. The benchmark and the algorithm therefore have different roles: the former defines what is evaluated, while the latter provides controlled instances for this evaluation.
+
 \input{figures/pipeline}
 
 \subsection{From a Call Graph to a Reachability Question}
 
-\benchmark constructs each instance from an ordered call graph. Each node is converted into a Java method and each edge into a method call. A source method $s$ and a target method $t$ define the corresponding question: whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
+The construction algorithm builds each instance from an ordered call graph. Each node is converted into a Java method and each edge into a method call. A source method $s$ and a target method $t$ define the corresponding question: whether an execution starting from $s$ can reach $t$ through direct or indirect calls.
 
 \vspace{0.2cm}
 
@@ -16,18 +18,7 @@ We represent one instance as
     (P, s, t, f, y, G_{\mathit{exec}}, m),
 \]
 
-where $P$ is the Java program and $f$ identifies the task family. The label $y$ is \true{} when $t$ is executable from $s$, and \false{} otherwise. The oracle is the executable call graph $G_{\mathit{exec}}$; $m$ stores the generation configuration and graph properties.
-
-\vspace{0.2cm}
-
-The complete Java class, together with the source and target methods, is then provided to the LLM. Its answer must follow a JSON format containing two fields:
-
-\begin{itemize}[leftmargin=*]
-    \item \texttt{final\_answer}, containing the Boolean answer to the reachability question;
-    \item \texttt{trace}, containing the ordered sequence of methods followed from the source.
-\end{itemize}
-
-The two outputs are evaluated separately. The final answer indicates whether the reachability decision is correct, while the trace gives additional information about the sequence of calls returned by the model.
+where $P$ is a Java class containing several methods and $f$ identifies the task family. The label $y$ is \true{} when $t$ is executable from $s$, and \false{} otherwise. The oracle is the executable call graph $G_{\mathit{exec}}$; $m$ stores the generation configuration and graph properties.
 
 \vspace{0.2cm}
 
@@ -36,7 +27,7 @@ Figure~\ref{fig:pipeline} summarizes the complete pipeline. The program, the que
 
 \subsection{Generating the Call Graph}
 
-\benchmark uses ordered acyclic trees that support controlled reachability, direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
+The construction algorithm uses ordered acyclic trees that support controlled reachability, direct and indirect calls, multiple branches, and target methods that exist in the class but are not reachable from the selected source.
 
 The order of the children is also preserved, since it determines the order in which method calls are inserted into the Java program.
 
@@ -67,7 +58,7 @@ The generation probability is $p=0.65$, producing both positive and negative que
 
 \subsection{Generating the Java Program}
 
-Once the tree is available, each node is translated into one Java method. For every edge $u \rightarrow v$, a call to $v$ is inserted into the body of $u$. The order of these calls follows the order defined by the tree.
+Once the tree is available, each node is translated into one method of a single Java class, named \texttt{TheClass}. The class contains the complete set of generated methods, including methods outside the region reachable from a queried source. For every edge $u \rightarrow v$, a call to $v$ is inserted into the body of $u$. The order of these calls follows the order defined by the tree.
 
 \vspace{0.2cm}
 
@@ -122,12 +113,21 @@ The generated data also associate each question with a signed distance $d$. A po
 Each instance stores the executable graph directly, allowing all valid exploration orders to be evaluated in the same way. Primary scores are computed from this graph.
 
 
-\subsection{Design Summary}
+\subsection{Prompt Structure and Execution Context}
+\label{subsec:prompt-design}
 
-Through this process, \benchmark turns a controlled call graph into a Java program, a reachability question, and an executable-graph oracle. The two task families follow the same construction. Separating the zero-condition instances from instances with guards makes it possible to study the additional demands of runtime conditions.
+The model receives the complete Java class, rather than one isolated method. The system message first defines executable reachability and asks the model to respect assignments, conditions, branches, and loops. It then specifies the response format and includes the Java code. A separate user message identifies the source and target, asking whether the former calls the latter directly or indirectly.
+
+The requested JSON object contains two fields: \texttt{final\_answer}, with the value \texttt{"True"} or \texttt{"False"}, and \texttt{trace}, with the ordered list of methods explored from the source. For scoring, a positive trace must stop at the target, while a negative trace must contain the complete executable region. The answer and trace are evaluated separately according to the rules above; the evaluator accepts different exploration orders even though the prompt asks for execution order.
 
 \vspace{0.2cm}
 
-Each generated class is compiled before it is retained. The validator then checks the executable calls, recomputes reachability, and verifies the generated conditions. The stored graph and label therefore correspond to the Java code presented to the LLM, rather than only to an internal structure used during generation.
+We consider two versions of this prompt. In \emph{v1}, the code block contains only \texttt{TheClass}, with its different methods. The question names a source method but the prompt does not provide the program entry point. For a source with parameters, the model must therefore infer the context supplying its argument values from the class.
 
-The benchmark provides controlled instances whose structural properties can be varied while keeping the expected result known. The next section describes how these instances are selected and used in the experiments.
+In \emph{v4}, the code block also contains a separate \texttt{Main} class. Its \texttt{main} method instantiates \texttt{TheClass} and invokes the generated root method. This root is the program entry point; it is not necessarily the source named in the reachability question. Following calls from this entry point provides the context in which the source receives its arguments. The returned trace still starts at the queried source, rather than at \texttt{main}.
+
+\vspace{0.2cm}
+
+Version v4 also makes the intended determinism explicit. It states that the supplied code is a self-contained specification of a concrete execution, that every relevant value and execution outcome can be determined statically, and that no external input or runtime behavior should be assumed. The model is asked to propagate variable and argument values from the entry point and use them to evaluate conditions, branches, and loop iterations. This clarification concerns the generated programs, rather than Java programs in general.
+
+The two versions retain the same reachability question and response format. Their difference concerns the information available for interpreting execution. Comparing them allows us to examine whether the difficulties observed with guarded calls persist when the entry context and the deterministic nature of the task are made explicit.
