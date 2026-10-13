@@ -56,3 +56,30 @@ unsupported claim about absent functionality in another benchmark is introduced.
 The software-engineering implications are prospective evaluation criteria for
 program understanding, debugging and change-impact inspection, not measured
 developer benefits or a demonstration on repository-scale programs.
+
+## Contribution-positioning update — 2026-10-13
+
+The introduction and Related Work now distinguish the task from benchmarks
+that already study static function reachability or runtime call structures.
+These sources support that distinction:
+
+- [SemBench, publisher article](https://www.nature.com/articles/s44488-026-00014-y):
+  includes function reachability as a static call-graph property over real C
+  programs. The paper therefore does not claim that function reachability is
+  itself new; it specifies reachability under values supplied by a generated
+  execution context.
+- [Gao et al.'s CoRE, ACL Anthology](https://aclanthology.org/2026.findings-acl.460/):
+  evaluates implementation invariance and process transparency through
+  intermediate execution-state probes. This is distinct from checking a
+  method-exploration trace against executable call edges.
+- [CABRA, arXiv](https://arxiv.org/abs/2610.10610):
+  uses generated call-graph transformations to control code-understanding task
+  size and evaluates code-editing tasks with coding agents. This rules out
+  treating synthetic call-graph generation alone as the contribution.
+
+The revised positioning narrows the contribution to source--target method
+reachability under concrete values, with separate answer and exploration-trace
+scoring on the final execution-validated dataset. Positive traces must reach
+the target; negative traces must cover the full source-reachable region, and
+any valid exploration order is accepted. The table compares task and oracle
+scope rather than benchmark quality.

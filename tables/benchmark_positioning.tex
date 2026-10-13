@@ -1,17 +1,17 @@
 \begin{table}[t]
 \centering
-\caption{Task scope of the closest benchmarks. The rows describe evaluation choices, not relative benchmark quality.}
+\caption{Task scope of benchmarks related to reachability and execution reasoning. The rows describe evaluation choices, not relative benchmark quality.}
 \label{tab:benchmark-positioning}
 \scriptsize
 \setlength{\tabcolsep}{3pt}
-\begin{tabularx}{\columnwidth}{@{}p{0.21\columnwidth}X@{}}
+\begin{tabularx}{\columnwidth}{@{}p{0.23\columnwidth}p{0.37\columnwidth}X@{}}
 \toprule
-Benchmark & Task and evidence \\
+Benchmark & Question & Program and oracle \\
 \midrule
-REval~\cite{chen2025reval} & Runtime behavior and consistency of intermediate predictions on adapted code benchmarks. \\
-CoRE~\cite{xie2025core} & Data and control dependencies and information flow; human-verified static-analysis tasks. \\
-TraceEval~\cite{li2026traceeval} & Runtime call structure in repository-derived programs; execution-verified call edges. \\
-\benchmark & Generated method reachability with controlled factors; execution-validated labels and graphs; separate decision and exploration-trace scores. \\
+SemBench~\cite{xu2026semb} & Is a function reachable in a static call graph? & Real-world C programs; static semantic labels. \\
+CoRE (Xie et al.)~\cite{xie2025core} & Are statements related by data or control dependencies? & Human-verified static-analysis tasks. \\
+TraceEval~\cite{li2026traceeval} & What is the program's runtime call structure? & Repository-derived programs; call edges verified by execution. \\
+\benchmark & Does a target execute from a source under the values of a generated execution? & Generated Java classes; execution-validated labels and graphs; separate answer and trace scores. \\
 \bottomrule
 \end{tabularx}
 \end{table}

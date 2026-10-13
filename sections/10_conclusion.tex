@@ -1,7 +1,7 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this paper, we present \benchmark, the final generated dataset of Java classes and executable method-reachability questions, together with the configurable algorithm used to construct it. The generation controls different factors, while the labels and graphs are verified by execution. This allows us to evaluate the final answer and the model's exploration trace separately.
+In this paper, we present \benchmark, the final generated dataset for evaluating whether a target method executes from a selected source under the concrete values supplied by a generated execution. A separate configurable algorithm controls the generated classes and factors, and execution validates the labels and graphs on the complete dataset. Unlike static function reachability, these questions account for guards evaluated with the generated values; unlike runtime call-structure recovery, they evaluate one source--target relation and its exploration trace.
 
 The results show that a correct answer can be accompanied by an incomplete exploration or by calls that cannot execute. The main difficulties involve guarded calls, passed values, and the complete exploration required by negative questions. Comparing CO and EE also shows that models can behave differently on the same dataset when the execution context is made explicit. The gains remain modest for Gemma and Qwen3.6. Qwen3.8-Flash-Next improves its traces more on the difficult subset, but also produces more non-responses.
 
