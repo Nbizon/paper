@@ -8,10 +8,10 @@
 \toprule
 Benchmark & Question & Program and oracle \\
 \midrule
-SemBench~\cite{xu2026semb} & Is a function reachable in a static call graph? & Real-world C programs; static semantic labels. \\
+SemBench~\cite{xu2026semb} & Is a function reachable in a static call graph? & Real-world C programs with static semantic labels. \\
 CoRE (Xie et al.)~\cite{xie2025core} & Are statements related by data or control dependencies? & Human-verified static-analysis tasks. \\
-TraceEval~\cite{li2026traceeval} & What is the program's runtime call structure? & Repository-derived programs; call edges verified by execution. \\
-\benchmark & Does a target execute from a source under the values of a generated execution? & Generated Java classes; execution-validated labels and graphs; separate answer and trace scores. \\
+TraceEval~\cite{li2026traceeval} & What is the program's runtime call structure? & Repository-derived programs with call edges verified by execution. \\
+\benchmark & Does a target execute from a source under the values of a generated execution? & Parameter-controlled Java classes with execution-validated labels and graphs. Answers and traces are scored separately. \\
 \bottomrule
 \end{tabularx}
 \end{table}

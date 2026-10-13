@@ -17,7 +17,7 @@ Section~\ref{sec:benchmark-design} explains how this execution context is repres
 
 \subsection{Decisions and Executable Evidence}
 
-A Boolean answer indicates whether the target is reachable, but does not describe the calls supporting that decision. Establishing reachability requires finding an executable route to the target, while establishing unreachability requires ruling out all such routes. The evidence needed to support the answer therefore depends on the question's polarity.
+A Boolean answer indicates whether the target is reachable. It does not show which calls support that decision or whether those calls execute in the given context. A trace lists the methods explored by the model. Checking it against the executable graph shows whether the model follows calls that can execute. Establishing reachability requires finding an executable route to the target, while establishing unreachability requires ruling out all such routes. The evidence needed therefore depends on the question's polarity.
 
 We use the term \emph{trace} to refer to the ordered exploration of methods returned by the model alongside its answer. This exploration need not reproduce every invocation or follow one chronological execution sequence: independent branches can be explored in different orders. Its purpose is to provide evidence that can be checked against the executable calls in the program.
 
