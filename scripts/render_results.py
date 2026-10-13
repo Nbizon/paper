@@ -43,13 +43,13 @@ def render(root):
             body.append([name, short, f'{int(n):,}', *[percent(model, group, 'overall', 'all', k) for k in ['answer','path','nr']]])
         body.append(None)
     table('tables/overall_performance.tex',
-          r'Primary scores (\%). U: \texttt{nb\_if}$=0$; C: \texttt{nb\_if}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
+          r'Primary scores (\%). U: \texttt{n\_if}$=0$; C: \texttt{n\_if}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
           'tab:overall', 'llrrrr', r'Group & Model & $N$ & Answer & Trace & NR', body[:-1])
 
     body = []
-    for factor, label, low, high in [('if', 'Guards: 1 to 5', 1, 5), ('param','Parameters: 0 to 2',0,2),
-                                    ('context','Methods: 100 to 500',100,500), ('comment','Comments: 0 to 1',0,1),
-                                    ('var','Variables: 0 to 2',0,2), ('loop','Loops: 0 to 2',0,2)]:
+    for factor, label, low, high in [('if', r'\path{n_if}: 1 to 5', 1, 5), ('param',r'\path{n_params}: 0 to 2',0,2),
+                                    ('context',r'\path{class_size}: 100 to 500',100,500), ('comment',r'\path{n_comment}: 0 to 1',0,1),
+                                    ('var',r'\path{n_vars}: 0 to 2',0,2), ('loop',r'\path{n_loops}: 0 to 2',0,2)]:
         fields = [label]
         for model, short in MODELS:
             for metric in ['answer','path']:
@@ -76,7 +76,7 @@ def render(root):
             body.append(fields)
     table('tables/value_origin_difficulty.tex',
           r'Value-origin distance in method boundaries. D1$^*$ restricts D1 to the same unambiguous attribution population as D3/D5. D3 denotes attributed errors; D5 denotes exposed guards without an attributed error. D9 is question-weighted reference difficulty. Counts appear in Table~\ref{tab:difficulty-populations}.',
-          'tab:value-origin','lrrrrr',r'Model & Param. & D1$^*$ & D3 & D5 & D9',body)
+          'tab:value-origin','lrrrrr',r'Model & \path{n_params} & D1$^*$ & D3 & D5 & D9',body)
 
     body=[]
     for model, short in MODELS:
@@ -86,8 +86,8 @@ def render(root):
                          percent(model,'condition','context',context,'t01'),
                          percent(model,'condition','context',context,'target_bad_if_share')])
     table('tables/context_mechanisms.tex',
-          r'Condition-aware context diagnostics (\%). Pos./neg. are final-answer scores; T01 is the attributed-error/exposure ratio; A is the target-directed share of attributed guard errors. Each polarity score has 5,832 questions per class-size level.',
-          'tab:context-mechanisms','lrrrrr',r'Model & Methods & Pos. & Neg. & T01 & A',body)
+          r'Condition-aware context diagnostics (\%). Pos./neg. are final-answer scores; T01 is the attributed-error/exposure ratio; A is the target-directed share of attributed guard errors. Each polarity score has 5,832 questions per \texttt{class\_size} level.',
+          'tab:context-mechanisms','lrrrrr',r'Model & \path{class_size} & Pos. & Neg. & T01 & A',body)
 
     body=[]
     for model, short in MODELS:
@@ -99,8 +99,8 @@ def render(root):
                 body.append([short,str(param),name,f"{float(r['value']):.3f}",f"{int(r['eligible']):,}",f"{int(r['denominator']):,}",f"{int(r['excluded']):,}"])
         body.append(None)
     table('tables/difficulty_populations.tex',
-          r'Difficulty populations within condition-aware questions. Each parameter level has 11,664 questions. The denominator counts resolved guard occurrences for D1/D1$^*$/D3/D5, and eligible questions for D9. Exclusions include zero resolved occurrences, missing origins, or ambiguous attribution as applicable.',
-          'tab:difficulty-populations','llrrrrr',r'Model & Param. & Metric & Mean & Eligible questions & Denominator & Excluded',body[:-1],wide=True)
+          r'Difficulty populations within condition-aware questions. Each \texttt{n\_params} level has 11,664 questions. The denominator counts resolved guard occurrences for D1/D1$^*$/D3/D5, and eligible questions for D9. Exclusions include zero resolved occurrences, missing origins, or ambiguous attribution as applicable.',
+          'tab:difficulty-populations','llrrrrr',r'Model & \path{n_params} & Metric & Mean & Eligible questions & Denominator & Excluded',body[:-1],wide=True)
 
     body=[]
     for model,short in MODELS:
@@ -123,8 +123,8 @@ def render(root):
         for guards in [1,3,5]:
             body.append([short,str(guards),*[percent(model,'all','if',guards,k) for k in ['answer','path','t01','target_bad_if_share','target_bad_if_case_incidence','t05']]])
     table('tables/guard_mechanisms.tex',
-          r'Guard diagnostics (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per guard level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
-          'tab:guard-mechanisms','llrrrrrr',r'Model & Guards & Answer & Trace & T01 & A & B & T05',body,wide=True)
+          r'Guard diagnostics by \texttt{n\_if} (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per condition level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
+          'tab:guard-mechanisms','llrrrrrr',r'Model & \path{n_if} & Answer & Trace & T01 & A & B & T05',body,wide=True)
 
     body=[]
     for model,short in MODELS:
@@ -172,13 +172,13 @@ def render(root):
 
     guards = [0,1,3,5]
     parameters = [0,1,2]
-    plot('figures/results_guards_parameters.tex', ['Guard count','Parameter count'],
+    plot('figures/results_guards_parameters.tex', [r'\texttt{n\_if}',r'\texttt{n\_params}'],
          'fig:results-guards-parameters',
          [score_series('all','if',guards,['answer','path']),
           score_series('condition','param',parameters,['answer','path'])],
-         [r'xmin=-0.2,xmax=5.2,xtick={0,1,3,5},xlabel={Generated guards ($\mathtt{nb\_if}$)}',
-          r'xmin=-0.1,xmax=2.1,xtick={0,1,2},xlabel={Parameters per method}'],
-         r'Scores by guard count over all questions (a), and by parameter count within condition-aware questions (b). Other factors are balanced. The zero-guard level is the unguarded group.',
+         [r'xmin=-0.2,xmax=5.2,xtick={0,1,3,5},xlabel={Generated guards ($\mathtt{n\_if}$)}',
+          r'xmin=-0.1,xmax=2.1,xtick={0,1,2},xlabel={Parameters per method ($\mathtt{n\_params}$)}'],
+         r'Scores by \texttt{n\_if} over all questions (a), and by \texttt{n\_params} within condition-aware questions (b). Other factors are balanced. The zero-value level of \texttt{n\_if} is the unguarded group.',
          'Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines trace correctness.')
 
     distances = [-25,-22,-19,-16,-13,-10,-7,-4,-1,1,4,7,10,13,16,19,22,25]
@@ -196,7 +196,7 @@ def render(root):
         return [(short, metric, [(level,100*value(model,'condition','context_truth',f'{level}:{truth}',metric))
                                   for level in contexts])
                 for model,short in MODELS for metric in ['answer','path']]
-    context_axis = r'xmin=80,xmax=520,xtick={100,250,500},xlabel={Methods per class}'
+    context_axis = r'xmin=80,xmax=520,xtick={100,250,500},xlabel={\texttt{class\_size}}'
     plot('figures/results_context.tex', ['Reachable targets','Unreachable targets'],
          'fig:results-context', [context_series('True'),context_series('False')],
          [context_axis,context_axis],

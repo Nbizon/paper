@@ -3,7 +3,7 @@
 \centering
 \begin{tikzpicture}
 \begin{groupplot}[rb score axis, group style={group size=2 by 1, horizontal sep=1.3cm}]
-\nextgroupplot[title={(a) Reachable targets},xmin=80,xmax=520,xtick={100,250,500},xlabel={Methods per class},legend to name=fig-results-context-legend,legend columns=4]
+\nextgroupplot[title={(a) Reachable targets},xmin=80,xmax=520,xtick={100,250,500},xlabel={\texttt{class\_size}},legend to name=fig-results-context-legend,legend columns=4]
 \addplot[rb gemma,rb answer] coordinates {(100,96.0391) (250,85.2023) (500,66.0322)};
 \addlegendentry{Gemma: answer}
 \addplot[rb gemma,rb path] coordinates {(100,79.1324) (250,71.6049) (500,57.0645)};
@@ -12,7 +12,7 @@
 \addlegendentry{Qwen: answer}
 \addplot[rb qwen,rb path] coordinates {(100,83.8649) (250,82.5789) (500,78.2579)};
 \addlegendentry{Qwen: trace}
-\nextgroupplot[title={(b) Unreachable targets},xmin=80,xmax=520,xtick={100,250,500},xlabel={Methods per class},ylabel={}]
+\nextgroupplot[title={(b) Unreachable targets},xmin=80,xmax=520,xtick={100,250,500},xlabel={\texttt{class\_size}},ylabel={}]
 \addplot[rb gemma,rb answer] coordinates {(100,69.2387) (250,77.4177) (500,87.6372)};
 \addplot[rb gemma,rb path] coordinates {(100,32.2702) (250,25.3086) (500,17.3868)};
 \addplot[rb qwen,rb answer] coordinates {(100,67.2497) (250,75.6344) (500,84.6708)};

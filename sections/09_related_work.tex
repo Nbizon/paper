@@ -11,7 +11,7 @@ Other benchmarks examine more specific properties of program behavior. CRUXEval 
 
 \input{tables/benchmark_positioning}
 
-\benchmark combines controlled generation of call structure and value propagation with an oracle validated by execution on the final dataset. The final answer and exploration trace are evaluated separately. Factors such as guards, parameters, class size, and code presentation are varied in the generated grid, while the oracle accepts different valid exploration orders. This makes it possible to compare error patterns across the configured factors. The resulting evaluation complements broader program corpora, while covering a narrower range of Java behavior.
+\benchmark combines controlled generation of call structure and value propagation with an oracle validated by execution on the final dataset. The final answer and exploration trace are evaluated separately. Factors such as \path{n_if}, \path{n_params}, \path{class_size}, and code presentation are varied in the generated grid, while the oracle accepts different valid exploration orders. This makes it possible to compare error patterns across the configured factors. The resulting evaluation complements broader program corpora, while covering a narrower range of Java behavior.
 
 \subsection{Reachability and Call-Graph Analysis}
 
