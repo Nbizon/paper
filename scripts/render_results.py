@@ -43,7 +43,7 @@ def render(root):
             body.append([name, short, f'{int(n):,}', *[percent(model, group, 'overall', 'all', k) for k in ['answer','path','nr']]])
         body.append(None)
     table('tables/overall_performance.tex',
-          r'Primary scores (\%). U: \texttt{n\_if}$=0$; C: \texttt{n\_if}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
+          r'Primary scores (\%). U: \mbox{\texttt{n\_if}$=0$}; C: \mbox{\texttt{n\_if}}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
           'tab:overall', 'llrrrr', r'Group & Model & $N$ & Answer & Trace & NR', body[:-1])
 
     body = []
@@ -123,7 +123,7 @@ def render(root):
         for guards in [1,3,5]:
             body.append([short,str(guards),*[percent(model,'all','if',guards,k) for k in ['answer','path','t01','target_bad_if_share','target_bad_if_case_incidence','t05']]])
     table('tables/guard_mechanisms.tex',
-          r'Guard diagnostics by \texttt{n\_if} (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per condition level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
+          r'Guard diagnostics by \mbox{\texttt{n\_if}} (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per condition level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
           'tab:guard-mechanisms','llrrrrrr',r'Model & \path{n_if} & Answer & Trace & T01 & A & B & T05',body,wide=True)
 
     body=[]
@@ -178,7 +178,7 @@ def render(root):
           score_series('condition','param',parameters,['answer','path'])],
          [r'xmin=-0.2,xmax=5.2,xtick={0,1,3,5},xlabel={Generated guards ($\mathtt{n\_if}$)}',
           r'xmin=-0.1,xmax=2.1,xtick={0,1,2},xlabel={Parameters per method ($\mathtt{n\_params}$)}'],
-         r'Scores by \texttt{n\_if} over all questions (a), and by \texttt{n\_params} within condition-aware questions (b). Other factors are balanced. The zero-value level of \texttt{n\_if} is the unguarded group.',
+         r'Scores by \mbox{\texttt{n\_if}} over all questions (a), and by \texttt{n\_params} within condition-aware questions (b). Other factors are balanced. The zero-value level of \mbox{\texttt{n\_if}} is the unguarded group.',
          'Two panels with correctness on the same zero-to-one-hundred percent scale. Circles denote Gemma and squares Qwen; solid lines denote answer correctness and dashed lines trace correctness.')
 
     distances = [-25,-22,-19,-16,-13,-10,-7,-4,-1,1,4,7,10,13,16,19,22,25]

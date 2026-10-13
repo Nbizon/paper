@@ -1,7 +1,7 @@
 \section{Experimental Configuration Details}
 \label{app:experimental-config}
 
-Table~\ref{tab:dataset-spec} reports the generation grid and the partition into task families. The archived field \texttt{n\_if} is displayed as \texttt{if} in the diagnostic exports; in the paper, the task families are defined by \path{n_if}=0 and \path{n_if}>0. All archived configurations record generator mode \texttt{d}, including the zero-condition instances; this historical field does not change the analysis partition. Table~\ref{tab:models} reports the serving configuration recovered from the logs. The logs leave model and tokenizer revisions unset, so the named checkpoints do not establish an immutable weight revision.
+Table~\ref{tab:dataset-spec} reports the generation grid and the partition into task families. The archived field \texttt{n\_if} is displayed as \texttt{if} in the diagnostic exports; in the paper, the task families are defined by \mbox{\texttt{n\_if}$=0$} and \mbox{\texttt{n\_if}$>0$}. All archived configurations record generator mode \texttt{d}, including the zero-condition instances; this historical field does not change the analysis partition. Table~\ref{tab:models} reports the serving configuration recovered from the logs. The logs leave model and tokenizer revisions unset, so the named checkpoints do not establish an immutable weight revision.
 
 \input{tables/dataset_specification}
 \input{tables/models}

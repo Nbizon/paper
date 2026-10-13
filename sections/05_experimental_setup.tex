@@ -4,7 +4,7 @@
 \subsection{Evaluation Set}
 \label{subsec:evaluation-set}
 
-The main evaluation uses the final \benchmark dataset, containing 46,656 questions generated from 1,232 Java classes. Gemma and Qwen are evaluated on exactly the same questions. Programs with \path{n_if}=0 provide 11,664 unguarded questions, while programs with \path{n_if}$\in\{1,3,5\}$ provide 34,992 condition-aware questions. Both groups contain the same number of reachable and unreachable targets.
+The main evaluation uses the final \benchmark dataset, containing 46,656 questions generated from 1,232 Java classes. Gemma and Qwen are evaluated on exactly the same questions. Programs with \mbox{\texttt{n\_if}$=0$} provide 11,664 unguarded questions, while programs with \mbox{\texttt{n\_if}}$\in\{1,3,5\}$ provide 34,992 condition-aware questions. Both groups contain the same number of reachable and unreachable targets.
 
 The grid varies \path{class_size} over $\{100,250,500\}$, \path{n_comment} over $\{0,1\}$, and \path{n_vars}, \path{n_loops}, and \path{n_params} over $\{0,1,2\}$. The four values of \path{n_if} complete a balanced grid of 648 configurations. The values of \path{depths} are $\{1,4,7,10,13,16,19,22,25\}$. \path{n_questions}=4 sets the number of questions for each polarity at each distance in every configuration. Each instance retains the Java code, question, executable graph, and generation metadata.
 

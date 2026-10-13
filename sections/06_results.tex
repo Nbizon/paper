@@ -15,11 +15,11 @@ Without guards, Qwen reaches 99.19\% answer correctness and 96.33\% trace correc
 
 \subsubsection{Conditions and Parameters Act Together}
 
-Increasing \path{n_if} from one to five reduces condition-aware trace correctness by 21.94 points for Gemma and 19.17 for Qwen (Table~\ref{tab:factors}). The largest difference associated with \path{n_params} appears when the first parameter is introduced. Gemma's trace score falls from 66.62\% to 39.17\%, and Qwen's from 90.53\% to 43.52\%.
+Increasing \mbox{\texttt{n\_if}} from one to five reduces condition-aware trace correctness by 21.94 points for Gemma and 19.17 for Qwen (Table~\ref{tab:factors}). The largest difference associated with \path{n_params} appears when the first parameter is introduced. Gemma's trace score falls from 66.62\% to 39.17\%, and Qwen's from 90.53\% to 43.52\%.
 
 \input{tables/factor_effects}
 
-Considering \path{n_if} and \path{n_params} together makes it possible to locate this difficulty more precisely. With \path{n_if}=0, increasing \path{n_params} from zero to two reduces trace correctness by only 2.26 points for Gemma and 0.44 for Qwen. With \path{n_if}=5, these reductions reach 33.82 and 55.66 points. This pattern shows that the effect of \path{n_params} is greater when conditions use passed values to determine which calls execute. \path{n_comment}, \path{n_vars}, and \path{n_loops} show smaller average differences in this grid, with none exceeding five points for either model.
+Considering \mbox{\texttt{n\_if}} and \path{n_params} together makes it possible to locate this difficulty more precisely. With \mbox{\texttt{n\_if}$=0$}, increasing \path{n_params} from zero to two reduces trace correctness by only 2.26 points for Gemma and 0.44 for Qwen. With \mbox{\texttt{n\_if}$=5$}, these reductions reach 33.82 and 55.66 points. This pattern shows that the effect of \path{n_params} is greater when conditions use passed values to determine which calls execute. \path{n_comment}, \path{n_vars}, and \path{n_loops} show smaller average differences in this grid, with none exceeding five points for either model.
 
 \subsubsection{Distance and Class Size}
 
