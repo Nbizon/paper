@@ -9,11 +9,7 @@
 
 Each instance contains a Java class named \texttt{TheClass}, a source method $s$, and a target method $t$. This class contains all generated methods, including those outside the region reachable from $s$. A root method with no parameters defines the entry point of the program. Its local declarations initialize values that can then be passed to other methods.
 
-We represent an instance as
-\[
-    (P, e, s, t, f, y, G_{\mathit{exec}}, m),
-\]
-where $P$ is the class, $e$ is the execution context starting from the root, and $f$ identifies the task family. The label $y$ is \true{} when $t$ can execute from $s$ with the argument values supplied by $e$, and \false{} otherwise. The graph $G_{\mathit{exec}}$ records executable calls, while $m$ stores the generation settings and question metadata. The source named in the question is not necessarily the root. A separate \texttt{Main} class can make this context explicit by invoking the root, but the launcher method is not included in the oracle graph.
+The execution from this root defines the context $e$. The expected answer $y$ is \true{} when $t$ can execute from $s$ with the argument values supplied during this execution, and \false{} otherwise. The queried source is not necessarily the root. The executable call graph $G_{\mathit{exec}}$ provides the oracle used to evaluate the response. Generation settings and question metadata are retained with each instance.
 
 \subsection{Constructing the Method Structure}
 
@@ -64,6 +60,6 @@ We consider two variants of the final benchmark: \benchmark~(CO), for \emph{Clas
 
 In \benchmark~(CO), the code block contains only \texttt{TheClass}. The prompt does not explicitly identify the entry point or state that all values and execution outcomes needed to answer the question are determined by the code. When the source has parameters, the model must infer the intended execution from the root and recover the values supplied to this source from the class. Without this information being explicit, a parameter may be treated as an unspecified input, even though its value is fixed by the generated execution. This adds an interpretation step, particularly when the arguments determine whether guarded calls execute.
 
-In \benchmark~(EE), the code block also contains a separate \texttt{Main} launcher, which creates an instance of \texttt{TheClass} and calls its root without arguments. The prompt states that the supplied code describes a concrete execution, that all relevant values and outcomes can be determined statically, and that no external inputs should be assumed. The model is asked to follow values from the entry point and use them to evaluate conditions, branches, and loops.
+In \benchmark~(EE), the code block also contains a separate \texttt{Main} launcher, which creates an instance of \texttt{TheClass} and calls its root without arguments. The launcher method is not included in the oracle graph. The prompt states that the supplied code describes a concrete execution, that all relevant values and outcomes can be determined statically, and that no external inputs should be assumed. The model is asked to follow values from the entry point and use them to evaluate conditions, branches, and loops.
 
 EE therefore makes explicit the execution context already used by the common oracle, while CO also requires the model to infer it. The classes have the same structural complexity in both variants. The returned trace starts at the queried source and uses the same response fields. \researchq{3} compares performance and token use between these two presentations of the same dataset.
