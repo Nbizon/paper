@@ -11,9 +11,7 @@ Other evaluations consider problems closer to repository-level development. SWE-
 
 Other works reduce the scope of the task with the objective of examining specific aspects of program understanding. CRUXEval asks models to predict inputs or outputs for short Python functions, while REval evaluates predictions about runtime behavior and intermediate states~\cite{gu2024cruxeval,chen2025reval}. Xie et al.'s CoRE considers static data and control dependencies and information flow, whereas Gao et al.'s CoRE examines implementation invariance and intermediate execution-state prediction~\cite{xie2025core,gao2026core}. This allows model capabilities to be studied through properties that can be evaluated more directly.
 
-Some benchmarks examine relationships between calls. SemBench includes function reachability, defined by connectivity in a static call graph over real-world C programs~\cite{xu2026semb}. TraceEval asks models to recover runtime call structures from repository-derived programs, with edges verified through execution~\cite{li2026traceeval}. CABRA also uses generated call-graph transformations to control difficulty, although its tasks concern code editing with coding agents~\cite{balepur2026cabra}. These works provide related approaches to evaluating code behavior, but differ in the questions asked and the information returned by the model. Table~\ref{tab:benchmark-positioning} summarizes the closest task distinctions.
-
-\input{tables/benchmark_positioning}
+Some benchmarks examine relationships between calls. SemBench includes function reachability, defined by connectivity in a static call graph over real-world C programs~\cite{xu2026semb}. TraceEval asks models to recover runtime call structures from repository-derived programs, with edges verified through execution~\cite{li2026traceeval}. CABRA also uses generated call-graph transformations to control difficulty, although its tasks concern code editing with coding agents~\cite{balepur2026cabra}. These works provide related approaches to evaluating code behavior, but differ in the questions asked and the information returned by the model.
 
 \subsection{Position of \benchmark}
 
