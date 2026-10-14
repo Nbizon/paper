@@ -11,7 +11,7 @@ Table~\ref{tab:overall} shows that Qwen obtains the highest overall scores, with
 
 \input{tables/overall_performance}
 
-When calls are unguarded, Qwen obtains 99.19\% answer correctness and 96.33\% trace correctness, while Gemma obtains 96.05\% and 82.23\%. The presence of conditions is associated with much lower trace correctness, at 57.80\% and 47.13\%, respectively. Non-responses account for only 1.10\% and 2.73\% of condition-aware questions, which means that they explain much less of the difficulty than the difference between answer and trace scores. The main difficulty therefore concerns the executable evidence returned with the answer.
+When calls are unguarded, Qwen obtains 99.19\% answer correctness and 96.33\% trace correctness, while Gemma obtains 96.05\% and 82.23\%. The presence of conditions is associated with much lower trace correctness, at 57.80\% and 47.13\%, respectively. Non-responses account for only 1.10\% and 2.73\% of condition-aware questions. The main difficulty therefore concerns the executable evidence returned with the answer.
 
 \subsubsection{Conditions and Parameters Act Together}
 
@@ -34,7 +34,7 @@ Qwen obtains the best overall scores, but both models answer questions correctly
 
 \subsubsection{Executability and Incomplete Exploration}
 
-On condition-aware questions, Gemma obtains 69.27\% trace correctness for positive targets and only 24.99\% for negative targets, compared with 81.57\% and 34.04\% for Qwen. The negative traces reveal two difficulties. First, 51.38\% of Gemma traces and 48.50\% of Qwen traces include an existing method outside the executable region. Second, they omit a large part of this region, with mean omitted fractions of 39.37\% and 38.01\%. Since a trace can contain both errors, these values do not describe separate categories and should not be added together.
+On condition-aware questions, Gemma obtains 69.27\% trace correctness for positive targets and only 24.99\% for negative targets, compared with 81.57\% and 34.04\% for Qwen. The negative traces reveal two difficulties. First, 51.38\% of Gemma traces and 48.50\% of Qwen traces include an existing method outside the executable region. Second, they omit a large part of this region, with mean omitted fractions of 39.37\% and 38.01\%.
 
 One possible explanation for this behavior is that the model follows a call placed inside an \texttt{if} block, even though its condition should evaluate to false. It can therefore explore a subtree that should not be reachable from the source and, when this subtree contains the target, answer that the target is reachable. This type of error could favor positive answers, since a positive question may be answered correctly while the trace follows a call that cannot execute. For a negative question, the same behavior would instead lead to an incorrect positive answer.
 
