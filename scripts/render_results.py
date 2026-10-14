@@ -90,6 +90,21 @@ def render(root):
           'tab:context-mechanisms','lrrrrr',r'Model & \path{class_size} & Pos. & Neg. & T01 & A',body)
 
     body=[]
+    for context in [100,250,500]:
+        fields=[str(context)]
+        for metric in ['t01','target_bad_if_share']:
+            fields.extend(percent(model,'condition','context',context,metric)
+                          for model,_ in MODELS)
+        body.append(fields)
+    table('tables/context_bias.tex',
+          r'Condition-aware questions by class size. The first ratio counts attributed false-guard errors per exposed guard. The second gives the share of attributed errors whose callee can reach the queried target through executable calls.',
+          'tab:context-bias','rrrrr',
+          r' & \multicolumn{2}{c}{\shortstack{Attributed guard errors /\\exposed guards (\%)}} & '
+          r'\multicolumn{2}{c}{\shortstack{Errors whose callee\\can reach target /\\attributed guard errors (\%)}} \\ '
+          r'\cmidrule(lr){2-3}\cmidrule(lr){4-5} '
+          r'\path{class_size} & Gemma & Qwen & Gemma & Qwen',body)
+
+    body=[]
     for model, short in MODELS:
         for param in [1,2]:
             for key,name in [('if_difficulty_mean','D1'),('if_difficulty_attributable',r'D1$^*$'),
