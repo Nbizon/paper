@@ -54,7 +54,7 @@
 \node[rb annotation, anchor=west, align=left] at (14,-1.75)
   {Shared labels\\and oracle};
 \end{tikzpicture}
-\caption{Construction and evaluation of \benchmark. The construction algorithm produces the final dataset. CO and EE present the same classes and questions with different execution information. Labels and executable-graph oracles are used only for scoring the returned answer and trace.}
+\caption{Construction and evaluation of \benchmark. The algorithm produces the final dataset, whose classes and questions are presented with different execution information in CO and EE. The labels and executable-graph oracles are then used to score the returned answer and trace.}
 \Description{Two aligned rows read from left to right. The construction algorithm generates a method tree, emits Java code, and constructs the oracle and questions, producing the final ReachabilityBench dataset. Evaluation takes the same class and question through either the Class-only or Explicit execution prompt, runs the model separately for each variant, and scores its Boolean answer and trace. A separate dashed arrow supplies the common labels and oracle directly to scoring.}
 \label{fig:pipeline}
 \end{figure*}

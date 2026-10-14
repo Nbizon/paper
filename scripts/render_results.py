@@ -43,7 +43,7 @@ def render(root):
             body.append([name, short, f'{int(n):,}', *[percent(model, group, 'overall', 'all', k) for k in ['answer','path','nr']]])
         body.append(None)
     table('tables/overall_performance.tex',
-          r'Primary scores (\%). U: \mbox{\texttt{n\_if}$=0$}; C: \mbox{\texttt{n\_if}}$\in\{1,3,5\}$. Non-responses (NR) remain in both score denominators.',
+          r'Answer and trace correctness (\%) for unguarded (U: \mbox{\texttt{n\_if}$=0$}) and condition-aware (C: \mbox{\texttt{n\_if}}$\in\{1,3,5\}$) questions. Non-responses (NR) remain in both denominators.',
           'tab:overall', 'llrrrr', r'Group & Model & $N$ & Answer & Trace & NR', body[:-1])
 
     body = []
@@ -57,14 +57,14 @@ def render(root):
                 delta = 100*(value(model,group,factor,high,metric)-value(model,group,factor,low,metric))
                 fields.append(f'{delta:+.2f}')
         body.append(fields)
-    table('tables/factor_effects.tex', r'Marginal contrasts within condition-aware questions (percentage points, high minus low). A: answer; T: trace. Other factors are averaged over the balanced grid.',
+    table('tables/factor_effects.tex', r'Score differences within condition-aware questions (percentage points, high minus low). A and T denote answer and trace correctness, with other factors averaged over the balanced grid.',
           'tab:factors','lrrrr',r'Contrast & Gemma A & Gemma T & Qwen A & Qwen T',body)
 
     body=[]
     for model, short in MODELS:
         for truth, label in [('True','Positive'),('False','Negative')]:
             body.append([short,label,*[percent(model,'condition','expected_truth',truth,k) for k in ['answer','path','t04','t05']]])
-    table('tables/trace_diagnostics.tex', r'Condition-aware scores by polarity (\%). Each polarity has 17,496 questions per model. T04 is the mean omitted fraction; T05 is the incidence of an existing method outside the executable region. Both are negative-only diagnostics.',
+    table('tables/trace_diagnostics.tex', r'Condition-aware scores by polarity (\%). Each polarity has 17,496 questions per model. T04 gives the mean omitted fraction, while T05 gives the incidence of traces containing an existing method outside the executable region. Both are negative-only diagnostics.',
           'tab:trace-diagnostics','llrrrr',r'Model & Polarity & Answer & Trace & T04 & T05',body)
 
     body=[]
@@ -75,7 +75,7 @@ def render(root):
                 fields.append(f'{value(model,"condition","param",param,key):.2f}')
             body.append(fields)
     table('tables/value_origin_difficulty.tex',
-          r'Value-origin distance in method boundaries. D1$^*$ restricts D1 to the same unambiguous attribution population as D3/D5. D3 denotes attributed errors; D5 denotes exposed guards without an attributed error. D9 is question-weighted reference difficulty. Counts appear in Table~\ref{tab:difficulty-populations}.',
+          r'Value-origin distance in method boundaries. D1$^*$ restricts D1 to the same unambiguous attribution population as D3/D5. D3 concerns attributed errors, while D5 concerns exposed guards without an attributed error. D9 is question-weighted reference difficulty. Counts appear in Table~\ref{tab:difficulty-populations}.',
           'tab:value-origin','lrrrrr',r'Model & \path{n_params} & D1$^*$ & D3 & D5 & D9',body)
 
     body=[]
@@ -86,7 +86,7 @@ def render(root):
                          percent(model,'condition','context',context,'t01'),
                          percent(model,'condition','context',context,'target_bad_if_share')])
     table('tables/context_mechanisms.tex',
-          r'Condition-aware context diagnostics (\%). Pos./neg. are final-answer scores; T01 is the attributed-error/exposure ratio; A is the target-directed share of attributed guard errors. Each polarity score has 5,832 questions per \texttt{class\_size} level.',
+          r'Condition-aware context diagnostics (\%). Pos./neg. denote final-answer scores, T01 gives the attributed-error/exposure ratio, and A gives the target-directed share of attributed guard errors. Each polarity score has 5,832 questions per \texttt{class\_size} level.',
           'tab:context-mechanisms','lrrrrr',r'Model & \path{class_size} & Pos. & Neg. & T01 & A',body)
 
     body=[]
@@ -115,7 +115,7 @@ def render(root):
                          f'{int(d):,}' if d else '--',f"{int(r['eligible']):,}",f"{int(r['excluded']):,}"])
         body.append(None)
     table('tables/diagnostic_populations.tex',
-          r'Condition-aware diagnostic aggregates. Values are percentages; T09 is a median with no sum denominator. Eligibility depends on the metric, so exclusions also include the other polarity for negative/positive-only diagnostics. For T04/T13, the numerator sums per-question fractions, not node counts. The two FP rows use unambiguously attributable negative records and condition on whether a target-directed guard error is present.',
+          r'Condition-aware diagnostic aggregates. Values are percentages, except for T09, which is a median with no sum denominator. Eligibility depends on the metric, so exclusions also include the other polarity for negative/positive-only diagnostics. For T04/T13, the numerator sums per-question fractions, not node counts. The two FP rows use unambiguously attributable negative records and condition on whether a target-directed guard error is present.',
           'tab:diagnostic-populations','llrrrrr',r'Model & Metric & Value & Numerator & Denominator & Eligible & Excluded',body[:-1],wide=True)
 
     body=[]
@@ -123,7 +123,7 @@ def render(root):
         for guards in [1,3,5]:
             body.append([short,str(guards),*[percent(model,'all','if',guards,k) for k in ['answer','path','t01','target_bad_if_share','target_bad_if_case_incidence','t05']]])
     table('tables/guard_mechanisms.tex',
-          r'Guard diagnostics by \mbox{\texttt{n\_if}} (\%). A is the target-directed share of attributed errors; B is the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per condition level. T01 uses the exposed-guard denominator; A/B exclude ambiguous attributions.',
+          r'Guard diagnostics by \mbox{\texttt{n\_if}} (\%). A gives the target-directed share of attributed errors, while B gives the incidence of at least one such error in an eligible response. T05 applies only to the 5,832 negative questions per condition level. T01 uses the exposed-guard denominator, while A/B exclude ambiguous attributions.',
           'tab:guard-mechanisms','llrrrrrr',r'Model & \path{n_if} & Answer & Trace & T01 & A & B & T05',body,wide=True)
 
     body=[]
@@ -132,7 +132,7 @@ def render(root):
             body.append([short,label,f"{value(model,group,'overall','all','reasoning_token_count_mean'):,.0f}",
                          percent(model,group,'overall','all','reasoning_budget_usage_mean'),
                          f"{value(model,group,'overall','all','answer_token_count_mean'):,.0f}"])
-    table('tables/token_observability.tex', r'Mean persisted reasoning and answer tokens, counted with each model\'s tokenizer. Usage is reasoning tokens divided by the requested 16,384-token budget. These are output measurements, not wall-clock compute or a budget intervention.',
+    table('tables/token_observability.tex', r"Mean persisted reasoning and answer tokens, counted with each model's tokenizer. Usage gives reasoning tokens relative to the requested 16,384-token budget. These measurements describe output length rather than wall-clock compute or a budget intervention.",
           'tab:token-observability','llrrr',r'Model & Group & Reasoning tokens & Usage (\%) & Answer tokens',body,wide=True)
 
     def score_series(group, factor, levels, metrics):
@@ -188,7 +188,7 @@ def render(root):
          [score_series('condition','distance',distances,['answer']),
           score_series('condition','distance',distances,['path'])],
          [distance_axis, distance_axis],
-         r'Condition-aware scores by signed generation distance. Negative distances denote unreachable targets; positive distances denote reachable targets. Each point has 1,944 questions per model. The dotted divider at zero separates the two populations; no zero-distance query is plotted.',
+         r'Condition-aware scores by signed generation distance. Negative distances denote unreachable targets, while positive distances denote reachable targets. Each point has 1,944 questions per model. The dotted divider at zero separates the two populations, with no zero-distance query plotted.',
          'Answer and trace correctness by signed distance. The two polarity-specific curves stop on either side of zero. Model identity uses the same colors and markers as the other result figures.')
 
     contexts = [100,250,500]

@@ -18,7 +18,7 @@
 \node[rb note, anchor=west] at (0.75,-2.85) {Optional edge};
 \node[rb note] at (-0.2,-3.3) {$X_{LL},X_{LR}\sim\mathrm{Bernoulli}(p)$, independently};
 \end{tikzpicture}
-\caption{Local tree-expansion rule. Solid edges are added while the method budget permits; dashed edges are sampled independently with probability $p$. The right child and sampled grandchildren are queued for further expansion.}
+\caption{Local tree-expansion rule. Solid edges are added while method names remain available, and dashed edges are sampled independently with probability $p$. The right child and sampled grandchildren are then queued for further expansion.}
 \Description{A node u has two fixed children. The left child has two optional children controlled by independent Bernoulli variables.}
 \label{fig:local-tree-rule}
 \end{figure}

@@ -58,7 +58,7 @@ def main():
         '\\end{verbatim}\n\\texttt{Main.java}\n\\begin{verbatim}\n' +
         launcher.replace('    ', '  ') + '\\end{verbatim}\n\\end{minipage}\n'
         '\\caption{Complete four-method illustration produced by the construction algorithm. '
-        'Only whitespace is compacted. The root supplies the value 4; '
+        'Only whitespace is compacted. The root supplies the value 4. The method '
         '\\texttt{sortJobForRequest} executes from the root but is not reachable from '
         '\\texttt{buildSessionToBuffer}, whose visible call to it is disabled.}\n'
         '\\label{fig:background-example}\n\\end{figure}\n'
