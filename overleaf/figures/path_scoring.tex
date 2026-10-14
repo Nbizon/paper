@@ -1,0 +1,22 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[rb diagram]
+\node[rb method] (a) at (0,0) {A};
+\node[rb method] (b) at (-1.6,-0.95) {B};
+\node[rb method] (c) at (1.6,-0.95) {C};
+\node[rb method] (d) at (-2.4,-1.9) {D};
+\node[rb method] (e) at (-0.8,-1.9) {E};
+\node[rb method] (f) at (0.8,-1.9) {F};
+\node[rb method] (g) at (2.4,-1.9) {G};
+\foreach \from/\to in {a/b,a/c,b/d,b/e,c/f,c/g}
+  \draw[rb edge] (\from) -- (\to);
+\node[rb query, text width=6.3cm, anchor=north] at (0,-2.45)
+  {\textbf{Reachable query}\enspace A $\rightarrow$ G\\
+   Example valid trace: $\langle\mathrm{A},\mathrm{C},\mathrm{G}\rangle$\\[3pt]
+   \textbf{Unreachable query}\enspace C $\not\rightarrow$ E\\
+   Required closure: $\{\mathrm{C},\mathrm{F},\mathrm{G}\}$};
+\end{tikzpicture}
+\caption{Examples of trace evaluation against an executable graph. A positive trace must end at its target, while a negative trace must cover all methods reachable from the source and exclude the target. Independent branches can be explored in any valid order.}
+\Description{A tree with edges A to B and C, B to D and E, and C to F and G. A reaches G through C. E is outside the executable closure of C. Query examples are separate from graph edges.}
+\label{fig:canonical-traversal}
+\end{figure}

@@ -1,0 +1,82 @@
+\documentclass[10pt,conference]{IEEEtran}
+
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xspace}
+\usepackage{enumitem}
+\usepackage{balance}
+\usepackage{xcolor}
+\usepackage{xurl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[switch]{lineno}
+\usepackage{hyperref}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\definecolor{modelblue}{RGB}{37,99,235}
+\definecolor{modelorange}{RGB}{194,65,12}
+\definecolor{modelgreen}{RGB}{21,128,61}
+\definecolor{finalcolor}{RGB}{37,99,235}
+\definecolor{chaincolor}{RGB}{21,128,61}
+\definecolor{tracecolor}{RGB}{194,65,12}
+
+\tikzset{
+  rb axis/.style={draw=gray!55, line width=0.65pt},
+  rb grid/.style={draw=gray!18, line width=0.45pt},
+  rb panel title/.style={draw=gray!60, fill=gray!4, rounded corners=2pt, align=center, inner sep=3pt, font=\scriptsize},
+  rb legend/.style={font=\scriptsize},
+  rb method/.style={draw=modelblue!70, fill=modelblue!5, rounded corners=2pt, minimum height=0.52cm, align=center, font=\scriptsize},
+  rb code/.style={draw=gray!70, fill=gray!4, rounded corners=2pt, align=left, inner sep=5pt, font=\scriptsize},
+  rb edge/.style={->, gray!75, line width=0.75pt},
+  rb optional edge/.style={->, dashed, modelorange!80, line width=0.85pt},
+  rb value/.style={font=\tiny},
+  rb tick/.style={font=\scriptsize}
+}
+
+\input{macros}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue
+}
+
+\title{ReachabilityBench: Diagnosing LLMs on Controlled Java Method-Reachability Tasks}
+
+\author{Anonymous Author(s)}
+
+\begin{document}
+\pagestyle{plain}
+\linenumbers
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract}
+\end{abstract}
+
+\begin{IEEEkeywords}
+large language models, software engineering benchmark, program comprehension, reachability, unguarded reachability, condition-aware execution
+\end{IEEEkeywords}
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_research_questions}
+\input{sections/04_benchmark_design}
+\input{sections/05_experimental_setup}
+\input{sections/06_results}
+\input{sections/07_discussion}
+\input{sections/08_threats}
+\input{sections/09_related_work}
+\input{sections/10_conclusion}
+% \input{sections/11_data_availability}
+
+% Detailed experimental material is retained in the source archive.
+% \appendices
+% \input{sections/12_experimental_appendix}
+
+\bibliographystyle{IEEEtran}
+\bibliography{bibliography/references}
+
+\end{document}

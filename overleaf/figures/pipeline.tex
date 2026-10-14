@@ -1,0 +1,60 @@
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[rb diagram,
+  pipeline card/.style={draw=rbRule, fill=white, line width=0.7pt,
+    rounded corners=2pt, text width=2.75cm, minimum height=1.7cm,
+    inner sep=6pt, align=center, font=\sffamily\footnotesize},
+  pipeline prompt/.style={pipeline card, text width=3.15cm,
+    minimum height=1.25cm, inner sep=5pt},
+  pipeline dataset/.style={pipeline card, draw=modelblue!70,
+    fill=modelblue!4, line width=0.9pt},
+  pipeline link/.style={rb edge, rounded corners=2pt},
+  pipeline reference/.style={pipeline link, dashed, draw=rbMuted}]
+
+% The two rows read independently from left to right on the same grid.
+\node[rb heading, anchor=west] at (0,1.25) {(a) Construction algorithm};
+\node[pipeline card] (tree) at (1.6,0)
+  {\textbf{Method structure}\\[3pt]Generated method names\\and call tree};
+\node[pipeline card] (java) at (5.5,0)
+  {\textbf{Java generation}\\[3pt]Values, calls and guards\\Fixed execution};
+\node[pipeline card] (questions) at (9.4,0)
+  {\textbf{Oracle + questions}\\[3pt]Executable calls\\Queries $(s,t)$\\Boolean labels};
+\node[pipeline dataset, text width=3.35cm] (dataset) at (13.8,0)
+  {\textbf{\benchmark}\\[3pt]Final generated dataset\\Classes, questions,\\labels and oracles};
+\foreach \from/\to in {tree/java,java/questions,questions/dataset}
+  \draw[pipeline link] (\from.east) -- (\to.west);
+\node[rb note, anchor=west] at (0,-1.15)
+  {Controlled settings: methods, guards, parameters, comments, variables and loops};
+
+\node[rb heading, anchor=west] at (0,-1.7) {(b) Evaluation of the same dataset};
+\node[pipeline dataset] (instance) at (1.6,-3.45)
+  {\textbf{\benchmark} };
+\node[pipeline prompt] (co) at (5.5,-2.65)
+  {\textbf{CO: Class-only}\\[3pt]Entry point implicit\\Determinism implicit};
+\node[pipeline prompt] (ee) at (5.5,-4.25)
+  {\textbf{EE: Explicit execution}\\[3pt]Entry point: \texttt{Main}\\Determinism explicit};
+\node[pipeline card] (model) at (9.4,-3.45)
+  {\textbf{LLM inference}\\[3pt]One run per variant\\Boolean + trace};
+\node[pipeline card, text width=3.35cm] (scoring) at (13.8,-3.45)
+  {\textbf{Independent scoring}\\[3pt]Final-answer correctness\\Trace correctness};
+
+% Local forks replace long routes around the construction stages.
+\coordinate (input fork) at (3.55,-3.45);
+\draw[pipeline link, -] (instance.east) -- (input fork);
+\draw[pipeline link] (input fork) |- (co.west);
+\draw[pipeline link] (input fork) |- (ee.west);
+\coordinate (output join) at (7.55,-3.45);
+\draw[pipeline link, -] (co.east) -| (output join);
+\draw[pipeline link, -] (ee.east) -| (output join);
+\draw[pipeline link] (output join) -- (model.west);
+\draw[pipeline link] (model.east) -- (scoring.west);
+
+% The oracle goes directly to scoring and never enters the prompt.
+\draw[pipeline reference] (dataset.south) -- (scoring.north);
+\node[rb annotation, anchor=west, align=left] at (14,-1.75)
+  {Shared labels\\and oracle};
+\end{tikzpicture}
+\caption{Construction and evaluation of \benchmark. The algorithm produces the final dataset, whose classes and questions are presented with different execution information in CO and EE. The labels and executable-graph oracles are then used to score the returned answer and trace.}
+\Description{Two aligned rows read from left to right. The construction algorithm generates a method tree, emits Java code, and constructs the oracle and questions, producing the final ReachabilityBench dataset. Evaluation takes the same class and question through either the Class-only or Explicit execution prompt, runs the model separately for each variant, and scores its Boolean answer and trace. A separate dashed arrow supplies the common labels and oracle directly to scoring.}
+\label{fig:pipeline}
+\end{figure*}

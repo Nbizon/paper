@@ -1,0 +1,21 @@
+\begin{table}[!b]
+\centering
+\caption{Configuration fields and their role in instance generation and question sampling.}
+\label{tab:generation-parameters}
+\footnotesize
+\begin{tabularx}{\columnwidth}{@{}>{\raggedright\arraybackslash}p{0.33\columnwidth}>{\raggedright\arraybackslash}X@{}}
+\toprule
+Parameter & Role \\
+\midrule
+\path{class_size} & Sets the number of methods in the class. \\
+\path{depths} & Selects target positions in the generated exploration; negative questions use the corresponding negative distances. \\
+\path{n_questions} & Sets the question quota for each polarity at each distance. \\
+\path{n_params} & Sets the number of parameters for each non-root method; the root has no parameters. \\
+\path{n_if} & Sets the number of condition blocks per method. Depending on the task family, these contain value-tested calls or control-flow filler. \\
+\path{n_vars} & Adds artificial local variables, separate from variables introduced to pass call arguments. \\
+\path{n_loops} & Adds loops per method. Each loop prints its counter for 1--5 iterations and contains no calls to benchmark methods. \\
+\path{n_comment} & Adds Lorem Ipsum comment lines above each method body; they do not describe program behavior. \\
+\path{useful_var_spawn_probability} & Controls the introduction of fresh local variables for call arguments when existing values could be reused. \\
+\bottomrule
+\end{tabularx}
+\end{table}

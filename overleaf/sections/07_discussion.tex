@@ -1,0 +1,14 @@
+\section{Discussion}
+\label{sec:error-analysis}
+
+\subsection{Execution Context and Model Performance}
+
+Making the execution context explicit is associated with only modest average improvements in trace correctness for Gemma and Qwen3.6. These models still encounter difficulties when they must follow values through guarded calls, which means that the difference between answer and trace correctness remains even when the execution information is available.
+
+The comparison on the same 216 difficult questions makes this difference between models more visible. Gemma's trace correctness changes from 26.39\% to 27.31\%, while Qwen3.6 remains at 29.17\%, although its answer correctness increases from 62.04\% to 72.22\%. For Qwen3.8-Flash-Next, trace correctness increases by 11.11 points, from 35.65\% to 46.76\%, including a gain of 17.59 points on negative traces. The improvement is therefore more pronounced in Qwen3.8's returned exploration, suggesting that some models can make better use of explicit execution information when conditions depend on passed values. However, this does not isolate the effect of model size or architecture, since the Gemma and Qwen3.6 budgets differ between variants and the subset contains only six classes. Qwen3.8 also produces more non-responses with EE.
+
+\subsection{Reasoning Budgets and Token Cost}
+
+Providing a larger reasoning budget does not mean that each response uses it completely. On the common questions, the mean reasoning length increases from 5,569 to 5,832 tokens for Qwen3.6 and from 7,788 to 9,241 for Gemma. Under EE, 3.22\% of Qwen3.6 responses and 15.08\% of Gemma responses exceed 16,384 reasoning tokens, supporting the decision to provide more room than in CO. The increase therefore concerns part of the responses without doubling average consumption. However, these observed lengths do not establish the minimum budget needed for either variant.
+
+The overall token cost nevertheless remains high, with EE prompts containing 36,600 tokens on average for Qwen3.6 and 38,254 for Gemma, and reaching approximately 131,000 and 134,000 tokens. The launcher and execution instructions add only about 108 input tokens on average, which means that most of this cost comes from the class itself. On the difficult subset, Gemma's mean reasoning length increases from 9,067 to 12,709 tokens for a trace gain below one point. More generated reasoning therefore does not necessarily provide substantially better executable evidence. Reporting token consumption alongside correctness allows us to examine both the scores and the resources used to obtain them.

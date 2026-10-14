@@ -1,0 +1,20 @@
+\section{Introduction}
+
+LLMs are now widely used in software engineering, particularly to assist developers with tasks such as program understanding, debugging, code review, and code generation. To evaluate their capabilities on these tasks, many benchmarks have been proposed with the objective of reproducing problems that are close to those encountered by developers, including HumanEval and SWE-bench~\cite{chen2021codex,jimenez2024swebench}.
+
+However, these benchmarks mainly provide a global measure of whether a model can solve a specific task. They can therefore indicate whether a model performs well in a given scenario, but they make it more difficult to diagnose the reasons behind its success or failure. A single task can involve several skills at the same time, which makes it difficult to identify precisely which elements cause difficulties for the model. For example, a model may understand a program by partially relying on semantic information present in method or variable names, while its performance may decrease when this information is removed. A correct or incorrect answer alone is not sufficient to highlight this type of behavior.
+
+In this work, we propose \benchmark, a Java benchmark whose objective is not to replace existing benchmarks, but to provide an evaluation framework that allows a more fine-grained analysis of model capabilities. Given a Java class containing several methods, a source method, and a target method, the model must determine whether the target can execute from the source under the generated argument values. This requires following calls and, when they are guarded by conditions, the values that determine whether they execute.
+
+The Java code used in the benchmark is automatically generated from call structures by a separate construction algorithm. \benchmark refers to the final dataset produced by this algorithm. Since the executable graphs are known, this allows us to build an oracle that provides the expected answer for each question and supports checking model traces. The model must return its result as a JSON object containing two elements: a final answer, indicating whether reachability is \true{} or \false{}, and a trace, corresponding to the ordered sequence of methods explored. This allows us to go beyond a binary measure of success or failure and obtain additional information about the executable calls supporting the model's answer.
+
+The construction algorithm is configurable and allows different structural factors to be controlled, such as class size, guarded calls, passed values, and target distance. By varying these parameters, we can compare model behavior across different levels of difficulty.
+
+We also consider two prompt variants of the same dataset, Class-only (CO) and Explicit execution (EE). In CO, the prompt presents the generated class without explicitly identifying the entry point or stating that execution is deterministic. In EE, a separate \texttt{Main} launcher and additional instructions make this context explicit. This allows us to examine how model performance changes when information that must otherwise be inferred from the class is provided in the prompt.
+
+This paper makes three contributions:
+\begin{itemize}[leftmargin=*]
+    \item the final \benchmark dataset of 1,232 Java classes and 46,656 questions, with parameters that vary structural difficulty.
+    \item an evaluation that checks Boolean answers against labels and method traces against the executable graph.
+    \item an empirical study of model performance across structural factors and the CO and EE prompt variants.
+\end{itemize}

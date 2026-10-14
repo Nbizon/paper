@@ -1,0 +1,18 @@
+\section{Threats to Validity}
+\label{sec:threats}
+
+\subsection{Construct Validity}
+
+Method reachability evaluates a specific part of program understanding, and the returned trace provides an observable output rather than direct access to internal reasoning. Positive traces can stop at the target, while negative traces must cover the complete executable region, so their scores correspond to different exploration requirements. The guard diagnostics also identify only errors that can be attributed unambiguously to a false guard. The absence of such an error therefore does not prove that the condition was evaluated correctly. Origin-distance comparisons exclude literal conditions, unresolved origins, and ambiguous attributions.
+
+\subsection{Internal Validity}
+
+We check the primary scores against executable-graph evaluations and compare prompts on shared questions. The independent execution audit in Section~\ref{subsec:oracle-validation} checks the oracle edges, reachable regions, and labels for the complete final dataset by starting each class through its root launcher. However, this validates the concrete execution contexts without validating response parsing or every diagnostic. Structural factors also change text length and graph properties, which means that average score differences do not isolate semantic causes.
+
+In \benchmark~(CO), some errors may come from how the model interprets the source method's arguments, since the entry context and determinism remain implicit. \benchmark~(EE) makes both explicit together, so their individual contributions cannot be separated. The Gemma and Qwen3.6 comparison also changes the reasoning budget, while Qwen3.8 uses the same requested budget but only six difficult classes. Gemma's provisional comparison concerns an unbalanced subset and must be updated before drawing conclusions about the full corpus. Decoding, quantization, and parsing can also affect the scores, and the serving logs do not identify fixed checkpoint or tokenizer revisions.
+
+\subsection{External and Conclusion Validity}
+
+The generated programs contain one class with controlled method calls and value flow, without covering dynamic dispatch, executed recursion, exceptions, external libraries, or dependencies across classes. Generating new programs also does not establish the absence of training-data overlap, since the training data are unavailable. The findings therefore concern the evaluated tasks and configurations and do not establish general repository-level capability.
+
+Each question receives one response, and questions from the same class are related observations. We therefore report descriptive comparisons, without significance tests or confidence intervals for a broader population. Relationships between guard errors and answers describe the returned outputs without establishing causal mechanisms, and the fixed-budget prompt subset does not represent the full factorial grid.

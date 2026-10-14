@@ -1,0 +1,26 @@
+\section{Background}
+\label{sec:background}
+
+\subsection{Method Reachability and Execution Context}
+
+A method-reachability question asks whether a target method can be invoked from a source method through a sequence of direct or indirect calls. This relationship can be represented using a call graph, in which methods correspond to nodes and calls correspond to directed edges. The target is then reachable from the source when a path connects them. Different analyses have been proposed to construct these graphs from the relationships between program elements~\cite{grove2001framework,tip2000scalable}.
+
+However, a call can be visible in the source code without being executed, for example when it appears inside a condition that is false. Following all visible calls is therefore not sufficient to describe what happens during execution. Determining reachability also requires examining the values that decide whether these calls execute.
+
+These values depend on the execution context, which includes the supplied arguments and initial state. In a deterministic program, this context determines which branches are taken and which methods are invoked. When a condition depends on a parameter, its value may have been passed through several methods before reaching the condition. The declaration of the queried source method alone may therefore not provide enough information to answer the question. In this paper, reachability is evaluated under this given execution context.
+
+\input{figures/generated_java_example}
+
+Figure~\ref{fig:background-example} illustrates this with a complete Java class containing four methods, produced by the construction algorithm. The \texttt{Main} launcher invokes the root method, which initializes \texttt{message} to 4. When \texttt{buildSessionToBuffer} is selected as the source, its call to \texttt{sortJobForRequest} does not execute because the supplied value is greater than $-5$. The source reaches only \texttt{clearNotificationFromUrl}, whose guarded call is also disabled. Although the root invokes the target separately, this does not make it reachable from the selected source, since the question concerns calls made from that source with its supplied arguments.
+
+Section~\ref{sec:benchmark-design} explains how this execution context is represented in the generated instances and supplied to the model.
+
+\subsection{Decisions and Executable Evidence}
+
+A Boolean answer indicates whether the target is reachable, but it does not show which calls support this decision or whether they execute in the given context. A trace provides additional information by listing the methods explored by the model. This allows us to check whether the exploration follows executable calls. The evidence required depends on the question's polarity, since establishing reachability requires finding a route to the target, while establishing unreachability requires ruling out all such routes.
+
+In this paper, the term \emph{trace} refers to the ordered exploration of methods returned by the model alongside its answer. It does not need to reproduce every invocation or follow one chronological execution sequence, since independent branches can be explored in different orders. Its purpose is to provide evidence that can be checked against executable calls in the program.
+
+However, a correct answer does not necessarily mean that this evidence is valid. In Figure~\ref{fig:background-example}, a model can correctly state that \texttt{sortJobForRequest} is unreachable from \texttt{buildSessionToBuffer}, while including it in the trace through a call guarded by a false condition. Evaluating the answer and trace separately allows us to distinguish a correct decision from a valid exploration.
+
+Since the trace is itself generated, it provides an observable output that can be evaluated against the program, rather than direct access to the model's internal reasoning. Section~\ref{subsec:scoring} describes how this output is checked independently of the Boolean answer.

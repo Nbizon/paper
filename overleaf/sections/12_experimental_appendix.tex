@@ -1,0 +1,85 @@
+\section{Experimental Configuration Details}
+\label{app:experimental-config}
+
+Table~\ref{tab:dataset-spec} describes the generation grid and the two task families. The archived field \texttt{n\_if} appears as \texttt{if} in the diagnostic exports, while the paper defines the families through \mbox{\texttt{n\_if}$=0$} and \mbox{\texttt{n\_if}$>0$}. All archived configurations record generator mode \texttt{d}, including zero-condition instances, but this historical field does not change the analysis partition. Table~\ref{tab:models} gives the serving configuration recovered from the logs. Since model and tokenizer revisions are unset, the checkpoint names do not establish an immutable weight revision.
+
+\input{tables/dataset_specification}
+\input{tables/models}
+
+\section{Diagnostic Definitions and Populations}
+\label{app:diagnostic-definitions}
+
+Let $R(s)$ denote the set of methods executable from $s$, and $T$ the returned sequence. A guard is considered exposed when its containing method appears in $T$. We attribute a false-guard error when a newly introduced method has no executable predecessor among earlier trace methods and exactly one earlier guard explains its introduction. When several guards could explain it, attribution is undefined. This allows us to identify unsupported inclusions through false guards, without observing all possible condition-evaluation errors, such as ignoring a true branch.
+
+\vspace{0.2cm}
+
+T01 divides the number of attributed guard errors by the number of exposed call-controlling guards, with both counts summed over eligible responses. A gives the fraction of attributed errors whose guarded callees can reach the target through executable edges, while B gives the fraction of eligible responses containing at least one such error. For negative questions, T04 measures the mean fraction of $R(s)$ omitted, and T05 measures the incidence of traces containing an existing method outside $R(s)$. These defects can occur in the same trace, so the measurements do not form separate categories.
+
+\vspace{0.2cm}
+
+For structurally admissible positive traces, T06 measures target omission, while T07 measures continuation after the target among traces containing it. Structural admissibility requires a source-first sequence with no duplicate or unsupported method introduction. T08 measures unknown method names, T09 gives the relative position of the first structural error in nonempty defective traces, and T11 measures duplicates in eligible nonempty traces. T13 measures mean source-anchored coverage, corresponding to the fraction of $R(s)$ linked back to the source through executable introductions. This does not represent positive-query success, since a valid positive trace can stop at the target without covering the whole region.
+
+\vspace{0.2cm}
+
+For a guard $g$ whose variable origin is resolved, $h(g)$ counts the method boundaries back to the local declaration supplying its tested value. D1 averages $h(g)$ over exposed guards, while D3 restricts this average to guards with an attributed false-guard error and D5 to the remaining exposed guards in unambiguous traces. Literal conditions, unresolved origins, and ambiguous lineages are excluded. D1$^*$ uses the attribution population shared by D3/D5, allowing its numerator and denominator to be partitioned into those of D3 and D5. D9 averages $h(g)$ over guards in each reference depth-first exploration before averaging across questions. This reference traversal is a diagnostic convention and does not impose an exploration order on the model.
+
+\vspace{0.2cm}
+
+Table~\ref{tab:difficulty-populations} describes these different weights and exclusions. D1 differs from D1$^*$ because it also includes resolved exposures in traces with ambiguous error attribution. Table~\ref{tab:diagnostic-populations} gives the populations used for the other diagnostics, with missing measurements excluded from interpretations of success. The hashes accompanying the reproducible aggregates identify the source export and its metric catalogue.
+
+The main text focuses on omissions, inclusions outside the executable region, and value-origin distance. Table~\ref{tab:error-taxonomy} retains the broader response checks, whose incidences overlap and do not partition failures. Table~\ref{tab:trace-diagnostics} separates outcomes by polarity, while Table~\ref{tab:value-origin} compares origin distances. Reference difficulty increases from 4.25 to 5.29 boundaries between \path{n_params}=1 and \path{n_params}=2. However, it is weighted by question, while the error comparison is weighted by guard occurrence.
+
+\input{tables/error_taxonomy}
+\input{tables/trace_diagnostics}
+\input{tables/value_origin_difficulty}
+\input{tables/difficulty_populations}
+\input{tables/diagnostic_populations}
+
+\section{Detailed Result Curves}
+\label{app:result-details}
+
+Figure~\ref{fig:results-guards-parameters} shows the marginal profiles for \path{n_if} and \path{n_params}, while Table~\ref{tab:guard-mechanisms} distinguishes the rate of detected guard errors from their target-directed consequences. T01 decreases as \path{n_if} rises, although path scores deteriorate and A increases. This can occur because additional conditions increase the exposure denominator, while the returned traces determine which guards are exposed. A smaller T01 ratio therefore does not establish better condition evaluation, and counts must be interpreted together with eligibility.
+
+\vspace{0.2cm}
+
+Figure~\ref{fig:results-distance} separates signed distance levels, allowing the two polarities to be examined individually. Figure~\ref{fig:results-context} also shows that higher negative answer correctness can coexist with lower path correctness. These curves provide additional information about where the decision and its evidence diverge.
+
+\input{figures/results_guards_parameters}
+\input{tables/guard_mechanisms}
+\input{tables/context_mechanisms}
+\input{figures/results_distance}
+\input{figures/results_context}
+
+\vspace{0.2cm}
+
+Table~\ref{tab:token-observability} reports persisted token counts, showing that condition-aware responses contain more reasoning tokens on average than unguarded responses despite lower primary scores. Mean reasoning usage on condition-aware questions is 45.72\% of the requested budget for Gemma and 38.43\% for Qwen. However, these means do not show whether individual failures exhausted their budget, and tokenizer differences prevent interpreting token ratios as equal compute. This experiment uses one requested budget and does not establish whether increasing it would resolve the observed failures.
+
+\input{tables/token_observability}
+
+\section{Published Benchmark Comparisons}
+\label{app:external-comparison}
+
+Table~\ref{tab:external-comparison} gives scores reported in official model cards for the named checkpoints, checked on October~6, 2026. Both model columns come from Qwen's card, with Google's card also confirming Gemma's LiveCodeBench score~\cite{qwen2026qwen36,google2026gemma4}. These values therefore describe published external results rather than additional runs in our experiment.
+
+\begin{table*}[t]
+\centering
+\caption{Published external scores (\%) for the named checkpoints. Scores can be compared within rows, while protocols differ across rows and from \benchmark.}
+\label{tab:external-comparison}
+\scriptsize
+\begin{tabularx}{\textwidth}{lrrX}
+\toprule
+Benchmark & Gemma & Qwen & Provenance and protocol qualification \\
+\midrule
+LiveCodeBench v6 & 77.1 & 80.4 & Qwen card, with Gemma's value also confirmed by Google. \\
+SWE-bench Verified & 17.4 & 73.4 & Qwen card, using an internal agent scaffold with shell and file-edit tools. \\
+SWE-bench Multilingual & 17.3 & 67.2 & Same vendor-reported scaffold, not our reachability protocol. \\
+SWE-bench Pro & 13.8 & 49.5 & Qwen card, with a refined benchmark set applied to its baselines. \\
+Terminal-Bench 2.0 & 34.2 & 51.5 & Qwen card, using the Harbor/Terminus-2 harness and the mean of five runs. \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+% Flush appendix floats and restore full-height columns before references.
+\clearpage
+\nolinenumbers
+\twocolumn

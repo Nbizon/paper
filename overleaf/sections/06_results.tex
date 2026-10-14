@@ -1,0 +1,84 @@
+\section{Results}
+\label{sec:results}
+
+We first examine whether the models answer reachability questions correctly and provide traces that follow executable calls, before comparing the two prompt variants of the benchmark. The analysis of structural factors and traces uses the 46,656 questions evaluated with \benchmark~(CO), while prompt comparisons use the questions shared by both variants within each model.
+
+\subsection{\researchq{1}: Reachability Accuracy and Structural Factors}
+
+\subsubsection{Correct Decisions Do Not Always Have Valid Evidence}
+
+Table~\ref{tab:overall} shows that Qwen obtains the highest overall scores, with 87.98\% final-answer correctness and 67.43\% trace correctness, compared with 84.21\% and 55.90\% for Gemma. The difference between models is therefore more pronounced for the trace than for the answer. However, 28.31\% of Gemma responses and 20.55\% of Qwen responses contain a correct answer with an incorrect trace. A correct decision alone is therefore not sufficient to establish that the model provides a valid exploration.
+
+\input{tables/overall_performance}
+
+When calls are unguarded, Qwen obtains 99.19\% answer correctness and 96.33\% trace correctness, while Gemma obtains 96.05\% and 82.23\%. The presence of conditions is associated with much lower trace correctness, at 57.80\% and 47.13\%, respectively. Non-responses account for only 1.10\% and 2.73\% of condition-aware questions. The main difficulty therefore concerns the executable evidence returned with the answer.
+
+\subsubsection{Conditions and Parameters Act Together}
+
+Increasing \mbox{\texttt{n\_if}} from one to five is associated with a decrease in condition-aware trace correctness of 21.94 points for Gemma and 19.17 for Qwen (Table~\ref{tab:factors}). For \path{n_params}, the largest difference appears when the first parameter is introduced, with Gemma's trace score falling from 66.62\% to 39.17\% and Qwen's from 90.53\% to 43.52\%.
+
+\input{tables/factor_effects}
+
+Considering \mbox{\texttt{n\_if}} and \path{n_params} together allows us to locate this difficulty more precisely. When \mbox{\texttt{n\_if}$=0$}, increasing \path{n_params} from zero to two is associated with a decrease of only 2.26 points for Gemma and 0.44 for Qwen. When \mbox{\texttt{n\_if}$=5$}, the decreases reach 33.82 and 55.66 points. The difference associated with \path{n_params} is therefore greater when conditions use passed values to determine whether calls execute. In comparison, \path{n_comment}, \path{n_vars}, and \path{n_loops} show smaller average differences, with none exceeding five points for either model. A possible explanation is that these parameters only add distractors, such as artificial comments, unused local declarations, and loops containing no calls to benchmark methods. They therefore increase the amount of code to inspect without adding algorithmic complexity to the reachability problem, since executable calls and the values controlling them remain unchanged.
+
+\subsubsection{Distance and Class Size}
+
+For positive condition-aware questions, trace correctness decreases from 95.68\% to 56.58\% for Gemma and from 99.90\% to 70.52\% for Qwen when the nominal distance in \path{depths} increases from 1 to 25. For negative questions, the scores decrease from 54.01\% to 11.63\% and from 55.56\% to 22.94\%. However, the same nominal distance does not require the same exploration for both polarities. At magnitude 25, the shortest executable route to a positive target contains 5.90 methods on average, while a negative trace must cover 26 methods. Since positive distance records the target's position in the reference exploration, the model can reach it without exploring earlier side branches.
+
+When \path{class_size} increases from 100 to 500 methods, condition-aware trace correctness decreases from 55.70\% to 37.23\% for Gemma and from 60.11\% to 54.99\% for Qwen. Qwen's answer score nevertheless increases from 82.46\% to 85.67\%, although this average hides different patterns by polarity. Its positive answer correctness falls from 97.67\% to 86.68\%, while its negative correctness rises from 67.25\% to 84.67\%. This pattern strongly suggests that an answer bias influences the scores, since negative-answer correctness improves without more reliable exploration. In \researchq{2}, we examine the returned traces with the objective of better understanding how this possible bias changes with class size.
+
+\paragraph{Answer to \researchq{1}.}
+Qwen obtains the best overall scores, but both models answer questions correctly more often than they provide valid traces. Their main difficulties concern guarded calls, parameters used in conditions, and the complete exploration needed to establish that a target is unreachable.
+
+\subsection{\researchq{2}: What the Traces Reveal}
+
+\subsubsection{Executability and Incomplete Exploration}
+
+On condition-aware questions, Gemma obtains 69.27\% trace correctness for positive targets and only 24.99\% for negative targets, compared with 81.57\% and 34.04\% for Qwen. The negative traces reveal two difficulties. First, 51.38\% of Gemma traces and 48.50\% of Qwen traces include an existing method outside the executable region. Second, they omit a large part of this region, with mean omitted fractions of 39.37\% and 38.01\%.
+
+One possible explanation for this behavior is that the model follows a call placed inside an \texttt{if} block, even though its condition should evaluate to false. It can therefore explore a subtree that should not be reachable from the source and, when this subtree contains the target, answer that the target is reachable. This type of error could favor positive answers, since a positive question may be answered correctly while the trace follows a call that cannot execute. For a negative question, the same behavior would instead lead to an incorrect positive answer.
+
+To examine this interpretation, we consider trace errors that can be attributed unambiguously to a call behind a false guard. Among eligible negative responses containing such an error, when the called method can reach the target, the answer is a false positive in 89.73\% of Gemma cases and 92.57\% of Qwen cases. Without such an attributed error, these rates are only 1.36\% and 0.46\%. This allows us to relate the exploration of a disabled branch containing the target to the final answer returned by the model.
+
+This tendency is also visible in the difference between positive and negative answer correctness. When \path{n_if} increases from one to five, this difference grows from 0.2 to 7.9 percentage points for Gemma and from 8.2 to 21.5 for Qwen. Positive answers therefore become more favorable relative to negative answers, although both correctness scores decrease. These observations support the interpretation of a positive-answer bias, without establishing that the attributed errors caused the observed score differences.
+
+\subsubsection{Class Size and the Answer Bias}
+
+However, the increase in negative-answer correctness observed in \researchq{1} suggests that this tendency may be counterbalanced when the class contains more methods. To better understand this behavior, we compare the number of attributed guard errors per exposed guard with the proportion of these errors whose called method can reach the target. A guard is considered exposed when its containing method appears in the trace. Table~\ref{tab:context-bias} shows that the error rate changes only slightly with \path{class_size}, while the proportion of errors leading toward the target decreases from 32.36\% to 8.90\% for Gemma and from 35.27\% to 13.62\% for Qwen between 100 and 500 methods.
+
+\input{tables/context_bias}
+
+One possible explanation is that increasing the number of methods makes it less likely that a subtree explored through a false guard contains the queried target. The model may therefore continue to follow calls that should not execute, but these errors would lead to a positive answer less often. This would explain why negative-answer correctness can increase while positive-answer correctness decreases, without a decrease in the attributed guard-error rate. A higher score on negative questions would then reflect fewer errors leading toward the target, rather than an improvement in the model's exploration.
+
+\subsubsection{Value Propagation Across Methods}
+\label{subsec:value-origin}
+
+The presence of method parameters also provides information about the difficulty of following guarded calls. When \path{n_params}=0, the proportion of eligible guard exposures with an attributed false-guard error is only 0.25\% for Gemma and 0.18\% for Qwen. This proportion increases to 7.42\% and 9.01\% when \path{n_params}=1, and reaches 10.40\% and 11.11\% when \path{n_params}=2.
+
+To better understand these errors, we examine the distance between a guard and the declaration supplying the value tested by its condition. At \path{n_params}=1, this distance is 5.41 method boundaries on average for Gemma's guards with an attributed error, compared with 3.59 for exposed guards without an attributed error. Qwen shows a similar difference, with 5.15 versus 3.58. At \path{n_params}=2, the distances become 6.22 versus 4.47 for Gemma and 5.90 versus 4.47 for Qwen. The exposed guards in the common population with unambiguous attribution nevertheless have almost identical mean distances for both models, at 3.72 for \path{n_params}=1 and approximately 4.64 for \path{n_params}=2.
+
+These averages are weighted by guard occurrences and exclude literal conditions, unresolved origins, and ambiguous attributions. They indicate that attributed errors tend to involve values passed through more methods, but they do not show how failure probability changes with each additional method boundary. Qwen's advantage in condition-aware trace correctness also decreases from 23.91 points at \path{n_params}=0 to 4.35 at \path{n_params}=1 and 3.75 at \path{n_params}=2. A higher overall score is therefore not sufficient to remove the difficulty that both models encounter when values must be followed across methods.
+
+\paragraph{Answer to \researchq{2}.}
+Evaluating the traces allows us to identify calls that cannot execute, methods omitted from the exploration, and errors involving longer value dependencies. This also provides information about a possible bias toward positive answers and how it may be counterbalanced in larger classes. A correct or incorrect answer alone is therefore not sufficient to highlight these behaviors.
+
+\subsection{\researchq{3}: Explicit Execution Context and Determinism}
+
+\subsubsection{Comparison on the Main Evaluation Set}
+
+Table~\ref{tab:prompt-comparison} compares the two variants on the same questions and oracles. With \benchmark~(EE), Qwen's answer correctness increases from 87.98\% to 89.66\%, while trace correctness increases from 67.43\% to 69.23\%. These gains of 1.68 and 1.79 points are small compared with the difference between answer and trace scores. The improvement is more visible for negative condition-aware questions, where answer correctness rises from 75.85\% to 80.16\%, while positive correctness remains around 92.6\%.
+
+\input{tables/prompt_comparison}
+
+Gemma shows the same overall trend on the common questions, with answer correctness increasing from 74.85\% to 76.87\% and trace correctness from 43.12\% to 44.72\%. Non-responses also decrease for both models. However, Gemma's values in Table~\ref{tab:prompt-comparison} are provisional and concern the same 11,824 questions in both variants. They cannot therefore be compared directly with its full-grid averages in Table~\ref{tab:overall}.
+
+However, making the execution context explicit does not remove the difficulty associated with passed values. Under \benchmark~(EE), Qwen's condition-aware trace correctness is 92.06\% at \path{n_params}=0, compared with 46.43\% at \path{n_params}=1 and 41.66\% at \path{n_params}=2. The improvement therefore leaves a large difference between these configurations. Since EE also provides a larger reasoning budget to accommodate execution analysis, these scores describe the results under the chosen budgets. Section~\ref{sec:error-analysis} discusses the corresponding token consumption.
+
+\subsubsection{Qwen3.8-Flash-Next at a Fixed Budget}
+
+On the 216-question difficult subset, Qwen3.8-Flash-Next's answer correctness increases from 57.41\% to 63.89\% and its trace correctness from 35.65\% to 46.76\% between \benchmark~(CO) and \benchmark~(EE), with both variants using a reasoning budget of 16,384 tokens. The largest gains concern negative questions, where answer correctness rises from 24.07\% to 46.30\% and trace correctness from 0\% to 17.59\%. For positive questions, trace correctness increases from 71.30\% to 75.93\%, although answer correctness decreases from 90.74\% to 81.48\%.
+
+However, non-responses also increase from 23 to 42 out of 216 questions, corresponding to 10.65\% and 19.44\%. The higher overall scores are therefore accompanied by fewer recoverable answers, with non-responses still included in the denominators. Since these questions belong to a specific subset with guarded calls and parameters, the results do not establish Qwen3.8's ranking on the full benchmark.
+
+\paragraph{Answer to \researchq{3}.}
+The models obtain higher overall answer and trace scores with \benchmark~(EE), particularly for negative questions. This is consistent with the additional interpretation required by \benchmark~(CO), although explicit execution information does not remove difficulties with guarded value propagation. The main comparison also changes the reasoning budget, while Qwen3.8's comparison at a fixed budget shows both better traces and more non-responses.

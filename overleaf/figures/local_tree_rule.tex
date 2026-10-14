@@ -1,0 +1,24 @@
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[rb diagram]
+\node[rb method] (u) at (0,0) {$u$};
+\node[rb method] (l) at (-1.65,-1.05) {$L(u)$};
+\node[rb method] (r) at (1.65,-1.05) {$R(u)$};
+\node[rb method, minimum width=1.25cm] (ll) at (-2.5,-2.15) {$L(L(u))$};
+\node[rb method, minimum width=1.25cm] (lr) at (-0.8,-2.15) {$R(L(u))$};
+\draw[rb edge] (u) -- (l);
+\draw[rb edge] (u) -- (r);
+\draw[rb optional edge] (l) -- (ll);
+\draw[rb optional edge] (l) -- (lr);
+\node[rb annotation, anchor=east] at (-2,-1.55) {$X_{LL}(u)=1$};
+\node[rb annotation, anchor=west] at (-1.15,-1.55) {$X_{LR}(u)=1$};
+\draw[rb edge] (-2.8,-2.85) -- (-2.15,-2.85);
+\node[rb note, anchor=west] at (-2.05,-2.85) {Fixed edge};
+\draw[rb optional edge] (0,-2.85) -- (0.65,-2.85);
+\node[rb note, anchor=west] at (0.75,-2.85) {Optional edge};
+\node[rb note] at (-0.2,-3.3) {$X_{LL},X_{LR}\sim\mathrm{Bernoulli}(p)$, independently};
+\end{tikzpicture}
+\caption{Local tree-expansion rule. Solid edges are added while method names remain available, and dashed edges are sampled independently with probability $p$. The right child and sampled grandchildren are then queued for further expansion.}
+\Description{A node u has two fixed children. The left child has two optional children controlled by independent Bernoulli variables.}
+\label{fig:local-tree-rule}
+\end{figure}
